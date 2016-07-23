@@ -1,0 +1,1 @@
+<? $arFilesInfo = array( 'FILES' => array("/bitrix/templates/furniture_dark-blue/template_styles.css" => "146797686955359",), 'CUR_SEL_CNT' => '524', 'CUR_IE_CNT' => '0'); ?>

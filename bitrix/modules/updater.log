@@ -1,0 +1,6 @@
+2015-11-11 23:06:28 -  - exec CUpdateClient::GetUpdatesList
+2015-11-11 23:06:28 -  - exec CUpdateClient::CollectRequestData
+2015-11-11 23:06:28 -  - LICENSE_KEY=X&lang=ru&SUPD_VER=14.5.0&VERSION=14.5.0&TYPENC=E&SUPD_STS=1&SUPD_URS=0&SUPD_URSA=1&SUPD_DBS=MYSQL&XE=N&CLIENT_SITE=b-teleport.ru&CHHB=b-teleport.ru&CSAB=89.111.178.100&CANGZIP=Y&CLIENT_PHPVER=5.4.41&stable=Y&bitm_main=14.5.0&bitm_compression=14.0.0&bitm_iblock=14.5.0&bitm_fileman=14.5.0&bitl_ru=&bitl_en=&bith_ru=&bith_en=&SUPD_PIBC=2&SUPD_PUC=1&SUPD_PSC=1&SUPD_SRS=RU
+2015-11-11 23:06:28 -  - exec CUpdateClient::GetHTTPPage
+2015-11-11 23:06:28 -  - TIME GetUpdatesList(request) 0.484 sec
+2015-11-11 23:06:28 -  - exec CUpdateClient::ParseServerData
