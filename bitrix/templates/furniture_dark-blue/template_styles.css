@@ -420,6 +420,19 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 .cnt_text span, .cnt_mail span{ background-color: #26A69A; color: #FFF;}
 
 .cnt_mail {display: none;}
+
+.msg_begin_avatar {
+	display: inline-block; 
+	height: 70px; 
+	width: 70px; 
+	margin: 0 0 0 15px; 
+	z-index:50;
+	background-size: cover;    
+	border-radius: 7px;
+    background-repeat: no-repeat;
+    background-position: center;
+    border: 1px solid #CCCCCC;
+}
 /*.cnt_mail span{ background-color: #26A69A;}*/
 .search_result {
 	max-height: 180px;
