@@ -1085,14 +1085,16 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 	display: block;
 	font-weight: 600;
 	text-align: left;
-	white-space: nowrap;
 	position: relative;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;	
 }
 .it_filter[data-filter-type=enum], .doc_filter {
 	padding: 15px 15px 15px 50px;
     background-image: url(/my/data/svg/expand_more.svg);
     background-repeat: no-repeat;
-    background-position: 15px center;
+    background-position: 15px 8px;
 }
 .it_filter[data-filter-type=boolean] {
 	padding: 15px 15px 15px 20px;
@@ -1153,7 +1155,9 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 	box-sizing: border-box;
 	text-align: left;
 	cursor: pointer;
-	
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;	
 }
 .it_filter_value:hover, .doc_filter_value:hover {
 	background-color: #EEE;
@@ -1180,7 +1184,7 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-	
+	width: 90%;
 }
 .it_category .it_filter, .it_category .it_filter_enum, .it_category .empty_cat{
 	display: none;
@@ -1255,7 +1259,8 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 #telebot_msg a:hover {
 	color: #26A69A;
 }
-
+.clw_bot {position: absolute; top: 1px; right: 5px; display: inline-block; width: 24px; height: 24px; text-align: center; border: 1px solid transparent; cursor: pointer; border-radius: 12px}
+.clw_bot:hover {border: 1px solid #AAAAAA;}
 #cnt_menu, #info_content {margin: 0px 10px;}
  
 #cnt_menu p, #info_content p, #up_menu p, #active_menu p {border: 1px solid #FBFBFB; font-family: 'Open Sans', Arial, Helvetica, sans-serif; padding: 10px; cursor: pointer; font-size: 14px; font-weight: 600; /*color: #777777;*/}
