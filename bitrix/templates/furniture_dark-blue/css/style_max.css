@@ -382,10 +382,6 @@
 	float: left;
 }
 
-#order_view .sidebar-item-box  .sidebar-item-name {
-    padding-left:40px;
-}
-
 #order_view  .mess_send {
 	position:absolute;
 	bottom:0;
@@ -548,6 +544,13 @@
 	padding:10px 10px;
 	background: #fbfbfb;
     border-radius: 3px;
+}
+
+#order_view .sidebar textarea {
+	width: 100%; 
+	border: 1px solid #ccc !important;
+	background: #fff;
+	resize:none;
 }
 
 #order_view  .order_item_list_content input {
@@ -748,6 +751,7 @@
 	border-collapse: collapse;
     font-family: 'Open Sans', Arial, Helvetica, sans-serif;
     font-weight: 600;
+	width: 100% !important;
 }
 
 #order_view .order_item_list_head .item_list_header {
@@ -755,10 +759,11 @@
 }
 
 #order_view  .order_positions .slimScrollDiv {
-	display: table;
 	box-shadow: 0px 0px 2px;
 	border-radius: 3px;
 	margin-bottom: 3px;
+	display: table;
+	width: 100% !important;
 }
 
 #order_view .order_item_list_head .input_row,
@@ -829,7 +834,7 @@
 }
 
 .item_line div {
-    padding: 0 15px;
+    padding: 0 10px;
 }
 
 #order_view .msg_file {
@@ -838,4 +843,42 @@
 
 #order_view #send_msg {
     padding: 0 0 0 25px;
+}
+
+.mess-list {
+    overflow-y: auto;
+}
+
+.fa.show-docs:hover,
+.fa.show-docs.active {
+	color: #26A69A !important;
+}
+
+div#UserDocList {
+	display: none;
+	position: absolute !important;
+	right: 75px;
+	top: 45px;
+	background-color: #FBFBFB;
+    border: 1px solid #CCCCCC;
+    padding: 10px;
+    z-index: 9999;
+    box-shadow: 2px 2px 4px #777777;
+    border-radius: 5px;
+}
+
+div#UserDocList .UserDocItem{
+	display: block;
+	border: 0;
+	padding: 10px;
+}
+
+div#UserDocList .UserDocItem:hover {
+	color: #fff;
+	background: #26A69A;
+}
+
+.order_item_list_content tbody {
+	display: table;
+	width: 100% !important;
 }

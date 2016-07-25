@@ -27,7 +27,6 @@ function getTmpDocInfo(id) {
 function setEditPolicy (sender, docstatus) {
 	$("#upl_xls").addClass('hidden');
 	$('#del_item').addClass('hidden');
-	$('.cnt_inp').prop("disabled", true);
 	$('.order_item_input_row').addClass('hidden');
 	$(".order_item_list_content .col_0 .fa").addClass('hidden');
 	$(".order_item_list_content .col_4 .fa").addClass('hidden');
@@ -40,7 +39,6 @@ function setEditPolicy (sender, docstatus) {
 			case 'new':
 				$("#upl_xls").removeClass('hidden');
 				$('#del_item').removeClass('hidden');
-				$('.cnt_inp').prop("disabled", false);
 				$('.order_item_input_row').removeClass('hidden');
 				$(".order_item_list_content .col_0 .fa").removeClass('hidden');
 				$(".order_item_list_content .col_4 .fa").removeClass('hidden');
@@ -169,7 +167,7 @@ function getDocHeaderProps(arHeader) {
 			'<div class="sidebar-item-header"><i class="fa fa-chevron-down"></i>Комментарии</div>' +
 			'<div class="sidebar-item-content">' +
 				'<div class="sidebar-item-box" data-type=comment>' +
-					'<div class="sidebar-item-name"><textarea style="width: 100%; border: 0; resize:none;">'+arHeader.comment+'</textarea></div>' +
+					'<div class="sidebar-item-name"><textarea>'+arHeader.comment+'</textarea></div>' +
 				'</div>' +
 			'</div>' +
 		'</div>'
@@ -293,17 +291,17 @@ function initDocView(arDoc) {
 				'</div>' +	
 			'</div>'	
 	);
-	
+	console.log(docHeader.sum);
 	var strorderinfo = 
 		'<div id="order_num">Заказ № '+docHeader.num+' от '+ docDate.day + '-' + docDate.month + '-' + docDate.year +' (' + docDate.hh + ':' + docDate.mm +':'+ docDate.ss + ')' + '</div>' +
-		'<div class="order_status"><div class="ord_hd_x1">Статус:</div><div class="ord_hd_x2">'+docStatus[docHeader.status]+'</div><br><div class="ord_hd_x1">Общая сумма:</div><div class="ord_hd_x2"><span class="total-sum">'+docHeader.sum.toFixed(2)+'</span><span class="currency"> '+docHeader.currencyId+'</span></div></div>' +
+		'<div class="order_status"><div class="ord_hd_x1">Статус:</div><div class="ord_hd_x2">'+docStatus[docHeader.status]+'</div><br><div class="ord_hd_x1">Общая сумма:</div><div class="ord_hd_x2"><span class="total-sum">'+parseFloat(docHeader.sum).toFixed(2)+'</span><span class="currency"> '+docHeader.currencyId+'</span></div></div>' +
 		'<div class="order_headline"><div class="ord_hd_x1">Получатель:</div><div class="ord_hd_x2">';
 		
 	if (sender.id == smuser.id) {
-		strorderinfo = strorderinfo + '<input class="cnt_inp" type="text" name="receiver" value="'+receiver.fullname+'" data-owner="'+receiver.name+'"/></div></div>';
+		strorderinfo = strorderinfo + '<input class="cnt_inp" type="text" name="receiver" value="'+receiver.fullname+'" data-owner="'+receiver.name+'" disabled></div></div>';
 	}
 	else {
-		strorderinfo = strorderinfo + '<input class="cnt_inp" type="text" name="sender" value="'+sender.fullname+'" data-owner="'+receiver.name+'"/></div></div>';
+		strorderinfo = strorderinfo + '<input class="cnt_inp" type="text" name="sender" value="'+sender.fullname+'" data-owner="'+receiver.name+'" disabled></div></div>';
 	};
 		
 	
@@ -317,11 +315,12 @@ function initDocView(arDoc) {
 		'<div class="confirm-buttons">' +
 			'<div id="save-local" class="button fa fa-floppy-o tooltip hidden" data-tooltip="Сохранить"></div>' +
 			'<div id="transmit" class="button fa fa-exchange tooltip hidden" data-tooltip="Отправить"></div>' +
-			'<div id="confirm" class="button fa fa-thumbs-o-up tooltip hidden" data-tooltip="Подтвердить"></div>' +
-			'<div id="cancel" class="button fa fa-times tooltip hidden" data-tooltip="Отменить"></div>' +
-			'<div id="ship" class="button fa fa-times tooltip hidden" data-tooltip="Готов к отгрузке"></div>' +
-			'<div id="complete" class="button fa fa-times tooltip hidden" data-tooltip="Выполнен"></div>' +
-			'<div id="process" class="button fa fa-times tooltip hidden" data-tooltip="Принять в обработку"></div>' +
+			'<div id="cancel" class="button fa fa-reply tooltip hidden" data-tooltip="Отменить"></div>' +
+			'<div id="process" class="button fa fa-share tooltip hidden" data-tooltip="Принять в обработку"></div>' +
+			'<div id="confirm" class="button fa fa-file-text-o tooltip hidden" data-tooltip="Подтвердить"></div>' +
+			'<div id="ship" class="button fa fa-ship tooltip hidden" data-tooltip="Готов к отгрузке"></div>' +
+			'<div id="complete" class="button fa fa-thumbs-o-up tooltip hidden" data-tooltip="Выполнен"></div>' +
+			
 		'</div>';
 
 	var strorderlisthead = getTabHeader(tabHeader);
@@ -449,24 +448,31 @@ function initDocView(arDoc) {
 	//Изменение количества позиций в строке заказа кнопками
 	$('#order_view').on('click', '.col_4 .fa, .col_5 .fa', function(){
 		var qty = $(this).siblings('input').val();
+		var price = parseFloat($(this).closest('.item').children('.col_6').text()).toFixed(2);
 		if ($(this).hasClass('fa-plus')) {
 			qty++;
 		}
 		else if ($(this).hasClass('fa-minus')) {
-			qty > 0 ? qty-- : qty;			
+			qty > 1 ? qty-- : qty;			
 		};	
-		$(this).siblings('input').val(qty).trigger('keypress');
+		$(this).siblings('input').val(qty);
+		$(this).closest('.item').children('.col_7').text(parseFloat(price*qty).toFixed(2));
+		getTotalSum();
 	});
 	//Изменение количества позиций в строке заказа вручную
-	$('#order_view').on('keypress', '.col_4 input, .col_5 input', function(e){
-		var verified = (e.which == 8 || e.which == undefined || e.which == 0) ? null : String.fromCharCode(e.which).match('[0-9]');
-		console.log(verified);
-		if (!(verified === null)) {
+	$('#order_view').on('keydown keyup', '.col_4 input, .col_5 input', function(e){
+		var arKey = [8, 9, 37, 39, 46];
+		console.log($.inArray(e.which, arKey));
+		if ((e.which >= 48 && e.which <=57) || (e.which >= 96 && e.which <=105) || ($.inArray(e.which, arKey)>=0)) {
+			if (!$(this).val().length || ($(this).val() == 0)) {$(this).val(1)};
 			var price = parseFloat($(this).closest('.item').children('.col_6').text()).toFixed(2);
 			var qty = $(this).val();
 			$(this).closest('.item').children('.col_7').text(parseFloat(price*qty).toFixed(2));
 			getTotalSum();
-		};	
+		} 
+		else {
+			e.preventDefault();
+		}		
 	});	
 
 	//Отметить позицию в заказе
@@ -520,7 +526,7 @@ function initDocView(arDoc) {
 		$(this).siblings('.sidebar-item-content').slideToggle(100);
 		$('.fa',this).toggleClass('fa-chevron-down fa-chevron-up');
 	});
-	
+	/*
 	//Выпадающий список контактов
 	$('#order_view .cnt_inp').keydown(function(e) {	
 		var obj = $(this);
@@ -571,7 +577,7 @@ function initDocView(arDoc) {
 			obj.removeClass('not_find');
 		}, 200 );
 	});
-	
+	*/
 	//Выпадающий список позиций
 	$('#order_view .order_positions .input_col').keydown(function(e) {	
 		var obj = $(this);
@@ -800,13 +806,6 @@ function initDocView(arDoc) {
 		}
 		$(this).replaceWith($(im_svg));
 	});
-	
-	//Пересчет ширины таблицы
-	$(window).resize(function(){
-		console.log('fgh');
-		setOrderItemListContentHeight();
-	});
-	
 };
 
 
@@ -897,18 +896,6 @@ function buildTmpDoc (tmpDoc){
 	tmpDoc.docTable = arItems;
 };
 
-
-function selectCntInList(obj){
-	if (obj.attr('data-usr-id') !== undefined) {
-		var contact = obj.attr('data-usr-name');
-		var contact_full = obj.attr('data-usr-fullname');
-		$('.cnt_inp').attr('data-'+$('.cnt_inp').attr('name'),contact);
-		$('.cnt_inp').attr('value',contact_full);
-		$('.cnt_inp').val(contact_full);
-		obj.closest('.modal_window').remove();	
-	};
-};
-
 function setNewDocPosition(obj, arHeader){
 	var col = 8;	
 	var html_str = '';
@@ -935,6 +922,18 @@ function setNewDocPosition(obj, arHeader){
 	setOrderItemListContentHeight();
 };
 
+/*
+function selectCntInList(obj){
+	if (obj.attr('data-usr-id') !== undefined) {
+		var contact = obj.attr('data-usr-name');
+		var contact_full = obj.attr('data-usr-fullname');
+		$('.cnt_inp').attr('data-'+$('.cnt_inp').attr('name'),contact);
+		$('.cnt_inp').attr('value',contact_full);
+		$('.cnt_inp').val(contact_full);
+		obj.closest('.modal_window').remove();	
+	};
+};
+
 function showCntList(obj){
 	var inp_str = encodeString(obj.val().toLowerCase());		
 	var cnt_obj = $('#contacts #m_cnt_list').find('[data-usr-index*='+inp_str+']').clone();
@@ -959,13 +958,14 @@ function showCntList(obj){
 		},150);
 	};
 };
+*/
 
 function setOrderItemListContentHeight(){
 	var h1 = $('#order_view .docview').height();
 	var h2 = $('#order_view .order_header')[0].clientHeight;
 	var h3 = $('#order_view .order_controls')[0].clientHeight;
 	var h4 = $('#order_view .order_positions .order_item_list_head')[0].clientHeight;
-	var h = h1-h2-h3-h4-40;
+	var h = h1-h2-h3-h4-20;
 	$('#order_view .order_positions .order_item_list_content').slimScroll({height: h, size: '7px', disableFadeOut: false});
 	
 	$('#order_view .order_positions .item_list_header td').each(function(i){
@@ -999,7 +999,7 @@ function showPosList(obj, contact){
 				showError(xhr.responseText.replace('%err%',''));
 				return;
 			};
-			var item = JSON.parse(xhr.responseText);		
+			var item = JSON.parse(xhr.responseText);	
 			if (item.catalog.length) {	
 				var html_str = '';	
 				$.each(item.catalog, function(key, item){
@@ -1010,11 +1010,14 @@ function showPosList(obj, contact){
 				?
 				$('.modal_window.item_sel .items_short').html(html_str)
 				:
-				obj.closest('.item.input_row').append('<div class="modal_window item_sel" ><div class="items_short">'+html_str+'</div></div>');
+				obj.closest('.item.input_row').append('<div class="modal_window item_sel"><div class="items_short">'+html_str+'</div></div>');
 				$('.modal_window.item_sel').slideDown(100);
 				$('.modal_window.item_sel').width($('.input_row .col_1_2').width()).css('left', $('.item.input_row .col_0').width()+30);
 				setTimeout(function(){
+					var item_sel_height = (item.catalog.length*43>300) ? 300 :  item.catalog.length*43;
+					$('.modal_window.item_sel').height(item_sel_height);
 					var h = $('.modal_window.item_sel').height();
+					console.log(h);
 					$('.modal_window.item_sel .items_short').slimScroll({height: h, size: '7px', disableFadeOut: false});				
 				},150);
 			}
@@ -1134,7 +1137,7 @@ function showSidebarMsg(contact){
 				'&receiver=' + encodeURIComponent(contact) +
 				'&type=all' +
 				'&start_date=' + formated_date +
-				'&limit=200';			
+				'&limit=100';			
 	xhr.open("POST", '/my/ajax/action.php', true);
 	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 	xhr.onreadystatechange = function()	{ 
@@ -1394,10 +1397,10 @@ function addMessageToList(arResult, mode) {
 		if(html_block != ""){
 			if(mode == 'begin') {
 				$('[data-msg-date='+last_date+']').remove();
-				$("#msg_li").prepend(html_block);
+				$("#msg_li").prepend('<div class="mess-list">' + html_block + '</div>');
 			}
 			else if(mode == 'end') {
-				$("#msg_li").append(html_block);
+				$("#msg_li .mess-list").append(html_block);
 				if ($('[data-msg-date='+first_date+']').length != 0) {
 					var obj = $('[data-msg-date='+first_date+']')[$('[data-msg-date='+first_date+']').length-1];
 					$(obj).remove();
@@ -1468,6 +1471,8 @@ function addSentMessages(msg_arResult) {
 	if(!(msg_arResult == undefined)) {
 		addMessageToList(msg_arResult, 'end')
 	};	
+	console.log($('.mess-list').height());
+	$('#msg_li').scrollTop($('.mess-list').height());
 }
 
 			
