@@ -392,7 +392,7 @@ elseif($action == 'catalog_get')
 			$list_type = ($_POST['list_type']=='')?'list':$_POST['list_type'];
 			$str = '';
 			$allow_stocks = $arResult['settings'][0]['allow_stocks'];
-			$allow_prices = $arResult['settings'][1]['allow_prices'];
+			$allow_prices = $arResult['settings'][0]['allow_prices'];
 			$arItmes = $arResult['catalog'];
 			$arPictures = $arResult['pictures'];
 			foreach($arItmes as $key=>$item)
@@ -812,14 +812,21 @@ elseif($action == 'catalog_FiltersGet')
 	{
 		$arResult = $res["return"];
 		$str = '';
+		$filterCount = count($arResult);
+		$expanded = ($filterCount > 2)?(""):(" it_filter_expanded");
+		$display = ($filterCount > 2)?(""):(' style="display: block;"');
 		foreach($arResult as $key=>$item)
 		{
 			//$parent_id = ($item['parent_id']=='')?('_zero_'):($item['parent_id']);
 			//$clevel = ($item['parent_id']=='')?(' it_clevel'):('');
-			$str = $str.'<div class="it_filter" data-filter-group-id ="'.$item['category_id'].'" data-filter-type ="'.$item['filter_type'].'" data-filter-name ="'.$item['filter_name'].'">';
+			if($item['filter_type'] == 'enum') {
+				$str = $str.'<div class="it_filter'.$expanded.'" data-filter-group-id ="'.$item['category_id'].'" data-filter-type ="'.$item['filter_type'].'" data-filter-name ="'.$item['filter_name'].'">';
+			} else {
+				$str = $str.'<div class="it_filter" data-filter-group-id ="'.$item['category_id'].'" data-filter-type ="'.$item['filter_type'].'" data-filter-name ="'.$item['filter_name'].'">';
+			}			
 			if($item['filter_type'] == 'enum') {
 				$str = $str.''.ucfirst($item['filter_name']).'<div class="sel_enum"></div></div>';
-				$str = $str.'<div class="it_filter_enum">';
+				$str = $str.'<div class="it_filter_enum"'.$display.'>';
 				foreach($item['enum_value'] as $key=>$value)
 				{
 					$str = $str.'<div class="it_filter_value" data-filter-value ="'.$value.'">

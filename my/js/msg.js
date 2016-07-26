@@ -1014,6 +1014,7 @@ function addMessageToList(arResult, mode) {
 }
 function showMessages(contact, arMsg, mode, isBegining)
 {
+	$('.wait').remove();
 	var cur_contact = getActiveContact();
 	if(contact.id != cur_contact.id) {
 		removeCntMessagesCash('msg_'+contact.id);
@@ -1053,7 +1054,6 @@ function showMessages(contact, arMsg, mode, isBegining)
 	if(mode == 'begin' && arMsg.length>0) {
 		$('#msg_li').attr('data-start_date', arMsg[0].dt);
 	}
-	$('.wait').remove();
 	if(mode == 'end') {
 		$('#mess_list').scrollTop($('#msg_li').height());
 		if($('#msg_li').attr('data-cnt-id') == contact.name) {

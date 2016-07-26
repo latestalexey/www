@@ -774,7 +774,7 @@ $(document).ready(function() {
 	
 	showGreeting();
 	if ($('#m_cnt_list .contact_inf').length < 5) {
-		setTimeout(function() {showTelebotInfo('Пригласите в TELEPORT, своих партнеров и друзей для работы и общения.<br>Для этого вам надо нажать на "+" над списком контактов и выбрать пункт "Пригласить новый контакт"','',20)}, 30);
+		setTimeout(function() {showTelebotInfo('Нажмите на значок "+" над списком контактов, чтобы пригласить в TELEPORT, своих партнеров и друзей для работы и общения.','',25000)}, 30000);
 	}	
 });
 
@@ -838,10 +838,12 @@ function showTelebotInfo(msg, emojion, timeout) {
 	}
 	str = '<div id="telebot_info">\
 				<img id="telebot_image" style="height: 150px; width: 108px;" src="/my/data/telebot_'+emojion+'.png"/>\
-				<div id="telebot_msg">'+msg+'</div>\
+				<div id="telebot_msg"><div><div class="clw_bot"><img src="/include/close_window.svg"/></div></div>'+msg+'</div>\
 			</div>';
 	$('#content').append(str);
-	
+	$('#telebot_info').on('click','.clw_bot', function() {
+		hideTelebotInfo();
+	});
 	$('#telebot_info').css('display','block');
 	resizeTelebot();
 	if(timeout > 0) {
