@@ -211,7 +211,7 @@ function getSearchStr(arHeader) {
 	var docsearchrow = 				
 		'<tr  class="item input_row">' +
 			'<td class="col_0"><i class="fa fa-keyboard-o" aria-hidden="true"></i></td>' +
-			'<td colspan="2" class="col_1_2"><input class="input_col" placeholder="Введите артикул товара"/></td>' +
+			'<td colspan="2" class="col_1_2"><input class="input_col" placeholder="Введите артикул или наименование товара"/></td>' +
 			'<td class="col_3"></td>'+
 			'<td class="col_4"></td>'+
 			'<td class="col_5"></td>'+
@@ -384,7 +384,7 @@ function initDocView(arDoc) {
 		var xhr = new XMLHttpRequest();
 		var body =	'action=Messages_Send' +
 					'&message=' + encodeURIComponent(JSON.stringify(Doc)) +
-					'&message_type=docs' +
+					'&message_type=document' +
 					'&contact=' + encodeURIComponent((sender.id==smuser.id) ? receiver.name : sender.name);					
 		xhr.open("POST", '/my/ajax/action.php', true);
 		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
