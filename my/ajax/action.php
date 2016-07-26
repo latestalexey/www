@@ -314,7 +314,7 @@ elseif($action == 'msg_request')
 	$res = $TLP_obj->telecall('Messages_Request', $arFnc);
 	echo $res;
 }
-elseif($action == 'files_getList')
+elseif($action == 'filesList')
 {
 	$arFnc = array();
 	foreach ($_POST as $key => $value) 
@@ -323,16 +323,16 @@ elseif($action == 'files_getList')
 			{$arFnc[$key] = $value;}
 	}	
 		
-	$res = $TLP_obj->telecall('Files_GetList', $arFnc);
+	$res = $TLP_obj->telecall('filesList', $arFnc);
 	if($res['errCode'] == 0)
 	{
 		if($adds=='json')
 		{
-			echo $res["return"];
+			echo $res;
 		}
 		else		
 		{
-			$arResult = json_decode($res["return"], true);
+			$arResult = json_decode($res, true);
 		}	
 	}
 	else
@@ -1004,7 +1004,7 @@ elseif($action == 'getPersonInfo')
 					<?}?>	
 				</div>	
 			</div>			
-			<div id="cnt_info_main" data-usr-flname="<?=$arResult['user_fullname'];?>">
+			<div id="cnt_info_main" data-usr-flname="<?=$arResult['user_fullname'];?>" data-usr-name="<?=$arResult['user_name'];?>">
 			<?
 			foreach($arFields as $key=>$fvalue)
 			{
@@ -1369,6 +1369,20 @@ elseif($action == 'getPersonInfo')
 				}?>
 				</div>
 			<?}?>
+			
+			<div id="cnt_filelist" style="display: none;">
+				<div class="cnt_headline">
+					<div id="back_main" class="active_icon">
+						<?include($_SERVER["DOCUMENT_ROOT"]."/my/data/svg/arrow_back.svg");?>
+						<div style="display: inline-block; font-size: 14px; vertical-align: 7px; font-weight: 800;">
+							Вернуться назад к основной информации
+						</div>
+					</div>
+				</div>	
+				<div id="cnt_filelist_content"></div>
+			</div>	
+			
+			
 			<div id="buttons" class="cnt_headline">
 				<div id="cnt_info_docs" style="display: inline-block; min-width: 150px; margin: 0 46px 0 0;" class="menu_button">Файлы профиля</div>
 				<?if($arResult['user_status'] == 'saler') {?>
