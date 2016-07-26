@@ -55,7 +55,6 @@ $(document).ready(function()
 		hideModalWindow($('.modal_window'));
 		$('.modal_back').remove();	
 		hideMenuItems();
-		$('#it_cart .info').html('');
 		if(!$('#contact_filter').hasClass('ext_selected')) {
 			getMyCatalogItems();
 		}
@@ -713,11 +712,22 @@ function getSelectedContactItems(it_nom, it_filter) {
 			}
 			//console.log(xhr.responseText);
 			showItems(xhr.responseText);
+			if(contact == smuser) {
+				$('#item_li .cart').remove();
+				if(list_type == 'list') {
+					$('#item_list_header .col_5').remove();
+					$('#item_li .col_5').remove();
+				}	
+			
+			}
 		}		
 		xhr.send(body);
 	}	
 }
 function getMyCatalogItems() {
+	$('#it_cart .info').html('');
+	$('#it_cart .info').next('div').css('display','none');
+
 	removeCurrentContact();
 	$('#contact_filter').addClass('ext_selected');
 	$('#cur_contact').html('<div style="padding: 5px 10px;">\
@@ -1358,6 +1368,7 @@ function getOrderDate(date){
 
 function getItemPosInfo() {
 	$('#it_cart .info').html('');
+	$('#it_cart .info').next('div').css('display','none');
 	var contact = getActiveContact();
 	if (contact.id != undefined) {
 		$.post('/my/ajax/order.php', {action: 'Documents_getItemPosInfo', receiver: contact.name}, function(data){
@@ -1371,6 +1382,7 @@ function getItemPosInfo() {
 				html_str = html_str + '<div class="UserDocItem" data-doc-id='+val.docHeader.id+'>Заказ №'+(++key)+' от '+DocDate.day+'-'+DocDate.month+'-'+DocDate.year+'</div>';		
 			}); 
 			$('#it_cart .info').html('Выбрано <span>'+UserItemsQty+'</span> позиций в <span>'+UserDocsQty+'</span> заказах <span class="show-docs fa fa-chevron-down"></span>');
+			$('#it_cart .info').next('div').css('display','inline-block');
 			$('#items_header #it_rule_pan').append('<div id="UserDocList">'+html_str+'</div>');
 		})	
 	}	

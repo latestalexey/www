@@ -55,7 +55,7 @@
 	width: 56px;
 	height: 24px;
 	margin-right: 10px;
-	background: url('/my/data/checkbox.png') no-repeat;
+	background: url('/include/checkbox.png') no-repeat;
 	background-position:0 0;
 	cursor: pointer;
 }
@@ -857,7 +857,7 @@
 div#UserDocList {
 	display: none;
 	position: absolute !important;
-	right: 75px;
+	right: 45px;
 	top: 45px;
 	background-color: #FBFBFB;
     border: 1px solid #CCCCCC;
