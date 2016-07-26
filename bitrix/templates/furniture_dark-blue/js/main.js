@@ -774,7 +774,7 @@ $(document).ready(function() {
 	
 	showGreeting();
 	if ($('#m_cnt_list .contact_inf').length < 5) {
-		setTimeout(function() {showTelebotInfo('Нажмите на значок "+" над списком контактов, чтобы пригласить в TELEPORT, своих партнеров и друзей для работы и общения.','',25000)}, 30000);
+		setTimeout(function() {showTelebotInfo('Нажмите на значок "+" над списком контактов, чтобы пригласить в TELEPORT, своих партнеров и друзей для работы и общения.','',15000)}, 30000);
 	}	
 });
 

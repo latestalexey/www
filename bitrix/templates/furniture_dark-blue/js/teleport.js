@@ -216,6 +216,10 @@ function htmlspecialchars(text) {
       .replace(/'/g, "&#039;");
 }
 function encodeString(str) {
+	if(str == undefined) {
+		return "";
+	}	
+	
 	var fname = str.replace(new RegExp("@",'g'),'\\@');
 	fname = fname.replace(new RegExp("\\.",'g'),'\\.');
 	fname = fname.replace(new RegExp(" ",'g'),'\\ ');

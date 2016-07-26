@@ -1,7 +1,7 @@
 function getDocInfo(id) {
 	var xhr = new XMLHttpRequest();
 	var body =	'action=Documents_GetById' +
-				'&message_ID=' + id;
+				'&message_id=' + id;
 	xhr.open("POST", '/my/ajax/action.php', true);
 	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 	xhr.onreadystatechange = function() { 

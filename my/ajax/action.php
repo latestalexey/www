@@ -2,34 +2,6 @@
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_before.php");
 require_once($_SERVER["DOCUMENT_ROOT"]."/my/admin/before.php");
 
-function downloadOrder($DOM)
-{
-	$arResult = array();
-	$orders = $DOM->getElementsByTagName('order');
-	foreach ($orders as $order)
-	{
-		$arElement = array();
-		foreach ($order->attributes as $attr) 
-		{
-			$arElement[$attr->name] = $attr->value;
-		}	
-		$items = $order->getElementsByTagName('item');
-		$arItems = array();
-		foreach ($items as $item) 
-		{
-			$arItem = array();
-			foreach ($item->attributes as $attr) 
-			{
-				$arItem[$attr->name] = $attr->value;
-			}
-			$arItems[] = $arItem;
-		}
-		$arElement["items"] = $arItems;
-		$arResult[$arElement["message_ID"]] = $arElement;
-	}	
-	return $arResult;
-}
-
 function url_check($buf) 
 { 
       $buf=trim($buf); 
@@ -866,7 +838,7 @@ elseif($action == 'catalog_FiltersGet')
 	else
 	{echo '%err%'.$TLP_obj->mistakes[$res['errCode']];}
 }
-elseif($action == 'order_getById')
+elseif($action == 'Documents_GetById')
 {
 	$arFnc = array();
 	foreach ($_POST as $key => $value) 
@@ -875,60 +847,13 @@ elseif($action == 'order_getById')
 			{$arFnc[$key] = $value;}
 	}	
 		
-	$res = $TLP_obj->telecall('Messages_GetByID', $arFnc);
+	$res = $TLP_obj->telecall('Documents_GetById', $arFnc);
+	
 	if($res['errCode'] == 0)
 	{
 		$retVal = json_decode($res["return"], true);
-		$DOM = DOMDocument::loadXML($retVal['result'][0]['msg_text']);
-		$arResult = downloadOrder($DOM);
-		if($adds=='json')
-		{
-			$arOrder = $arResult[$_POST['message_ID']];
-			echo json_encode($arOrder);
-		}
-		elseif($adds=='json_html')
-		{
-			echo "";
-		}
-		else		
-		{
-			$arOrder = $arResult[$_POST['message_ID']];
-
-			$strwindow = '<div class="close_line"><div class="clw"><img src="/include/close_window.svg"/></div></div>';
-
-			$strorderinfo = '<div class="order_header">
-			<div id="order_num">Заказ № '.$arOrder['message_N'].' от '.$arOrder['message_date'].'</div>
-			<div class="order_headline"><div class="ord_hd_x1">Отправитель:</div><div class="ord_hd_x2"><input type="text" name="sender" value="'.$arOrder['sender'].'"/></div></div>
-			<div class="order_headline"><div class="ord_hd_x1">Получатель:</div><div class="ord_hd_x2"><input type="text" name="recipient" value="'.$arOrder['recipient'].'"/></div></div>
-			<div class="order_headline"><div class="ord_hd_x1">Форма оплаты:</div><div class="ord_hd_x2"><input type="text" name="payment_type" value="'.$arOrder['payment_type'].'"/></div></div>
-			<div class="order_headline"><div class="ord_hd_x1">Доставка:</div><div class="ord_hd_x2"><input type="text" name="delivery_type" value="'.$arOrder['delivery_type'].'"/>; '.$arOrder['delivery_adress'].'</div></div>
-			</div>';
-			
-			$strhead = '<div class="order_bottom">
-				<div class="order_item_list_header"><div class="item"><div class="item_content" style="border-top: 1px solid #CCCCCC;"><div class="item_line">
-				<div class="col_1">Артикул</div>
-				<div class="col_2">Наименование</div>
-				<div class="col_3">Кол-во</div>
-				<div class="col_4">Цена</div>
-				<div class="col_5">Сумма</div>
-				</div></div></div></div>';
-			$str = '';	
-			foreach($arOrder['items'] as $key=>$item)
-			{
-
-				$str = $str.'<div id="it_'.$item["ID"].'" class="item"><div class="item_content"><div class="item_line">';
-				$str = $str.'<div class="col_1"></div><div class="col_2">'.$item["name"].'</div>';
-				$str = $str.'<div class="col_3">'.number_format($item["quantity"], 0, '.', ' ').'</div>';
-				$str = $str.'<div class="col_4">'.number_format($item["price"], 2, '.', ' ').'</div>';
-				$str = $str.'<div class="col_5">'.number_format($item["sum"], 2, '.', ' ').'</div>';
-				$str = $str.'</div></div></div>';
-
-			}
-			//'<div class="order_info">'.</div>
-			echo $strwindow.'<div style="overflow: hidden;">'.$strorderinfo.$strhead.'<div class="order_item_list"><div class="order_item_li">'.$str.'</div></div>
-			<div>Комментарий: '.$arOrder['comment'].'</div>
-			</div></div>';
-		}	
+		echo var_dump($retVal);
+		//
 	}
 	else
 	{echo '%err%'.$TLP_obj->mistakes[$res['errCode']];}
