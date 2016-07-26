@@ -52,7 +52,6 @@ $(document).ready(function()
 	$('#contact_filter, #exp_filter').off();
 	$('#contact_filter').text('Показать по всем контактам');
 	hideExtPan();
-	
 	hideTelebotInfo();
 	initOrderList(true);
 	
@@ -128,9 +127,29 @@ $(document).ready(function()
 		e.stopPropagation();
 		var contact = getActiveContact();
 		if (contact.id !== undefined) {
-			$.post('/my/ajax/order.php', { action: 'Documents_GetLastId' }, function(docid) {
-				addNewDoc(++docid, contact);				
-			});		
+			var xhr = new XMLHttpRequest();
+			var body =	'action=catalog_getQuantity' +
+						'&contact=' + encodeURIComponent(contact.name);
+			xhr.open("POST", '/my/ajax/action.php', true);
+			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+			xhr.onreadystatechange = function() { 
+				if (xhr.readyState != 4) return;
+				if(!(xhr.responseText.indexOf('%err%') == -1)) {
+					showError(xhr.responseText.replace('%err%',''));
+					return;
+				}
+				var itemsQty = xhr.responseText || 0;
+				console.log(itemsQty);
+				if (xhr.responseText>0) {
+					$.post('/my/ajax/order.php', { action: 'Documents_GetLastId' }, function(docid) {
+						addNewDoc(++docid, contact);				
+					});
+				}
+				else {
+					showTelebotInfo("Указанный контакт не имеет собственного каталога. Пожалуйста, выберите другой контакт...","", 3000);
+				};			
+			}		
+			xhr.send(body);
 		}
 		else {
 			showTelebotInfo("Выберите контакт - получателя документа ...","", 3000);
@@ -142,7 +161,6 @@ $(document).ready(function()
 });
 
 function addNewDoc(docid, contact){
-	console.log(docid);
 	var curDate = new Date;
 	var message = {
 		"docHeader":{
