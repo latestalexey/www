@@ -211,7 +211,7 @@ function getSearchStr(arHeader) {
 	var docsearchrow = 				
 		'<tr  class="item input_row">' +
 			'<td class="col_0"><i class="fa fa-keyboard-o" aria-hidden="true"></i></td>' +
-			'<td colspan="2" class="col_1_2"><input class="input_col" placeholder="Введите артикул или наименование товара"/></td>' +
+			'<td colspan="2" class="col_1_2"><input class="input_col" placeholder="Введите артикул товара"/></td>' +
 			'<td class="col_3"></td>'+
 			'<td class="col_4"></td>'+
 			'<td class="col_5"></td>'+
