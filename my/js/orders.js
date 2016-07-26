@@ -139,7 +139,7 @@ $(document).ready(function()
 					return;
 				}
 				var itemsQty = xhr.responseText || 0;
-				console.log(itemsQty);
+				//console.log(itemsQty);
 				if (xhr.responseText>0) {
 					$.post('/my/ajax/order.php', { action: 'Documents_GetLastId' }, function(docid) {
 						addNewDoc(++docid, contact);				

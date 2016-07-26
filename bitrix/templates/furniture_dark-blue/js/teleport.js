@@ -604,7 +604,6 @@ function ContactInfoView(name) {
 				else if($('#cnt_view #cnt_logo img').attr('data-change') == '2') {
 					body =	body + '&company_logo=';
 				}
-				console.log(body);
 				xhr.open("POST", '/my/ajax/action.php', true);
 				xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 				xhr.onreadystatechange = function()	{ 

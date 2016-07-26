@@ -532,7 +532,7 @@ $(document).ready(function()
 	
 	$('#items_header #it_rule_pan').on('click', '#UserDocList .UserDocItem', function(){
 		DocForView = $(this).attr('data-doc-id');
-		console.log(DocForView);
+		//console.log(DocForView);
 		window.location.href = window.location.protocol + '//' + window.location.host+'/my/index.php?mode=orders';	
 	});
 });
@@ -889,7 +889,7 @@ function getItemInfo(obj) {
 			
 			obj.after(modal_obj);
 			if(obj.hasClass('item_block')) {
-				obj.append('<div class="item_sign"></div>');
+				obj.append('<div class="item_sign" style="top: '+(obj.height()-7)+'px;"></div>');
 			}	
 			
 			var obj_height = obj.height();
@@ -1300,7 +1300,7 @@ function getItemInfoForDoc(obj) {
 
 function addItemToExistDoc(Item, contact) {
 	$.post('/my/ajax/order.php', { action: 'Documents_addItemToExistDoc', item: JSON.stringify(Item), receiver: contact }, function(data){
-		console.log(data);
+		//console.log(data);
 	});
 };
 
@@ -1350,7 +1350,7 @@ function addItemToNewDoc(Item, contact) {
 			hash: message.docHeader.hash
 			}, 
 			function(data) {
-				console.log(data);
+				//console.log(data);
 			}
 		);
 	});	
