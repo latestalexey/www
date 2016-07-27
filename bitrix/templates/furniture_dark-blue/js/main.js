@@ -379,7 +379,6 @@ $(document).ready(function() {
 		
 		var mcnt_obj = $('#cnt_'+$(this).parent().attr('data-usr-id'));
 		var gr_obj = getGroupHead(mcnt_obj);
-		console.log(gr_obj);
 		if(gr_obj.attr('data-srtnum') == 999) {
 			block_str = '<p id="unblock">Разблокировать контакт</p>';
 		}
@@ -774,7 +773,7 @@ $(document).ready(function() {
 	
 	showGreeting();
 	if ($('#m_cnt_list .contact_inf').length < 5) {
-		setTimeout(function() {showTelebotInfo('Нажмите на значок "+" над списком контактов, чтобы пригласить в TELEPORT, своих партнеров и друзей для работы и общения.','',25000)}, 30000);
+		setTimeout(function() {showTelebotInfo('Нажмите на значок "+" над списком контактов, чтобы пригласить в TELEPORT, своих партнеров и друзей для работы и общения.','',15000)}, 30000);
 	}	
 });
 

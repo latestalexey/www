@@ -139,7 +139,7 @@ $(document).ready(function()
 					return;
 				}
 				var itemsQty = xhr.responseText || 0;
-				console.log(itemsQty);
+				//console.log(itemsQty);
 				if (xhr.responseText>0) {
 					$.post('/my/ajax/order.php', { action: 'Documents_GetLastId' }, function(docid) {
 						addNewDoc(++docid, contact);				
@@ -337,7 +337,7 @@ function initOrderList(allContacts) {
 		$('#contact_filter').addClass('ext_selected');
 		$('#cur_contact').html('<div style="padding: 5px 10px;">\
 			<div style="font-weight: 600;"> Включен режим просмотра документов по всем контактам.</div>\
-			<div style="color: #444;">Для отбора документов по одному контакту выберите его в списке ваших контактов</div>\
+			<div style="color: #444; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Для отбора документов по одному контакту выберите его в списке ваших контактов</div>\
 			</div>');
 	}
 	lastOrderDate = new Date();

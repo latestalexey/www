@@ -131,7 +131,7 @@ elseif($action == 'Documents_GetList')
 }
 elseif($action == 'Documents_GetById')
 {
-	$message_ID = $_POST["message_ID"];
+	$message_ID = $_POST["message_id"];
 	$result = mysql_query ("SELECT message FROM t_documents WHERE message_id=$message_ID") or die (mysql_error());
 	$message = mysql_result ($result,0);
 	echo $message;

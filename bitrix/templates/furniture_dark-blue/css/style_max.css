@@ -55,7 +55,7 @@
 	width: 56px;
 	height: 24px;
 	margin-right: 10px;
-	background: url('/my/data/checkbox.png') no-repeat;
+	background: url('/include/checkbox.png') no-repeat;
 	background-position:0 0;
 	cursor: pointer;
 }
@@ -219,36 +219,40 @@
 /*===============================Cat_Update_End============================*/
 
 /*===============================CntView_AddFile============================*/
+#cnt_view #cntfile_form { width: 99%; margin: 10px 0;}
+#cnt_view #empty_files {font-size: 24px; color: #DDD; font-style: italic; padding-top: 77px; text-align: center;}
+#cnt_view .border_block {border: 1px solid #CCC; border-radius: 5px;}
+
 #cnt_view #add_cntfile {
-    position: relative;
-	float:left;
+	position: relative;
     border: 1px solid #CCC;
-    width: 180px;
-    height: 40px;
-	margin: 20px 20px 20px 0;
+    width: 100%;
     border-radius: 5px;
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
-	cursor:pointer;
+    cursor: pointer;
+    padding: 15px 10px;
+    box-sizing: border-box;
 }
 
+#cnt_view .msg_file{ width: 99%; max-width: 99%; margin: 2px 0; padding: 0px 0 10px 0;}
 
 #cnt_view #add_cntfile p{
-	margin-left:40px;
+	margin-left:35px;
 	font-weight: 600;
     font-size: 16px;
-    line-height: 40px;
 	text-align:left;
 }
 
 #cnt_view #add_cntfile svg{
     position: absolute;
-	top: 4px;
+	top: 10px;
     left: 4px;
 }
 
 #cnt_view #add_cntfile:hover {
     background: #26A69A;
+	color: #FFF;
 }
 
 #cnt_view #add_cntfile:hover svg{
@@ -857,7 +861,7 @@
 div#UserDocList {
 	display: none;
 	position: absolute !important;
-	right: 75px;
+	right: 45px;
 	top: 45px;
 	background-color: #FBFBFB;
     border: 1px solid #CCCCCC;

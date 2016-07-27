@@ -216,6 +216,10 @@ function htmlspecialchars(text) {
       .replace(/'/g, "&#039;");
 }
 function encodeString(str) {
+	if(str == undefined) {
+		return "";
+	}	
+	
 	var fname = str.replace(new RegExp("@",'g'),'\\@');
 	fname = fname.replace(new RegExp("\\.",'g'),'\\.');
 	fname = fname.replace(new RegExp(" ",'g'),'\\ ');
@@ -493,7 +497,7 @@ function ContactInfoView(name) {
 				}
 				else {
 					var strPhoto = '<div class="modal_back back_curt"></div><div id="detail_photo" class="modal_window">' +
-						'<div class="close_line"><div class="clw"><img style="height: 18px;" src="/include/close_window.svg"/></div></div>'+
+						'<div class="close_line"><div class="clw"><img src="/include/close_window.svg"/></div></div>'+
 						'<img src="'+$(this).find('img').attr('src')+'" style="max-height: 600px;"/>'+
 						'</div>';
 					$('#main_content').append(strPhoto);
@@ -517,6 +521,7 @@ function ContactInfoView(name) {
 				$('#cnt_view #cnt_company_card').hide(0);
 				$('#cnt_view #cnt_settings').hide(0);
 				$('#cnt_view #cnt_addings').hide(0);
+				$('#cnt_view #cnt_filelist').hide(0);
 				$('#cnt_view #cnt_info_body').show(0);
 				$('#cnt_view #buttons').show(0);
 				$('#cnt_view #cnt_logo').hide(0, function(){
@@ -600,7 +605,6 @@ function ContactInfoView(name) {
 				else if($('#cnt_view #cnt_logo img').attr('data-change') == '2') {
 					body =	body + '&company_logo=';
 				}
-				console.log(body);
 				xhr.open("POST", '/my/ajax/action.php', true);
 				xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 				xhr.onreadystatechange = function()	{ 
@@ -662,14 +666,7 @@ function ContactInfoView(name) {
 			});	
 
 			$('#cnt_view').on('click', '#cnt_info_docs' ,function() {
-				if ($('#cnt_filelist').length) {
-					$('#cnt_filelist').remove();
-				}
-				else {
-					$('#cnt_view').append('<div id="cnt_filelist" style="max-height:350px; margin-top: 20px; display:none;"><div id="cnt_filelist_header"></div><div id="cnt_filelist_content"></div></div>');
-					$('#telebot_info').remove();
-					SearchCntFiles()
-				};
+				SearchCntFiles();
 			});
 			$('#cnt_view').on('click', '#add_cntfile' ,function() {
 				$(this).siblings('#uploadifive-cntfile_upl').children().last().click();
@@ -686,12 +683,10 @@ function ContactInfoView(name) {
 function SearchCntFiles() {
 	var contact = $('#main_content #cnt_view #cnt_info_main').attr('data-usr-name');
 	var xhr = new XMLHttpRequest();
-	var body =	'action=files_getList' +
+	var body =	'action=filesList' +
 				'&adds=json' +
 				'&contact=' + encodeURIComponent(contact) +
-				'&status=*' +
-				'&limit=100' +
-				'&nom=1';					
+				'&Category=userFiles';					
 	xhr.open("POST", '/my/ajax/action.php', true);
 	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 	xhr.onreadystatechange = function() 
@@ -704,7 +699,7 @@ function SearchCntFiles() {
 		}
 		try {
 			var arResult = jQuery.parseJSON(xhr.responseText);
-			requestCntFileBrowser(arResult.result.reverse());
+			requestCntFileBrowser(arResult);
 		}	
 		catch (err)	{
 			showError('Не удалось получить список файлов. <br>Сбой операции <br> Повторите попытку позже');
@@ -716,20 +711,27 @@ function SearchCntFiles() {
 function requestCntFileBrowser(arResult) {	
 	var contact = $('#main_content #cnt_view #cnt_info_main').attr('data-usr-name');
 	var contactfn = $('#main_content #cnt_view #cnt_info_main').attr('data-usr-flname');
-	$('#cnt_filelist_header').append('<div style="text-align: center; padding: 13px 10px; color: #777; font-weight: 800; border-bottom: 1px solid #CCC;">Файлы контакта '+contactfn+'</div>');
+	
+	$('#cnt_filelist_content').removeClass('border_block');
+	$('#cnt_view #cnt_filelist_content').html('');
+	$('#cnt_view #cnt_filelist_content').off();
+	
 	var files_html = '';
+	
 	var delete_svg = '<svg fill="#BBB" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">'+
-	'<path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>'+
-	'<path d="M0 0h24v24H0z" fill="none"/></svg>';
+		'<path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>'+
+		'<path d="M0 0h24v24H0z" fill="none"/></svg>';
+
 	var file_html = '<div class="msg_file uploadifive-queue-item"><div class="upfile" ><div class="file_icon"></div>'+
-	'<div class="file_block"><p class="filename"></p>'+
-	'<p class="file_info"></p></div>'+
-	'<a class="del_file close"><div class="cloud">'+delete_svg+'</div></a>'+
-	'<div class="fileinfo">Готов к отправке</div>'+
-	'<div class="progress"><div class="progress-bar"></div></div>'+
-	'</div>';
+		'<div class="file_block"><p class="filename"></p>'+
+		'<p class="file_info"></p></div>'+
+		'<a class="del_file close"><div class="cloud">'+delete_svg+'</div></a>'+
+		'<div class="fileinfo">Готов к отправке</div>'+
+		'<div class="progress"><div class="progress-bar"></div></div>'+
+		'</div>';
+		
 	$(arResult).each(function(){
-		files_html = files_html + '<div class="msg_file" style="padding: 0px 0 10px 0; width:99%; max-width:99%">' + addCntFileToList($(this), true) + '</div>';
+		files_html = files_html + '<div class="msg_file">' + addCntFileToList($(this), true) + '</div>';
 	});	
 	
 	if (contact == smuser.name) {
@@ -740,7 +742,7 @@ function requestCntFileBrowser(arResult) {
 							'<path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path>' +
 							'<path d="M0 0h24v24H0z" fill="none"></path>' +
 						'</svg>' +
-						'<p>Добавить файл</p>' +
+						'<p>Добавить файл в профиль контакта</p>' +
 					'</div>' +
 					'<div id="send_cntfile" style="display:none;">' +
 						'<svg fill="#777" height="36" viewBox="0 0 24 24" width="36" xmlns="http://www.w3.org/2000/svg">' +
@@ -759,13 +761,21 @@ function requestCntFileBrowser(arResult) {
 					'<input type="hidden" name="action" value="upload_cntfile">' +	
 				'</form>';		
 		$('#cnt_filelist_content').append(html_str);
+	} else if(files_html == '') {
+		files_html = '<div id="empty_files">\
+			Файлы в профиле контакта отсутствуют\
+			</div>';
+		$('#cnt_filelist_content').addClass('border_block');
 	};
 	
 	$('#cnt_filelist_content').append(files_html);
 	$('#cnt_filelist_content').wrapInner('<div class="scrolllist"></div>');	
-	$('#cnt_filelist').show();
+
+	$('#cnt_view #buttons').hide(0);
+	$('#cnt_view #cnt_info_body').hide(0);
+	$('#cnt_filelist').show(0);
 	
-	$('#cnt_filelist_content').height($('#cnt_filelist').height()-$('#cnt_filelist_header').height());
+	$('#cnt_filelist_content').height($('#cnt_filelist').height() - $('#cnt_filelist .cnt_headline').height());
 	$('#cnt_filelist_content .scrolllist').slimScroll({height: 'auto', size: '7px', disableFadeOut: false});
 
 	$('#cnt_filelist_content').on('click','.image_file .close_line svg',function(e) {	
@@ -832,12 +842,12 @@ function addCntFileToList(obj, hide_image) {
 		'<path d="M0 0h24v24H0z" fill="none"/>'+
 		'<path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/>'+
 		'</svg>	';
-	var file_size = Math.round(obj.attr('fsize')/1024);
-	var file_idat = getFileType(obj.attr('fext'));
+	var file_size = Math.round(obj.attr('file_size')/1024);
+	var file_idat = getFileType(obj.attr('file_extention'));
 	var file_type = file_idat.type;
 	var att_svg = file_idat.svg;
-	var file_url = '/my/ajax/fld.php?a=dload&i='+obj.attr('ID');//$(this).attr('furl');
-	var pvfile_url = '/my/ajax/fld.php?a=prv&i='+obj.attr('ID');//$(this).attr('furl');
+	var file_url = '/my/ajax/files.php?a=detail&i='+obj.attr('file_id');//$(this).attr('furl');
+	var pvfile_url = '/my/ajax/files.php?a=prev&i='+obj.attr('file_id');//$(this).attr('furl');
 	var file_met = "KB";
 	if(file_size > 1024) { 
 		file_size = Math.round(file_size/1024);
@@ -855,8 +865,8 @@ function addCntFileToList(obj, hide_image) {
 		'<img src="'+pvfile_url+'"/>'+
 		'</div>';
 	}
-	var str_html = 	'<div class="upfile" id="fn_'+obj.attr('ID') + '" data-furl="'+file_url+'"><a target="_blank" href="'+file_url+'"><div class="file_icon">'+att_svg+'</div></a>'+
-					'<div class="file_block"><a target="_blank" href="'+file_url+'"><p class="filename">' + obj.attr('fname') + '</p></a>'+
+	var str_html = 	'<div class="upfile" id="fn_'+obj.attr('file_id') + '" data-furl="'+file_url+'"><a target="_blank" href="'+file_url+'"><div class="file_icon">'+att_svg+'</div></a>'+
+					'<div class="file_block"><a target="_blank" href="'+file_url+'"><p class="filename">' + obj.attr('file_name') + '</p></a>'+
 					'<p class="file_info">'+file_size+file_met+' '+file_type+'</p></div>'+
 					'<a target="_blank" href="'+file_url+'"><div class="cloud help_icon"><div class="help_info">Скачать файл</div>'+cloud_svg+'</div></a>'+ img_str +
 					'</div>';

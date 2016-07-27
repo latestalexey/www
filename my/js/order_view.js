@@ -1,7 +1,7 @@
 function getDocInfo(id) {
 	var xhr = new XMLHttpRequest();
 	var body =	'action=Documents_GetById' +
-				'&message_ID=' + id;
+				'&message_id=' + id;
 	xhr.open("POST", '/my/ajax/action.php', true);
 	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 	xhr.onreadystatechange = function() { 
@@ -19,7 +19,7 @@ function getDocInfo(id) {
 };	
 
 function getTmpDocInfo(id) {
-	$.post('/my/ajax/order.php', { action: 'Documents_GetById', message_ID: id }, function(data) {
+	$.post('/my/ajax/order.php', { action: 'Documents_GetById', message_id: id }, function(data) {
 		initDocView(JSON.parse(data));
 	});
 };
