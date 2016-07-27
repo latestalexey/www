@@ -261,6 +261,9 @@
 
 #cnt_view #cnt-fileinfo {
 	clear:both;
+	position: absolute;
+    top: 30px;
+    width: 100%;
 }
 
 #cnt_view #upload_cntfile:hover svg{
@@ -893,6 +896,16 @@ div#UserDocList .UserDocItem:hover {
 #order_view  .order_item_list_head .input_row .col_3 {
 	font-size: 16px;
 	font-weight: bold;
+	position: relative;
+}
+
+#order_view  .order_item_list_head .input_row .col_3 .totalsum-block {
+	display: block;
+    position: absolute;
+	top: 0;
+    right: 10px;
+    height: 100%;
+	line-height: 50px;
 }
 
 #order_view  .order_item_list_head .input_row .col_3 .total-sum {
