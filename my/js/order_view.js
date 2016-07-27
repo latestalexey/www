@@ -201,24 +201,15 @@ function getTabHeader(arHeader) {
 };
 
 function getSearchStr(arHeader) {
-	var col = 8;	
-	var html_str = '';
-	$.each(arHeader, function(i, val){
-		html_str = html_str + '<td class="col_'+col+'" add-field-name='+val.name+'></td>';
-		col++;
-	});	
-	
+	console.log(arHeader.props.length);
 	var docsearchrow = 				
 		'<tr  class="item input_row">' +
 			'<td class="col_0"><i class="fa fa-keyboard-o" aria-hidden="true"></i></td>' +
 			'<td colspan="2" class="col_1_2"><input class="input_col" placeholder="Введите артикул или наименование товара"/></td>' +
-			'<td class="col_3"></td>'+
-			'<td class="col_4"></td>'+
-			'<td class="col_5"></td>'+
-			'<td class="col_6"></td>'+
-			'<td class="col_7"></td>'+html_str
+			'<td colspan="'+(5+arHeader.props.length)+'" class="col_3">' +
+				'Общая сумма:<span class="total-sum">'+parseFloat(arHeader.sum).toFixed(2)+'</span><span class="currency"> '+arHeader.currencyId+'</span>' +
+			'</td>' +
 		'</tr>';	
-
 	return docsearchrow;	
 };
 
@@ -291,10 +282,9 @@ function initDocView(arDoc) {
 				'</div>' +	
 			'</div>'	
 	);
-	console.log(docHeader.sum);
 	var strorderinfo = 
 		'<div id="order_num">Заказ № '+docHeader.num+' от '+ docDate.day + '-' + docDate.month + '-' + docDate.year +' (' + docDate.hh + ':' + docDate.mm +':'+ docDate.ss + ')' + '</div>' +
-		'<div class="order_status"><div class="ord_hd_x1">Статус:</div><div class="ord_hd_x2">'+docStatus[docHeader.status]+'</div><br><div class="ord_hd_x1">Общая сумма:</div><div class="ord_hd_x2"><span class="total-sum">'+parseFloat(docHeader.sum).toFixed(2)+'</span><span class="currency"> '+docHeader.currencyId+'</span></div></div>' +
+		'<div class="order_status"><div class="ord_hd_x1">Статус:</div><div class="ord_hd_x2">'+docStatus[docHeader.status]+'</div></div>' +
 		'<div class="order_headline"><div class="ord_hd_x1">Получатель:</div><div class="ord_hd_x2">';
 		
 	if (sender.id == smuser.id) {
@@ -313,19 +303,19 @@ function initDocView(arDoc) {
 			'<div id="del_item" class="button disabled fa fa-trash tooltip"  data-tooltip="Удалить выбранные элементы"></div>' +	
 		'</div>' +	
 		'<div class="confirm-buttons">' +
-			'<div id="save-local" class="button fa fa-floppy-o tooltip hidden" data-tooltip="Сохранить"></div>' +
-			'<div id="transmit" class="button fa fa-exchange tooltip hidden" data-tooltip="Отправить"></div>' +
-			'<div id="cancel" class="button fa fa-reply tooltip hidden" data-tooltip="Отменить"></div>' +
-			'<div id="process" class="button fa fa-share tooltip hidden" data-tooltip="Принять в обработку"></div>' +
-			'<div id="confirm" class="button fa fa-file-text-o tooltip hidden" data-tooltip="Подтвердить"></div>' +
-			'<div id="ship" class="button fa fa-ship tooltip hidden" data-tooltip="Готов к отгрузке"></div>' +
-			'<div id="complete" class="button fa fa-thumbs-o-up tooltip hidden" data-tooltip="Выполнен"></div>' +
+			'<div id="save-local" class="button fa fa-floppy-o tooltip hidden" data-tooltip="Сохранить"><span class="button-text">Сохранить</span></div>' +
+			'<div id="transmit" class="button fa fa-exchange tooltip hidden" data-tooltip="Отправить"><span class="button-text">Отправить</span></div>' +
+			'<div id="cancel" class="button fa fa-reply tooltip hidden" data-tooltip="Отменить"><span class="button-text">Отменить</span></div>' +
+			'<div id="process" class="button fa fa-share tooltip hidden" data-tooltip="Принять в обработку"><span class="button-text">Принять в обработку</span></div>' +
+			'<div id="confirm" class="button fa fa-file-text-o tooltip hidden" data-tooltip="Подтвердить"><span class="button-text">Подтвердить</span></div>' +
+			'<div id="ship" class="button fa fa-ship tooltip hidden" data-tooltip="Готов к отгрузке">Г<span class="button-text">отов к отгрузке</span></div>' +
+			'<div id="complete" class="button fa fa-thumbs-o-up tooltip hidden" data-tooltip="Выполнен"><span class="button-text">Выполнен</span></div>' +
 			
 		'</div>';
 
 	var strorderlisthead = getTabHeader(tabHeader);
 	
-	var strordersearchrow = getSearchStr(tabHeader.props);
+	var strordersearchrow = getSearchStr(docHeader);
 
 	var strorderlist = (docTable.length) ? getDocTable(docTable, tabHeader.props) : '';
 
@@ -490,11 +480,13 @@ function initDocView(arDoc) {
 		e.stopPropagation();
 		$('#order_view .order_item_list_content .item.checked').remove();		
 		$(this).addClass('disabled');	
+		getTotalSum();
 	});
 	
 	//Просмотр подробой информации о позиции
 	$('#order_view').on('click', '.order_item_list_content .col_2', function(){
 		var obj = $(this).parents('.item');
+		obj.siblings('.item').children('.col_2').removeClass('opened');
 		obj.toggleClass('opened');
 		$(this).children('.fa').toggleClass('fa-chevron-down fa-chevron-up');
 		obj.hasClass('opened') ? getItemInfo(obj, receiver.name) : obj.next('#order-item-info').remove();
@@ -822,7 +814,7 @@ function getTotalSum() {
 	$('.order_item_list_content .col_7').each(function(){
 		totalSum = totalSum*1 + $(this).text()*1;
 	});
-	$('.order_header .total-sum').text(totalSum.toFixed(2));
+	$('.input_row .total-sum').text(totalSum.toFixed(2));
 };
 
 function mergeItems(newItem, exItem){
