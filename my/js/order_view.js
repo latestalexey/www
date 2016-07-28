@@ -11,8 +11,7 @@ function getDocInfo(id) {
 			showError(xhr.responseText.replace('%err%',''));	
 			return;
 		}
-		console.log(xhr.responseText);
-		var arResult = jQuery.parseJSON(xhr.responseText);
+		var arResult = JSON.parse(xhr.responseText);
 		initDocView(arResult);
 	};		
 	xhr.send(body);	
@@ -207,7 +206,7 @@ function getSearchStr(arHeader) {
 			'<td class="col_0"><i class="fa fa-keyboard-o" aria-hidden="true"></i></td>' +
 			'<td colspan="2" class="col_1_2"><input class="input_col" placeholder="Введите артикул или наименование товара"/></td>' +
 			'<td colspan="'+(5+arHeader.props.length)+'" class="col_3">' +
-				'Общая сумма:<span class="total-sum">'+parseFloat(arHeader.sum).toFixed(2)+'</span><span class="currency"> '+arHeader.currencyId+'</span>' +
+				'<span class="totalsum-block">Общая сумма:<span class="total-sum">'+parseFloat(arHeader.sum).toFixed(2)+'</span><span class="currency"> '+arHeader.currencyId+'</span></span>' +
 			'</td>' +
 		'</tr>';	
 	return docsearchrow;	
@@ -303,11 +302,11 @@ function initDocView(arDoc) {
 			'<div id="del_item" class="button disabled fa fa-trash tooltip"  data-tooltip="Удалить выбранные элементы"></div>' +	
 		'</div>' +	
 		'<div class="confirm-buttons">' +
-			'<div id="save-local" class="button fa fa-floppy-o tooltip hidden" data-tooltip="Сохранить"><span class="button-text">Сохранить</span></div>' +
-			'<div id="transmit" class="button fa fa-exchange tooltip hidden" data-tooltip="Отправить"><span class="button-text">Отправить</span></div>' +
-			'<div id="cancel" class="button fa fa-reply tooltip hidden" data-tooltip="Отменить"><span class="button-text">Отменить</span></div>' +
-			'<div id="process" class="button fa fa-share tooltip hidden" data-tooltip="Принять в обработку"><span class="button-text">Принять в обработку</span></div>' +
-			'<div id="confirm" class="button fa fa-file-text-o tooltip hidden" data-tooltip="Подтвердить"><span class="button-text">Подтвердить</span></div>' +
+			'<div id="save-local" class="button fa fa-floppy-o tooltip hidden" data-tooltip="Сохранить заказ, не отправляя получателю"><span class="button-text">Сохранить</span></div>' +
+			'<div id="transmit" class="button fa fa-exchange tooltip hidden" data-tooltip="Отправить заказ получателю"><span class="button-text">Отправить</span></div>' +
+			'<div id="cancel" class="button fa fa-reply tooltip hidden" data-tooltip="Отменить заказ"><span class="button-text">Отменить</span></div>' +
+			'<div id="process" class="button fa fa-share tooltip hidden" data-tooltip="Принять заказ в обработку"><span class="button-text">Принять в обработку</span></div>' +
+			'<div id="confirm" class="button fa fa-file-text-o tooltip hidden" data-tooltip="Подтвердить заказ"><span class="button-text">Подтвердить</span></div>' +
 			'<div id="ship" class="button fa fa-ship tooltip hidden" data-tooltip="Готов к отгрузке">Г<span class="button-text">отов к отгрузке</span></div>' +
 			'<div id="complete" class="button fa fa-thumbs-o-up tooltip hidden" data-tooltip="Выполнен"><span class="button-text">Выполнен</span></div>' +
 			
@@ -486,9 +485,10 @@ function initDocView(arDoc) {
 	//Просмотр подробой информации о позиции
 	$('#order_view').on('click', '.order_item_list_content .col_2', function(){
 		var obj = $(this).parents('.item');
-		obj.siblings('.item').children('.col_2').removeClass('opened');
-		obj.toggleClass('opened');
+		obj.siblings('.item').removeClass('opened').next('#order-item-info').remove();
+		obj.siblings('.item').children('.col_2').children('.fa').removeClass('fa-chevron-down').addClass('fa-chevron-up');
 		$(this).children('.fa').toggleClass('fa-chevron-down fa-chevron-up');
+		obj.toggleClass('opened');
 		obj.hasClass('opened') ? getItemInfo(obj, receiver.name) : obj.next('#order-item-info').remove();
 	});
 	
@@ -883,7 +883,6 @@ function buildTmpDoc (tmpDoc){
 			"props":arItemsProps
 		};
 		arItems.push(jsonstr);
-
 	});
 	tmpDoc.docTable = arItems;
 };
