@@ -382,7 +382,7 @@ $(document).ready(function(e)
 		var cnt_selection = $('#my_contacts').clone();
 		var cnt_search = $('#contacts #search_cnt').clone();
 		cnt_selection.attr('id','sel_contacts');
-		cnt_selection.css('height', cnt_selection.height()-42);
+		cnt_selection.css('height', cnt_selection.height()-90);
 		cnt_search.attr('id','sel_search');
 		cnt_selection.find('.cnt_mail').css('display', 'none');
 		cnt_selection.find('.cnt_text, .cnt_mail').each(function() {

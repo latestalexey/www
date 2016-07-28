@@ -743,6 +743,9 @@ function requestCntFileBrowser(arResult) {
 							'<path d="M0 0h24v24H0z" fill="none"></path>' +
 						'</svg>' +
 						'<p>Добавить файл в профиль контакта</p>' +
+						'<p style="font-size: 12px; font-weight: 400; font-style: italic;">\
+							Ваши бланки договоров, сертификаты, пресс-релизы и прайс-листы все ваши контакты смогут свободно скачивать здесь и не отвлекать вас. (Макс. 60Мб каждый файл)\
+						</p>'+
 					'</div>' +
 					'<div id="send_cntfile" style="display:none;">' +
 						'<svg fill="#777" height="36" viewBox="0 0 24 24" width="36" xmlns="http://www.w3.org/2000/svg">' +
@@ -764,6 +767,11 @@ function requestCntFileBrowser(arResult) {
 	} else if(files_html == '') {
 		files_html = '<div id="empty_files">\
 			Файлы в профиле контакта отсутствуют\
+			<p style="font-size: 14px;font-weight: 400;font-style: italic;color: rgba(255, 108, 0, 0.8);">\
+				Не теряйте время на отправку необходимых шаблонов и документов.<br>\
+				В файлах профиля можно выкладывать и безопасно хранить для своих контактов любые файлы. Бланки договоров, сертификаты, пресс-релизы, прайс-листы и многое другое, что необходимо для работы. <br>\
+				Файлы будут доступны только вашим контактам.\
+			</p>\
 			</div>';
 		$('#cnt_filelist_content').addClass('border_block');
 	};
