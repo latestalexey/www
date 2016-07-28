@@ -5,9 +5,6 @@ var empty_group = '<div class="empty_group tl_droppable">Перетащите н
 $(document).ready(function() {
 	arSizes = getPageSize();
 	$(document.body).addClass('my_body');
-
-	resetMouseEventListener(); 																														//Вешаем обработчки событий на часть элементов интерфейса менеджера контактов
-
 	$('.my_body').on('click',function(e) {
 		if($(e.target).hasClass('modal_back')) {
 			e.stopPropagation();
@@ -17,25 +14,25 @@ $(document).ready(function() {
 			$(e.target).remove();
 			$('.cnt_info').not($(e.target).children()).hide();
 			$('.msg_selected').removeClass('msg_selected');
-
-			hideCtxChannelMenu($('#ctx-channel-menu'));																				//Убираем контекстные меню 
-			hideSelectedList();																																//и выпадающие списки при 
-			hideContactMoveList();																														//клике вне их области
-
+			//RB
+			hideCtxChannelMenu($('#ctx-channel-menu'));
+			hideSelectedList();
+			hideContactMoveList();
+			//RB
 			//$('.trans_svg').toggleClass('transform_icon');
 		}
 		else if(!($(e.target).parents().hasClass('modal_window')) && !$(e.target).hasClass('modal_window'))
 		{
 			if($(e.target).is('ymaps')) {return;}
+
 			$('.modal_window').hide();
-			$('.modal_window').not('#cnt-manager').remove(); 																	//Не удалять менеджер контактов из DOM!
+			$('.modal_window').remove();
 			$('.modal_back').remove();
 			$('.cnt_info').not($(e.target).children()).hide();
 			$('.msg_selected').removeClass('msg_selected');
 			//$('.trans_svg').toggleClass('transform_icon');
-		}	
+	}	
 	});
-
 	$('#ext_bar').on('click', function(e) {
 		e.stopPropagation();
 		expandExtPan();
@@ -54,10 +51,48 @@ $(document).ready(function() {
 	$(".my_body").on('change',"form[name='fs_form'] input[type='file']", function(e) {
 		$(this).submit();
 	});
-
 	$(".my_body").on('submit', "form[name='fs_form']", function(e) {
 		e.preventDefault();
 		var thisForm = document.forms.fs_form;
+		var body = new FormData(thisForm);
+		var operID = $(thisForm).find('[name=operID]').val();
+
+		var xhr = new XMLHttpRequest();
+		xhr.open("POST", thisForm.action, true);
+		xhr.onreadystatechange = function()	{ 
+			if (xhr.readyState != 4) return;
+			
+			try {
+				var arResult = jQuery.parseJSON(xhr.responseText);
+			}
+			catch (err) {
+				showError(xhr.responseText);
+			}
+			
+			if (arResult.err == 0) {
+				if(operID = 'usr-addPhoto') {
+					$('#cnt_photo img').attr('src', arResult.img);
+					$('#cnt_photo img').attr('data-change', "1");
+					$('#cnt_photo img').attr('data-width', arResult.info[0]);
+					$('#cnt_photo img').attr('data-height', arResult.info[1]);
+				}	
+			}
+			else {
+				showError(arResult.err_info);
+			}
+		}
+		xhr.send(body);
+	
+	});
+
+	//добавлен обработчик для выбора логотипа компании ---------------
+	$(".my_body").on('change',"form[name='fs_logo'] input[type='file']", function(e) {
+		$(this).submit();
+	});
+	
+	$(".my_body").on('submit', "form[name='fs_logo']", function(e) {
+		e.preventDefault();
+		var thisForm = document.forms.fs_logo;
 		var body = new FormData(thisForm);
 		var operID = $(thisForm).find('[name=operID]').val();
 		
@@ -72,44 +107,7 @@ $(document).ready(function() {
 			catch (err) {
 				showError(xhr.responseText);
 			}
-			if (arResult.err == 0) {
-				if(operID = 'usr-addPhoto') {
-					$('#cnt_photo img').attr('src', arResult.img);
-					$('#cnt_photo img').attr('data-change', "1");
-					$('#cnt_photo img').attr('data-width', arResult.info[0]);
-					$('#cnt_photo img').attr('data-height', arResult.info[1]);
-				}	
-			}
-			else {
-				showError(arResult.err_info);
-			}
-		}
-		xhr.send(body);
-	});
-	
-	//добавлен обработчик для выбора логотипа компании ---------------
-	$(".my_body").on('change',"form[name='fs_logo'] input[type='file']", function(e) {
-		$(this).submit();
-	});
-
-	$(".my_body").on('submit', "form[name='fs_logo']", function(e) {
-		e.preventDefault();
-		var thisForm = document.forms.fs_logo;
-		var body = new FormData(thisForm);
-		var operID = $(thisForm).find('[name=operID]').val();
-
-		var xhr = new XMLHttpRequest();
-		xhr.open("POST", thisForm.action, true);
-		xhr.onreadystatechange = function()	{ 
-			if (xhr.readyState != 4) return;
 			
-			try {
-				var arResult = jQuery.parseJSON(xhr.responseText);
-			}
-			catch (err) {
-				showError(xhr.responseText);
-			}
-
 			if (arResult.err == 0) {
 				if(operID = 'usr-addLogo') {
 					$('#cnt_logo img').attr('src', arResult.img);
@@ -124,8 +122,7 @@ $(document).ready(function() {
 		}
 		xhr.send(body);
 	});
-//---------------------------------------------------------
-
+	
 	$(".my_body").on('mouseenter',".help_icon", function(e) {
 		e.stopPropagation();
 		var help_text = $(this).find('.help_info').html();
@@ -537,14 +534,6 @@ $(document).ready(function() {
 		topMenu_action($(this).attr('id'));
     });
 
-	$('.my_body').on('click','#manage_cnt', function(e) {																	//Добавлен обработчик вызова менеджера контактов
-		e.stopPropagation();
-		$('.modal_back').remove();
-		$('#active_menu').remove();
-
-		showModalWindow($('#cnt-manager'));
-	});
-
 	$('.my_body').on('click','#add_cnt', function(e) {
 		var obj = $('#contacts_menu');//$(this).parent();
 		e.stopPropagation();
@@ -557,7 +546,8 @@ $(document).ready(function() {
 			var str = '<div class="new_cnt" >' +
 				'<div style="margin-top: 5px;">' +
 					'<input class="cnt_inp" type="text" placeholder="Введите e-mail нового контакта" name="new_cntname" value=""/>' +
-					'<div class="reg_error" style="margin-top: 10px;"></div>' +
+					'<div class="reg_error" style="display: none; padding-top: 10px;"></div>' +
+					'<div class="search_result" data-last-value=""></div>' +
 				'</div>' + 
 				'<div style="font-size: 13px; font-weight: 600; margin: 10px 0 3px 0;">Сообщение для контакта</div>' + 
 				'<div><textarea id="new_cntmsg">'+smuser.fullname+' предлагает вам присоединиться к списку своих контактов в системе TELEPORT.</textarea></div>' +
@@ -565,6 +555,23 @@ $(document).ready(function() {
 				'</div>'+
 				'<div id="new_cntresponse"><div id="new_cnttext"></div><div class="menu_button">Продолжить</div></div>';
 			obj.append(str);
+			$('.cnt_inp').bind("change keyup click", function() {
+				if(this.value.length >= 3 && $('.search_result').attr("data-last-value") != this.value){
+					$.ajax({type: 'post', url: "/my/ajax/action.php",  data: {'action': 'FindPersons', 'new_cntname':this.value},  response: 'text',
+						success: function(data){
+							$('.search_result').attr("data-last-value", $('.cnt_inp').val());
+							$(".search_result").html(data).fadeIn(); 
+						}
+					});
+				} else if(this.value.length < 3) {
+					$(".search_result").html("").fadeOut(); 
+				}
+			});
+				
+			$(".search_result").on("click", ".contact_inf", function(){
+				$(".cnt_inp").val($(this).attr('data-usr-name'));
+				$(".search_result").fadeOut();
+			});
 			obj.find('.cnt_inp').focus();
 			$('#new_cnt_confirm').click(function() {
 				obj_form = $(this).parent();
@@ -584,9 +591,13 @@ $(document).ready(function() {
 				$(this).removeClass('not_find');
 				$(this).next('div').text('');
 				if(e.keyCode == 13) {
+					e.stopPropagation();
 					$('#new_cnt_confirm').click();
 					return;
-				}	
+				} else if(e.keyCode == 27 && $(".search_result .contact_inf").length > 0) {
+					e.stopPropagation();
+					$(".search_result").html("").fadeOut(); 
+				}
 				var inp_str = $(this).val();
 				if(inp_str == '') {
 					return;
@@ -661,6 +672,41 @@ $(document).ready(function() {
 		}
 		obj.find('.new_cnt').slideToggle(200);
 	});
+	$('.my_body').on('click','#manage_cnt', function(e) {
+		e.stopPropagation();
+		$('.modal_back').remove();
+		$('#active_menu').remove();
+		
+		var xhr = new XMLHttpRequest();
+		var body =	'';
+
+		xhr.open("POST", '/my/ajax/cnt_mngr.php', true);
+		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+		xhr.onreadystatechange = function() 
+		{ 
+			if (xhr.readyState != 4) return;
+			
+			if(!(xhr.responseText.indexOf('%err%') == -1)) {
+				showError(xhr.responseText.replace('%err%',''));
+				return;
+			}
+			
+			$('#main_content #cnt-manager').remove();
+			$('#main_content').append('<div id="cnt-manager" class="modal_window"></div>');
+
+			var strwindow = '<div class="close_line"><div class="clw"><img src="/include/close_window.svg"/></div></div>';
+			var str_html = strwindow + xhr.responseText;
+			$('#cnt-manager').append(str_html);
+			showModalWindow($('#cnt-manager'));
+			//RB
+			resetMouseEventListener();
+			addCntManagerEvents();
+			//RB
+
+
+		}	
+		xhr.send(body);
+	});
 	
 	$('#contacts .search_inp').on('keyup',function(e) {
 		var inp_str = $(this).val();
@@ -726,6 +772,9 @@ $(document).ready(function() {
 	setInterval(messagesRequest, 5000);
 	
 	showGreeting();
+	if ($('#m_cnt_list .contact_inf').length < 5) {
+		setTimeout(function() {showTelebotInfo('Нажмите на значок "+" над списком контактов, чтобы пригласить в TELEPORT, своих партнеров и друзей для работы и общения.','',15000)}, 30000);
+	}	
 });
 
 function parseURL(url_string) {
@@ -788,10 +837,12 @@ function showTelebotInfo(msg, emojion, timeout) {
 	}
 	str = '<div id="telebot_info">\
 				<img id="telebot_image" style="height: 150px; width: 108px;" src="/my/data/telebot_'+emojion+'.png"/>\
-				<div id="telebot_msg">'+msg+'</div>\
+				<div id="telebot_msg"><div><div class="clw_bot"><img src="/include/close_window.svg"/></div></div>'+msg+'</div>\
 			</div>';
 	$('#content').append(str);
-	
+	$('#telebot_info').on('click','.clw_bot', function() {
+		hideTelebotInfo();
+	});
 	$('#telebot_info').css('display','block');
 	resizeTelebot();
 	if(timeout > 0) {

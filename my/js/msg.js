@@ -382,7 +382,7 @@ $(document).ready(function(e)
 		var cnt_selection = $('#my_contacts').clone();
 		var cnt_search = $('#contacts #search_cnt').clone();
 		cnt_selection.attr('id','sel_contacts');
-		cnt_selection.css('height', cnt_selection.height()-42);
+		cnt_selection.css('height', cnt_selection.height()-90);
 		cnt_search.attr('id','sel_search');
 		cnt_selection.find('.cnt_mail').css('display', 'none');
 		cnt_selection.find('.cnt_text, .cnt_mail').each(function() {
@@ -1012,14 +1012,35 @@ function addMessageToList(arResult, mode) {
 			}
 		}	
 }
-function showMessages(contact, arMsg, mode)
+function showMessages(contact, arMsg, mode, isBegining)
 {
-	if(arMsg.length == 0) {
-		return;
-	}	
+	$('.wait').remove();
 	var cur_contact = getActiveContact();
 	if(contact.id != cur_contact.id) {
 		removeCntMessagesCash('msg_'+contact.id);
+		return;
+	}	
+	if(isBegining) {
+		if($("#msg_li").find('#msg_begin').length == 0) {
+
+			var avatarURL = $('#cnt_'+ contact.id).find('.cnt_avatar').css('background-image') || 'url(/include/no_avatar.svg)';
+			avatarURL = avatarURL.replace(new RegExp('"','g'),"");
+			var xhr = new XMLHttpRequest();
+			var body =	'contact=' + encodeURIComponent(contact.name) +
+						'&fullname=' + encodeURIComponent(contact.fullname) +
+						'&contact_img=' + encodeURIComponent(avatarURL);
+
+			xhr.open("POST", '/my/ajax/msg_begin.php', true);
+			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+			xhr.onreadystatechange = function() 
+			{
+				if (xhr.readyState != 4) return;
+				$("#msg_li").prepend(xhr.responseText);
+			}		
+			xhr.send(body);
+		}
+	} 
+	if(arMsg.length == 0) {
 		return;
 	}	
 		
@@ -1033,7 +1054,6 @@ function showMessages(contact, arMsg, mode)
 	if(mode == 'begin' && arMsg.length>0) {
 		$('#msg_li').attr('data-start_date', arMsg[0].dt);
 	}
-	$('.wait').remove();
 	if(mode == 'end') {
 		$('#mess_list').scrollTop($('#msg_li').height());
 		if($('#msg_li').attr('data-cnt-id') == contact.name) {
@@ -1121,7 +1141,8 @@ function getSelectedContactMessages(start_date, limit)
 				$('#mess_list #msg_li').attr('data-cnt-id','');
 				return;
 			}
-			showMessages(contact, arResult.reverse(), 'begin');
+			var isBegining = (arResult.length < limit)?(true):(false);
+			showMessages(contact, arResult.reverse(), 'begin', isBegining);
 			if(limit>100) {
 				$('#mess_list').css('display','block');
 				$('#mess_list').scrollTop($('#msg_li').height());
@@ -1172,7 +1193,7 @@ function getSelectedContactNewMessages()
 				$('#mess_list #msg_li').attr('data-cnt-id','');
 				return;
 			}
-			showMessages(contact, arResult.reverse(), 'end');
+			showMessages(contact, arResult.reverse(), 'end', false);
 
 		}		
 		xhr.send(body);

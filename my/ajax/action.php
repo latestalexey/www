@@ -2,34 +2,6 @@
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_before.php");
 require_once($_SERVER["DOCUMENT_ROOT"]."/my/admin/before.php");
 
-function downloadOrder($DOM)
-{
-	$arResult = array();
-	$orders = $DOM->getElementsByTagName('order');
-	foreach ($orders as $order)
-	{
-		$arElement = array();
-		foreach ($order->attributes as $attr) 
-		{
-			$arElement[$attr->name] = $attr->value;
-		}	
-		$items = $order->getElementsByTagName('item');
-		$arItems = array();
-		foreach ($items as $item) 
-		{
-			$arItem = array();
-			foreach ($item->attributes as $attr) 
-			{
-				$arItem[$attr->name] = $attr->value;
-			}
-			$arItems[] = $arItem;
-		}
-		$arElement["items"] = $arItems;
-		$arResult[$arElement["message_ID"]] = $arElement;
-	}	
-	return $arResult;
-}
-
 function url_check($buf) 
 { 
       $buf=trim($buf); 
@@ -202,6 +174,19 @@ $msgStatus['sent'] = 'Отправлен';
 $msgStatus['delivered'] = 'Доставлен';
 $msgStatus['viewed'] = 'Просмотрен';
 
+$docStatus = array(); 
+$docStatus['new'] = 'Новый';
+$docStatus['transmitted'] = 'Отправлен';
+$docStatus['agreement'] = 'На согласовании';
+$docStatus['confirmed'] = 'Подтвержден';
+$docStatus['canceled'] = 'Отменен';
+$docStatus['processed'] = 'Принят в обработку';
+$docStatus['shipped'] = 'Готов к отгрузке';
+$docStatus['closed'] = 'Выполнен';
+
+$docType = array();
+$docType['order'] = 'Заказ';
+
 
 if($action == 'logout')
 {
@@ -329,7 +314,7 @@ elseif($action == 'msg_request')
 	$res = $TLP_obj->telecall('Messages_Request', $arFnc);
 	echo $res;
 }
-elseif($action == 'files_getList')
+elseif($action == 'filesList')
 {
 	$arFnc = array();
 	foreach ($_POST as $key => $value) 
@@ -338,16 +323,16 @@ elseif($action == 'files_getList')
 			{$arFnc[$key] = $value;}
 	}	
 		
-	$res = $TLP_obj->telecall('Files_GetList', $arFnc);
+	$res = $TLP_obj->telecall('filesList', $arFnc);
 	if($res['errCode'] == 0)
 	{
 		if($adds=='json')
 		{
-			echo $res["return"];
+			echo $res;
 		}
 		else		
 		{
-			$arResult = json_decode($res["return"], true);
+			$arResult = json_decode($res, true);
 		}	
 	}
 	else
@@ -378,8 +363,8 @@ elseif($action == 'catalog_get')
 			$arResult = $res["return"];
 			$list_type = ($_POST['list_type']=='')?'list':$_POST['list_type'];
 			$str = '';
-			$allow_stocks = $arResult['settings']['allow_stocks'];
-			$allow_prices = $arResult['settings']['allow_prices'];
+			$allow_stocks = $arResult['settings'][0]['allow_stocks'];
+			$allow_prices = $arResult['settings'][0]['allow_prices'];
 			$arItmes = $arResult['catalog'];
 			$arPictures = $arResult['pictures'];
 			foreach($arItmes as $key=>$item)
@@ -389,11 +374,11 @@ elseif($action == 'catalog_get')
 					//list type
 					$str = $str.'<div id="it_'.$item["id"].'" class="item" data-it-id="'.$item["id"].'"><div class="item_content"><div class="item_line">';
 					$str = $str.'<div class="col_1">'.$item["article"].'</div><div class="col_2">'.$item["name"].'<p class="sub_info"><img src="/include/stdown.png"/></p></div>';
-					if($allow_prices == 1)
+					if($allow_prices)
 					{
 						$str = $str.'<div class="col_3">'.number_format($item["price"], 2, '.', ' ').'</div>';
 					}	
-					if($allow_stocks == 1)
+					if($allow_stocks)
 					{
 						$str = $str.'<div class="col_4">'.number_format($item["stock"], 0, '.', ' ').'</div>';
 					}	
@@ -423,7 +408,7 @@ elseif($action == 'catalog_get')
 							<div class="item_photo_list">
 								<div class="item_photo_li" style="width: '.$li_size.'px;" data-im-num="0" data-im-count="'.$im_count.'">';
 								for ($i=0; $i<$im_count; $i++) {
-									$item_url = (count($arPictures[$item["id"]]) == 0)?'/include/no_photo.png':'/my/ajax/files.php?a=pics_prev&i='.$arPictures[$item["id"]][$i]["file_id"];
+									$item_url = (count($arPictures[$item["id"]]) == 0)?'/include/no_photo.png':'https://'.$TLP_obj->TLP_HOST.'/Catalog_Pics/prev/'.$arPictures[$item["id"]][$i]["file_id"];
 									$str = $str.'<div class="item_photo" data-im-cnt="'.$i.'" style="background-image: url('.$item_url.');"></div>';
 								}
 								$str = $str.'</div>
@@ -458,12 +443,12 @@ elseif($action == 'catalog_get')
 								$str = $str.'<div class="item_block_name help_icon"><div class="help_info">Артикул: '.$item["article"].'</div>'.$item["article"].'</div>';
 							}
 							$str = $str.'<div class="item_block_name help_icon"><div class="help_info">Наименование: '.$item["name"].'</div>'.$item["name"].'</div>';
-							if($allow_stocks == 1)
+							if($allow_stocks)
 							{
 								$strStocks = ($item["stock"]=='' || $item["stock"] == 0)?'Нет':number_format($item["stock"], 0, '.', ' ');
 								$str = $str.'<div class="item_block_name item_block_name_allows">На складе: <span>'.$strStocks.'</span></div>';
 							}	
-							if($allow_prices == 1)
+							if($allow_prices)
 							{
 								$strPrice = ($item["price"]=='' || $item["price"] == 0)?'-':number_format($item["price"], 2, '.', ' ').' руб';
 								$str = $str.'<div class="item_block_name item_block_name_allows">Цена: <span>'.$strPrice.'</span></div>';
@@ -535,7 +520,11 @@ elseif($action == 'catalog_getItem')
 			$allow_prices = $arResult['settings']['allow_prices'];
 			$arItmes = $arResult['catalog'];
 			$arPictures = $arResult['pictures'];
-			$arProperties = $arResult['properties'];
+			
+			$arProperties = array();
+			foreach($arResult['properties'] as $curArray)
+			{$arProperties = $curArray;}
+			
 			$maxSize = $winSizes['width']-600;
 			if($_POST['listType'] == 'list') {
 				$maxSize = min($maxSize, $winSizes['height']-130);
@@ -558,7 +547,7 @@ elseif($action == 'catalog_getItem')
 									$i = 0;
 									foreach($arPictures[$item["id"]] as $image)
 									{
-										$item_url = '/my/ajax/files.php?a=pics&i='.$image['file_id'];
+										$item_url = 'https://'.$TLP_obj->TLP_HOST.'/Catalog_Pics/'.$image['file_id'];
 										$str = $str.'<div class="item_photo" data-im-cnt="'.$i.'" style="width: '.$imSize.'px; height: '.$imSize.'px; background-image: url('.$item_url.');"></div>';
 										$i++;
 									}
@@ -616,14 +605,14 @@ elseif($action == 'catalog_getItem')
 											<div>Категория </div>
 											<div>'.$item['group_name'].'</div>
 										</div>';
-										if($allow_prices == 1) {
+										if($allow_prices) {
 											$strPrice = ($item["price"]=='' || $item["price"] == 0)?'-':number_format($item["price"], 2, '.', ' ').' руб';
 											$str = $str.'<div class="item_detail_info_header">
 											<div>Ваша цена </div>
 											<div>'.$strPrice.'</div>
 										</div>';
 										}
-										if($allow_stocks == 1) {
+										if($allow_stocks) {
 											$strStocks = ($item["stock"]=='' || $item["stock"] == 0)?'Нет в наличии':number_format($item["stock"], 0, '.', ' ');
 											$str = $str.'<div class="item_detail_info_header">
 											<div>Наличие на складе </div>
@@ -670,7 +659,7 @@ elseif($action == 'catalog_getItem')
 	else
 	{echo '%err%'.$TLP_obj->mistakes[$res['errCode']];}
 }
-elseif($action == 'order_getList')
+elseif($action == 'documents_getList')
 {
 	$arFnc = array();
 	foreach ($_POST as $key => $value) 
@@ -679,7 +668,7 @@ elseif($action == 'order_getList')
 			{$arFnc[$key] = $value;}
 	}	
 		
-	$res = $TLP_obj->telecall('Messages_GetOrderList', $arFnc);
+	$res = $TLP_obj->telecall('Documents_GetList', $arFnc);
 	if($res['errCode'] == 0)
 	{
 		//$DOM = DOMDocument::loadXML($res["return"]);
@@ -690,28 +679,28 @@ elseif($action == 'order_getList')
 		}
 		elseif($adds=='json_html')
 		{
-			$arMessages = json_decode($res["return"], true);
+			$arMessages = $res["return"];
 			$arOrders = array();
 			foreach($arMessages as $key=>$order)
 			{
-				$col_3 = ($order["sender"] == $TLP_obj->user_info['name'])?($order["receiverFullname"]):($order["senderFullname"]);
-				$msg_date = DateTime::createFromFormat('Y-m-d H:i:s', str_replace("T"," ",$order['order']["message_date"]));
+				$col_3 = ($order["sender"] == $TLP_obj->user_info['name'])?($order["receiver"]):($order["sender"]);
+				$msg_date = DateTime::createFromFormat('Y-m-d H:i:s', str_replace("T"," ",$order["date"]));
 				$str_date = ($msg_date === false)?(""):($msg_date->format('d-m-Y'));
-				$str = '<div id="or_'.$order["message_ID"].'" class="order" data-order-id="'.$order["message_ID"].'" data-order-sender="'.$order["sender"].'" data-order-receiver="'.$order["receiver"].'">
+				$str = '<div id="or_'.$order["message_id"].'" class="order" data-order-id="'.$order["message_id"].'" data-order-sender="'.$order["sender"].'" data-order-receiver="'.$order["receiver"].'">
 					<div class="order_content">
 						<div class="order_line">
-							<div class="col_0">Заказ</div>
-							<div class="col_1">'.$order['order']["message_N"].'</div><div class="col_2">'.$str_date.'</div>
+							<div class="col_0">'.$docType[$order['type']].'</div>
+							<div class="col_1">'.$order["num"].'</div><div class="col_2">'.$str_date.'</div>
 							<div class="col_3">'.$col_3.'</div>
-							<div class="col_4">'.number_format($order["order"]["docsum"], 2, '.', ' ').'</div>
-							<div class="col_5">'.$msgStatus[$order["status"]].'</div>
+							<div class="col_4">'.number_format($order["sum"], 2, '.', ' ').'</div>
+							<div class="col_5">'.$docStatus[$order["status"]].'</div>
 						</div>
 					</div>
 					<p class="sub_info"><img src="/include/stdown.png"/></p>
 				</div>';
 
-				$arOrders[$order["message_ID"]]['html'] 			= $str;
-				$arOrders[$order["message_ID"]]['message_date'] 	= $order['order']["message_date"];
+				$arOrders[$order["message_id"]]['html'] 	= $str;
+				$arOrders[$order["message_id"]]['date'] 	= $order["date"];
 			}
 			
 			echo json_encode($arOrders);
@@ -720,29 +709,27 @@ elseif($action == 'order_getList')
 	else
 	{echo '%err%'.$TLP_obj->mistakes[$res['errCode']];}
 }
-elseif($action == 'catalog_GroupsGet')
+elseif($action == 'Catalog_GetCategory')
 {
 	$arFnc = array();
 	foreach ($_POST as $key => $value) 
 	{
-		if(!($key == 'action' || $key=='adds'))
+		if(!($key == 'action' || $key=='adds' || $key=='rtype'))
 			{$arFnc[$key] = $value;}
 	}	
-		
-	$res = $TLP_obj->telecall('Catalog_Get', $arFnc);
+	$res = $TLP_obj->telecall('Catalog_GetCategory', $arFnc);
 	if($res['errCode'] == 0)
 	{
-		$arResult = json_decode($res["return"], true);
-		$arGroups = $arResult['groups'];
-		$str = '<div id="ext_pan_topblock"><div id="cancel_filters">
-					Отключить все фильтры
-					<div class="filter_icon">
-						<svg fill="#26A69A" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-							<path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path>
-							<path d="M0 0h24v24H0z" fill="none"></path>
-						</svg>
-					</div>
-					<div id="it_counter"></div></div>';
+		$arGroups = $res["return"];
+		$str = '<div id="ext_pan_topblock">
+					<div style="padding: 20px 0; text-align: center;">
+						<div id="it_counter" class="filter_button fb_active" style="margin-right: 10px;">Найдено товаров</div>
+						<div id="cancel_filters" class="filter_button">Сбросить всё</div>
+					</div>';
+						//<svg fill="#26A69A" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+						//	<path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path>
+						//	<path d="M0 0h24v24H0z" fill="none"></path>
+						//</svg>
 		if(count($arGroups) > 0) {
 			$str = $str.'<div id="it_toplevel">Выберите категорию товара</div></div><div id="ext_filters">';
 			foreach($arGroups as $key=>$item)
@@ -795,16 +782,23 @@ elseif($action == 'catalog_FiltersGet')
 	$res = $TLP_obj->telecall('Catalog_FiltersGet', $arFnc);
 	if($res['errCode'] == 0)
 	{
-		$arResult = json_decode($res["return"], true);
+		$arResult = $res["return"];
 		$str = '';
+		$filterCount = count($arResult);
+		$expanded = ($filterCount > 2)?(""):(" it_filter_expanded");
+		$display = ($filterCount > 2)?(""):(' style="display: block;"');
 		foreach($arResult as $key=>$item)
 		{
 			//$parent_id = ($item['parent_id']=='')?('_zero_'):($item['parent_id']);
 			//$clevel = ($item['parent_id']=='')?(' it_clevel'):('');
-			$str = $str.'<div class="it_filter" data-filter-group-id ="'.$item['category_id'].'" data-filter-type ="'.$item['filter_type'].'" data-filter-name ="'.$item['filter_name'].'">';
 			if($item['filter_type'] == 'enum') {
-				$str = $str.''.ucfirst($item['filter_name']).'</div>';
-				$str = $str.'<div class="it_filter_enum">';
+				$str = $str.'<div class="it_filter'.$expanded.'" data-filter-group-id ="'.$item['category_id'].'" data-filter-type ="'.$item['filter_type'].'" data-filter-name ="'.$item['filter_name'].'">';
+			} else {
+				$str = $str.'<div class="it_filter" data-filter-group-id ="'.$item['category_id'].'" data-filter-type ="'.$item['filter_type'].'" data-filter-name ="'.$item['filter_name'].'">';
+			}			
+			if($item['filter_type'] == 'enum') {
+				$str = $str.''.ucfirst($item['filter_name']).'<div class="sel_enum"></div></div>';
+				$str = $str.'<div class="it_filter_enum"'.$display.'>';
 				foreach($item['enum_value'] as $key=>$value)
 				{
 					$str = $str.'<div class="it_filter_value" data-filter-value ="'.$value.'">
@@ -844,7 +838,7 @@ elseif($action == 'catalog_FiltersGet')
 	else
 	{echo '%err%'.$TLP_obj->mistakes[$res['errCode']];}
 }
-elseif($action == 'order_getById')
+elseif($action == 'Documents_GetById')
 {
 	$arFnc = array();
 	foreach ($_POST as $key => $value) 
@@ -853,60 +847,13 @@ elseif($action == 'order_getById')
 			{$arFnc[$key] = $value;}
 	}	
 		
-	$res = $TLP_obj->telecall('Messages_GetByID', $arFnc);
+	$res = $TLP_obj->telecall('Documents_GetById', $arFnc);
+	
 	if($res['errCode'] == 0)
 	{
 		$retVal = json_decode($res["return"], true);
-		$DOM = DOMDocument::loadXML($retVal['result'][0]['msg_text']);
-		$arResult = downloadOrder($DOM);
-		if($adds=='json')
-		{
-			$arOrder = $arResult[$_POST['message_ID']];
-			echo json_encode($arOrder);
-		}
-		elseif($adds=='json_html')
-		{
-			echo "";
-		}
-		else		
-		{
-			$arOrder = $arResult[$_POST['message_ID']];
-
-			$strwindow = '<div class="close_line"><div class="clw"><img src="/include/close_window.svg"/></div></div>';
-
-			$strorderinfo = '<div class="order_header">
-			<div id="order_num">Заказ № '.$arOrder['message_N'].' от '.$arOrder['message_date'].'</div>
-			<div class="order_headline"><div class="ord_hd_x1">Отправитель:</div><div class="ord_hd_x2"><input type="text" name="sender" value="'.$arOrder['sender'].'"/></div></div>
-			<div class="order_headline"><div class="ord_hd_x1">Получатель:</div><div class="ord_hd_x2"><input type="text" name="recipient" value="'.$arOrder['recipient'].'"/></div></div>
-			<div class="order_headline"><div class="ord_hd_x1">Форма оплаты:</div><div class="ord_hd_x2"><input type="text" name="payment_type" value="'.$arOrder['payment_type'].'"/></div></div>
-			<div class="order_headline"><div class="ord_hd_x1">Доставка:</div><div class="ord_hd_x2"><input type="text" name="delivery_type" value="'.$arOrder['delivery_type'].'"/>; '.$arOrder['delivery_adress'].'</div></div>
-			</div>';
-			
-			$strhead = '<div class="order_bottom">
-				<div class="order_item_list_header"><div class="item"><div class="item_content" style="border-top: 1px solid #CCCCCC;"><div class="item_line">
-				<div class="col_1">Артикул</div>
-				<div class="col_2">Наименование</div>
-				<div class="col_3">Кол-во</div>
-				<div class="col_4">Цена</div>
-				<div class="col_5">Сумма</div>
-				</div></div></div></div>';
-			$str = '';	
-			foreach($arOrder['items'] as $key=>$item)
-			{
-
-				$str = $str.'<div id="it_'.$item["ID"].'" class="item"><div class="item_content"><div class="item_line">';
-				$str = $str.'<div class="col_1"></div><div class="col_2">'.$item["name"].'</div>';
-				$str = $str.'<div class="col_3">'.number_format($item["quantity"], 0, '.', ' ').'</div>';
-				$str = $str.'<div class="col_4">'.number_format($item["price"], 2, '.', ' ').'</div>';
-				$str = $str.'<div class="col_5">'.number_format($item["sum"], 2, '.', ' ').'</div>';
-				$str = $str.'</div></div></div>';
-
-			}
-			//'<div class="order_info">'.</div>
-			echo $strwindow.'<div style="overflow: hidden;">'.$strorderinfo.$strhead.'<div class="order_item_list"><div class="order_item_li">'.$str.'</div></div>
-			<div>Комментарий: '.$arOrder['comment'].'</div>
-			</div></div>';
-		}	
+		echo var_dump($retVal);
+		//
 	}
 	else
 	{echo '%err%'.$TLP_obj->mistakes[$res['errCode']];}
@@ -980,14 +927,14 @@ elseif($action == 'getPersonInfo')
 		elseif($adds=='html')
 		{
 			$arResult = $res["return"];
-			$arFields = array("user_name"=>"Имя пользователя",
+			$arFields = array("user_name"=>"Пользователь",
 							"email"=>"e-mail",
-							"user_fullname"=>"Отображаемое имя",
+							"user_fullname"=>"Мое имя",
 							"phone"=>"Телефон",
-							"user_group"=>"Команда",
-							"company"=>"Организация",
-							"user_status"=>"Статус контакта",
-							"address"=>"Адрес местонахождения",
+							"user_group"=>"Я в команде",
+							"company"=>"Моя компания",
+							"user_status"=>"Мой статус",
+							"address"=>"Наш адрес",
 							"information"=>"Информация о себе");
 			$rdFields = array("user_name"=>true, "email"=>true, "user_group"=>true, "user_status"=>true, "company"=>true, "address"=>true);
 			$msFields = array("fullname"=>true, "email"=>true, "information"=>true, "address"=>true, "company"=>true);
@@ -1002,28 +949,27 @@ elseif($action == 'getPersonInfo')
 				
 			if($arResult['photo_id'] != '') {
 				$im_url = '/my/ajax/files.php?a=detail&i='.$arResult['photo_id'].'&'.mt_rand();
-
+				
 				$size = getimagesize($im_url);
 			}
 			else {
 				$im_url = '/include/no_avatar.svg';
 			}
-
 			if($arResult['company_logo'] != '') {
 				$logo_url = '/my/ajax/files.php?a=detail&i='.$arResult['company_logo'].'&'.mt_rand();
-
-				$size = getimagesize($logo_url);
+				
+				$logo_size = getimagesize($logo_url);
 			}
 			else {
-				$logo_url = '/include/no_avatar.svg';
+				$logo_url = '/include/no_logo.png';
 			}
-		?>
-
-<!--	добавлен id="cnt_photo"-->		
+			
+			?>
 			<div id="cnt_photo" class="cnt_photo">
+				
 				<img src="<?=$im_url;?>" data-width="<?=$size[0];?>" data-height="<?=$size[1];?>" data-change="0"/>
 				<div id="im_line">
-					<?if ($mySettings) { 
+					<?if ($mySettings) {
 					?>
 						<div id="add_photo" class="active_icon">
 							<form action="/my/ajax/upload.php" method="POST" enctype="multipart/form-data" name="fs_form">
@@ -1039,10 +985,8 @@ elseif($action == 'getPersonInfo')
 					<?}?>	
 				</div>	
 			</div>
-
-<!--	добавлен элемент для отображения логотипа организации -->
 			<div id="cnt_logo" class="cnt_photo" style="display:none">
-				<img src="<?=$logo_url;?>" data-width="<?=$size[0];?>" data-height="<?=$size[1];?>" data-change="0"/>
+				<img src="<?=$logo_url;?>" data-width="<?=$logo_size[0];?>" data-height="<?=$logo_size[1];?>" data-change="0"/>
 				<div id="im_line">
 					<?if ($mySettings) {
 					?>
@@ -1059,9 +1003,8 @@ elseif($action == 'getPersonInfo')
 						<div id="clear_photo" class="active_icon"><?include($_SERVER["DOCUMENT_ROOT"]."/my/data/svg/clear.svg");?></div>
 					<?}?>	
 				</div>	
-			</div>
-
-			<div id="cnt_info_main" data-usr-flname="<?=$arResult['user_fullname'];?>">
+			</div>			
+			<div id="cnt_info_main" data-usr-flname="<?=$arResult['user_fullname'];?>" data-usr-name="<?=$arResult['user_name'];?>">
 			<?
 			foreach($arFields as $key=>$fvalue)
 			{
@@ -1222,7 +1165,7 @@ elseif($action == 'getPersonInfo')
 				</div>	
 			<?
 			$rdFields = array("user_name"=>true, "user_group"=>true, "user_status"=>true);
-			$arFields = array("company"=>"Организация",
+			$arFields = array("company"=>"Моя компания",
 						"company_INN"=>"ИНН",
 						"company_KPP"=>"КПП",
 						"company_OGRN"=>"ОГРН",
@@ -1331,6 +1274,7 @@ elseif($action == 'getPersonInfo')
 							$readOnly = false;
 						}
 					
+					
 						if($key == 'delivery_possible') {?>
 							<div class="cnt_headline">
 								<div id="inf_<?=$key;?>" class="checkbox <?echo ($value==true)?'checkbox_clicked':'';?> <?echo ($readOnly)?'checkbox_disabled':'svd';?>"></div><span><?=$fvalue?></span>
@@ -1355,52 +1299,11 @@ elseif($action == 'getPersonInfo')
 							<?}?>
 							</div>
 						<?}
+						
 					}
 				}?>	
 				</div>
 			<?}?>	
-
-			<? // Begin of Загрузка изображений для галереи
-				$images = array();
-				$subdir = "/upload/tmp/";
-				$dir = $_SERVER["DOCUMENT_ROOT"].$subdir;
-				$index=0;
-
-				foreach (new DirectoryIterator($dir) as $fileInfo) {
-					if ($fileInfo->isDot() || $fileInfo->isDir()) continue;
-					$images[$index++] = $subdir.$fileInfo->getFilename();
-				}
-				// End of Загрузка изображений для галереи
-			?>
-			
-			<!-- Begin of Формирование кода галереи -->
-			<div id="cnt_gallery" style="display: none;">
-				<div class="cnt_headline">
-					<div id="nav-back" class="active_icon">
-						<?include($_SERVER["DOCUMENT_ROOT"]."/my/data/svg/arrow_back.svg");?>
-						<div style="display: inline-block; font-size: 14px; vertical-align: 7px; font-weight: 800;">
-							Вернуться назад к основной информации
-						</div>
-					</div>
-				</div>
-				<div class="carousel-wrapper">
-					<? 
-					if(count($images) > 0){
-						foreach ($images as $img) {?>
-							<img class="thumbnail" alt="" style="background-image: url(<?=$img?>); background-size: cover"/>
-					<?}
-					}else{?>
-						<p>Галерея пуста</p>
-					<?}?>
-				</div>
-				<? 
-				if(count($images) > 4){?>
-					<button class="nav-left"></button>
-					<button class="nav-right"></button>
-				<?}?>
-			</div>
-			<!-- End of Формирование кода галереи -->
-
 			<?if ($mySettings) {?>
 				<div id="cnt_settings" style="display: none;">
 					<div class="cnt_headline">
@@ -1466,16 +1369,27 @@ elseif($action == 'getPersonInfo')
 				}?>
 				</div>
 			<?}?>
+			
+			<div id="cnt_filelist" style="display: none;">
+				<div class="cnt_headline">
+					<div id="back_main" class="active_icon">
+						<?include($_SERVER["DOCUMENT_ROOT"]."/my/data/svg/arrow_back.svg");?>
+						<div style="display: inline-block; font-size: 14px; vertical-align: 7px; font-weight: 800;">
+							Вернуться назад к основной информации
+						</div>
+					</div>
+				</div>	
+				<div id="cnt_filelist_content"></div>
+			</div>	
+			
+			
 			<div id="buttons" class="cnt_headline">
-				<div id="cnt_info_docs" style="display: inline-block; min-width: 150px; margin: 0 30px 0 0;" class="menu_button">Файлы профиля</div>
+				<div id="cnt_info_docs" style="display: inline-block; min-width: 150px; margin: 0 46px 0 0;" class="menu_button">Файлы профиля</div>
 				<?if($arResult['user_status'] == 'saler') {?>
-					<div id="cnt_info_add" style="display: inline-block; min-width: 150px; margin: 0 30px 0 0;" class="menu_button">Доставка</div>
+					<div id="cnt_info_add" style="display: inline-block; min-width: 150px; margin: 0 46px 0 0;" class="menu_button">Доставка</div>
 				<?}?>	
 				<?if ($mySettings) {?>	
-					<div id="cnt_info_settings" style="display: inline-block; min-width: 150px; margin: 0 30px 0 0;" class="menu_button">Настройки</div>
-				<?}?>
-				<?if ($mySettings) {?>	
-					<div id="cnt_info_gallery" style="display: inline-block; min-width: 150px; margin: 0 30px 0 0;" class="menu_button">Галерея</div>
+					<div id="cnt_info_settings" style="display: inline-block; min-width: 150px; margin: 0;" class="menu_button">Настройки</div>
 				<?}?>
 			</div>
 			<?if ($mySettings) {?>	
@@ -1604,6 +1518,7 @@ elseif($action == 'setPersonInfo')
 
 	$arParam = array();
 	$photo_filename = "";
+	$logo_filename = "";
 	foreach ($_POST as $key => $value) 
 	{
 		if(!($key == 'action' || $key=='adds'))
@@ -1617,7 +1532,11 @@ elseif($action == 'setPersonInfo')
 					else {
 						$arexp = explode('?',$value); 
 						$arParam[$key] = base64_encode(file_get_contents($_SERVER["DOCUMENT_ROOT"].$arexp[0]));
-						$photo_filename = $_SERVER["DOCUMENT_ROOT"].$arexp[0];
+						if($key == 'photo') {
+							$photo_filename = $_SERVER["DOCUMENT_ROOT"].$arexp[0];
+						} else {
+							$logo_filename = $_SERVER["DOCUMENT_ROOT"].$arexp[0];
+						}	
 					}	
 				}
 				else {
@@ -1626,10 +1545,8 @@ elseif($action == 'setPersonInfo')
 			}
 		}
 	}
-
 	$arFnc = array("request_JSON"=>$arParam);
 	$res = $TLP_obj->telecall('Contacts_SetPersonInfo', $arFnc);
-
 	if(!($res['return'] == 0))
 	{
 		echo '%err%'.$TLP_obj->mistakes[$res['return']];
@@ -1647,17 +1564,17 @@ elseif($action == 'setPersonInfo')
 			else {
 				$im_url = '/include/no_avatar.svg';
 			}
-
-			if($arResult['company_logo'] != '') {
-				$logo_url = '/my/ajax/files.php?a=detail&i='.$arResult['company_logo'].'&'.mt_rand();
-				$size = getimagesize($logo_url);
-			}
+			
+			if($arResult['company_logo'] != '') {																																	// Добавлен код
+				$logo_url = '/my/ajax/files.php?a=detail&i='.$arResult['company_logo'].'&'.mt_rand();								// для сохранения	
+				$logo_size = getimagesize($logo_url);																																		// логотипа организации
+			}																																																			// на
 			else {
-				$logo_url = '/include/no_avatar.svg';
+				$logo_url = '/include/no_logo.png';
 			}
-
+			
 			$TLP_obj->user_info['photo'] = '/my/ajax/files.php?a=prev&i='.$arResult['photo_id'];
-			$TLP_obj->user_info['company_logo'] = '/my/ajax/files.php?a=prev&i='.$arResult['company_logo'];
+			$TLP_obj->user_info['company_logo'] = '/my/ajax/files.php?a=prev&i='.$arResult['company_logo'];				// сервере TELEPORT
 			$TLP_obj->user_info['name'] = $arResult['user_name'];
 			$TLP_obj->user_info['fullname'] = $arResult['user_fullname'];
 			$_SESSION["TLP_obj"] = serialize($TLP_obj);
@@ -1665,7 +1582,56 @@ elseif($action == 'setPersonInfo')
 			if($photo_filename != "") {
 				unlink($photo_filename);
 			}
+			if($logo_filename != "") {
+				unlink($logo_filename);
+			}
+			
+			
 		}	
 	}
+	
 }
+elseif($action == 'FindPersons')
+	{
+		$arFnc = array(
+			"name" => $_POST['new_cntname'],
+			"limit" => 20
+		);
+		$res = $TLP_obj->telecall("Contacts_FindPersons", $arFnc);
+		$strPersons = "";
+		foreach ($res['return'] as $key => $value) {
+			$strPersons = $strPersons.'<div class="contact_inf" data-usr-name="'.$value['name'].'" style="display: block;">
+				<table style="border-spacing: 0;">
+					<tbody>
+					<tr>
+						<td>
+							<div>
+								<div class="cnt_avatar cnt_avatar_small" style="background-image: url(/my/ajax/files.php?a=prev&i='.$value['photo_id'].');"></div>
+							</div>
+						</td>
+						<td>
+							<div class="cnt_text">
+								'.$value['fullname'].'											
+							</div>
+							<p class="cnt_add cnt_mail" style="display: block;">
+								'.$value['name'].'											
+							</p>
+						</td>	
+					</tr>	
+					</tbody>
+				</table>
+			</div>';	
+		}	
+		if($strPersons == "") {
+			if(preg_match("/.+@.+\..+/i", $_POST['new_cntname'])) {
+				$strPersons = '<div class="contact_inf" style="text-align: center;"><span style="color: #FF0000;">Контакт не найден в системе.</span><br>Приглашение будет отправлено на адрес электронной почты.</div>';
+			} else {
+				$strPersons = '<div class="contact_inf" style="text-align: center;"><span style="color: #FF0000;">Контакт не найден в системе.</span><br>Введите корректный e-mail, чтобы отправить приглашение на почту.</div>';
+			}			
+		}
+		echo $strPersons;
+	}
+
+
+
 ?>

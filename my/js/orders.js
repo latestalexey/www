@@ -12,6 +12,10 @@ var docStatus = {
 	'closed': 'Выполнен'
 }
 
+var docType = { 
+	'order': 'Заказ'
+}
+
 var payType = { 'cashless': 'Банковский перевод',
 	'cash': 'Наличными',
 	'card': 'Оплата банковской картой'
@@ -123,18 +127,35 @@ $(document).ready(function()
 		e.stopPropagation();
 		var contact = getActiveContact();
 		if (contact.id !== undefined) {
-			$.post('/my/ajax/order.php', { action: 'Documents_GetLastId' }, function(data) {
-				console.log(data);
-				var docid = data;				
-				addNewDoc(++docid, contact);
-				showTelebotInfo("Новый документ успешно создан ...","", 3000);				
-			});		
+			var xhr = new XMLHttpRequest();
+			var body =	'action=catalog_getQuantity' +
+						'&contact=' + encodeURIComponent(contact.name);
+			xhr.open("POST", '/my/ajax/action.php', true);
+			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+			xhr.onreadystatechange = function() { 
+				if (xhr.readyState != 4) return;
+				if(!(xhr.responseText.indexOf('%err%') == -1)) {
+					showError(xhr.responseText.replace('%err%',''));
+					return;
+				}
+				var itemsQty = xhr.responseText || 0;
+				//console.log(itemsQty);
+				if (xhr.responseText>0) {
+					$.post('/my/ajax/order.php', { action: 'Documents_GetLastId' }, function(docid) {
+						addNewDoc(++docid, contact);				
+					});
+				}
+				else {
+					showTelebotInfo("Указанный контакт не имеет собственного каталога. Пожалуйста, выберите другой контакт...","", 3000);
+				};			
+			}		
+			xhr.send(body);
 		}
 		else {
 			showTelebotInfo("Выберите контакт - получателя документа ...","", 3000);
 		};	
 		hideModalWindow($('#active_menu'));
-		$('.modal_back').remove();	
+		$('.modal_back').remove();			
 	});
 	
 });
@@ -182,22 +203,25 @@ function addNewDoc(docid, contact){
 			currencyId: message.docHeader.currencyId, 
 			hash: message.docHeader.hash
 		}, function(data) {
-			var docDate = getOrderDate(curDate);
-			$('#order_li').prepend(
-				'<div id='+docid+' class="order new" data-order-id='+docid+' data-order-sender='+contact.name+' data-order-receiver="">' +
-					'<div class="order_content">' +
-						'<div class="order_line">' +
-							'<div class="col_0">'+message.docHeader.type+'</div>' +
-							'<div class="col_1">'+message.docHeader.num+'</div>' +
-							'<div class="col_2">'+docDate.day+'-'+docDate.month+'-'+docDate.year+'</div>' +
-							'<div class="col_3">'+contact.fullname+'</div>' +
-							'<div class="col_4">'+message.docHeader.sum+'</div>' +
-							'<div class="col_5">'+docStatus[message.docHeader.status]+'</div>' +
+			if (data == 1) {
+				var docDate = getOrderDate(curDate);
+				$('#order_li').prepend(
+					'<div id='+docid+' class="order new" data-order-id='+docid+' data-order-sender='+contact.name+' data-order-receiver="">' +
+						'<div class="order_content">' +
+							'<div class="order_line">' +
+								'<div class="col_0">'+docType[message.docHeader.type]+'</div>' +
+								'<div class="col_1">'+message.docHeader.num+'</div>' +
+								'<div class="col_2">'+docDate.day+'-'+docDate.month+'-'+docDate.year+'</div>' +
+								'<div class="col_3">'+contact.fullname+'</div>' +
+								'<div class="col_4">'+message.docHeader.sum.toFixed(2)+'</div>' +
+								'<div class="col_5">'+docStatus[message.docHeader.status]+'</div>' +
+							'</div>' +
 						'</div>' +
-					'</div>' +
-					'<p class="sub_info"><img src="/include/stdown.png"></p>' +
-				'</div>'
-			);			
+						'<p class="sub_info"><img src="/include/stdown.png"></p>' +
+					'</div>'
+				);	
+				getTmpDocInfo(docid);	
+			}		
 		}
 	);
 };
@@ -232,15 +256,15 @@ function compileFilter() {
 	var cur_contact	= getActiveContact();
 
 	if(ltype == 'sent') {
-		docs_filter.push({"compare": "AND", "name": "sender", "type":"=", "value": smuser.name});
+		docs_filter.push({"name": "sender", "operation":"=", "value": smuser.name});
 		if(!(cur_contact.id == undefined)) {
-			docs_filter.push({"compare": "AND", "name": "receiver" , "type":"=", "value": cur_contact.name});
+			docs_filter.push({"name": "receiver" , "operation":"=", "value": cur_contact.name});
 		}
 	}
 	else if(ltype == 'recieved') {
-		docs_filter.push({"compare": "AND", "name": "receiver" , "type":"=", "value": smuser.name});
+		docs_filter.push({"name": "receiver" , "operation":"=", "value": smuser.name});
 		if(!(cur_contact.id == undefined)) {
-			docs_filter.push({"compare": "AND", "name": "sender" , "type":"=", "value": cur_contact.name});
+			docs_filter.push({"name": "sender" , "operation":"=", "value": cur_contact.name});
 		}
 	}
 	
@@ -255,7 +279,7 @@ function compileFilter() {
 				enum_list = enum_list + '"'+name_obj.attr('data-filter-value')+'"';
 			});
 			if(enum_list != '') {
-				docs_filter.push({"compare": "AND", "name": $(one_enum).attr('data-filter-name'), "type":"IN", "value": enum_list});
+				docs_filter.push({"name": $(one_enum).attr('data-filter-name'), "operation":"IN", "value": enum_list});
 			}	
 		});
 	}
@@ -313,7 +337,7 @@ function initOrderList(allContacts) {
 		$('#contact_filter').addClass('ext_selected');
 		$('#cur_contact').html('<div style="padding: 5px 10px;">\
 			<div style="font-weight: 600;"> Включен режим просмотра документов по всем контактам.</div>\
-			<div style="color: #444;">Для отбора документов по одному контакту выберите его в списке ваших контактов</div>\
+			<div style="color: #444; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Для отбора документов по одному контакту выберите его в списке ваших контактов</div>\
 			</div>');
 	}
 	lastOrderDate = new Date();
@@ -329,15 +353,13 @@ function getOrderList() {
 
 	compileFilter();
 	var contact	= getActiveContact();
-	var req_object = {"filter": docs_filter};
 	var xhr = new XMLHttpRequest();
-	var body =	'action=order_getList' +
-					'&rtype=json' +
+	var body =	'action=documents_getList' +
 					'&adds=json_html'+
-					'&requestXML=' + encodeURIComponent(JSON.stringify(req_object)) +
+					'&filters=' + encodeURIComponent(JSON.stringify(docs_filter)) +
 					'&start_date=' + getStringFromDate(from_date) + 
 					'&end_date=' + getStringFromDate(lastOrderDate) + 
-					'&maxlimit=150';
+					'&limit=150';
 		xhr.open("POST", '/my/ajax/action.php', true);
 		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 		xhr.onreadystatechange = function() 
@@ -364,7 +386,7 @@ function getTmpDocs(){
 					'<div id='+val.message_id+' class="order new" data-order-id='+val.message_id+' data-order-sender='+val.sender+' data-order-receiver='+val.receiver+' data-hash = '+val.hash+'>' +
 						'<div class="order_content">' +
 							'<div class="order_line">' +
-								'<div class="col_0">'+val.type+'</div>' +
+								'<div class="col_0">'+docType[val.type]+'</div>' +
 								'<div class="col_1">'+val.num+'</div>' +
 								'<div class="col_2">'+docDate.day+'-'+docDate.month+'-'+docDate.year+'</div>' +
 								'<div class="col_3">'+contact.fullname+'</div>' +
@@ -387,11 +409,16 @@ function showOrders(responseText) {
 	for(var key in arResult) {
 		var order = arResult[key];
 		
+		var ordObject = $('<div>').append($(order.html));
+		var order_name = ordObject.find('.col_3').text();
+		var cnt = getContactInfo(order_name);
+		ordObject.find('.col_3').text(cnt.fullname);
+		
 		if ($("div").is('[data-order-id='+key+']')) {
-			$('[data-order-id='+key+']').replaceWith(order.html);
+			$('[data-order-id='+key+']').replaceWith(ordObject.html());
 		}
 		else {
-			str_orders = str_orders + order.html;
+			str_orders = str_orders + ordObject.html();
 		}	
 	}
 	hideTelebotInfo();
@@ -399,7 +426,7 @@ function showOrders(responseText) {
 		$('#order_li').append(str_orders);
 	}	
 	if(!(key == undefined)) {
-		lastOrderDate = getDateFromString(arResult[key]['message_date']);
+		lastOrderDate = getDateFromString(arResult[key]['date']);
 	};
 	$('.wait').remove();
 

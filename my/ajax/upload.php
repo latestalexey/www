@@ -63,13 +63,10 @@ if($operID == 'usr-addPhoto')
 		$arResult['err'] = 0;
 		echo json_encode($arResult);
 	}	
-}
-
-//Добавлена ветка для обработки операции добавления логотипа организации
-if($operID == 'usr-addLogo')
+} else if($operID == 'usr-addLogo')
 {
 	$arResult = array();
-
+	
 	$im_name = 'logo_'.$_POST["usrid"];
 	$file_info = getimagesize($filename);
 	if($file_info == false) {
@@ -78,9 +75,12 @@ if($operID == 'usr-addLogo')
 		echo json_encode($arResult);
 	}
 	else {
-		$path = "/upload/tmp/".$im_name;
-		if(file_exists($_SERVER["DOCUMENT_ROOT"].$path)) {
-			unlink(realpath($_SERVER["DOCUMENT_ROOT"].$path));
+		$fullpath = "/upload/tmp/".$im_name;
+		if(!file_exists($_SERVER["DOCUMENT_ROOT"]."/upload/tmp/")) {
+			mkdir(realpath($_SERVER["DOCUMENT_ROOT"]."/upload/tmp/"),0777);
+		}	
+		if(file_exists($_SERVER["DOCUMENT_ROOT"].$fullpath)) {
+			unlink(realpath($_SERVER["DOCUMENT_ROOT"].$fullpath));
 		}	
 
 		if($file_info[1] > 800) {
@@ -94,20 +94,20 @@ if($operID == 'usr-addLogo')
 			$height= 500;
 			$ratio = $height / $file_info[1];
 			$width = $file_info[0] * $ratio;
-
+			
 			$new_image = imagecreatetruecolor($width, $height);
 			imagecopyresampled($new_image, $image, 0, 0, 0, 0, $width, $height, $file_info[0], $file_info[1]);
-			imagejpeg($new_image, $_SERVER["DOCUMENT_ROOT"].$path); 
+			imagejpeg($new_image, $_SERVER["DOCUMENT_ROOT"].$fullpath); 
 			imagedestroy($new_image);
 			imagedestroy($image);
 		}	
 		else {
-			rename($filename , $_SERVER["DOCUMENT_ROOT"].$path);
+			rename($filename , $_SERVER["DOCUMENT_ROOT"].$fullpath);
 		} 
 		
-		chmod($_SERVER["DOCUMENT_ROOT"].$path, 0777);
+		chmod($_SERVER["DOCUMENT_ROOT"].$fullpath, 0777);
 		$arResult['operID'] = $operID;
-		$arResult['img'] = $path.'?'.mt_rand();
+		$arResult['img'] = $fullpath.'?'.mt_rand();
 		$arResult['info'] = $file_info;
 		$arResult['err'] = 0;
 		echo json_encode($arResult);

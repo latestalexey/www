@@ -19,6 +19,9 @@ if($res)
 		if(!$res['return']['photo_id'] == '') {
 			$TLP_obj->user_info['photo'] = '/my/ajax/files.php?a=prev&i='.$user_info['photo_id'];
 		}	
+		if(!$res['return']['company_logo'] == '') {
+			$TLP_obj->user_info['company_logo'] = '/my/ajax/files.php?a=prev&i='.$user_info['company_logo'];
+		}	
 		$arFnc = array();
 		$mistakes = $TLP_obj->telecall('Mistakes_Get', $arFnc);
 		foreach ($mistakes as $mistake) 

@@ -19,7 +19,7 @@ $msgStatus['viewed'] = 'Просмотрен';
 			{$arFnc[$key] = $value;}
 	}	
 	$adds = $_GET['adds'];
-	$res = $TLP_obj->telecall('Messages_GetOrderList', $arFnc);
+	$res = $TLP_obj->telecall('Documents_GetList', $arFnc);
 
 	if($res['errCode'] == 0)
 	{

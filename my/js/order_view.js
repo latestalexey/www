@@ -1,152 +1,7 @@
-var msgObj = {
-    "errCode": 0,
-    "retval": {
-		"docHeader":{
-			"id":755,
-			"status":"canceled",
-			"sender":"virab_techno",
-			"receiver":"virab_techno",
-			"type":"order",
-			"date":"2016-06-30T14:02:24.2071860+03:00",
-			"num":"00001",
-			"hash":"00001234",
-			"sum":100,
-			"currencyId":"RUR",
-			"comment":"TEST",
-			"props":[{
-						"name":"paymentType",
-						"header":"Вид оплаты",
-						"type":"enum",
-						"enumvalues":["Безналичная оплата","Наличная оплата","Оплата по карте"],
-						"required":true,
-						"value":"Безналичная оплата"
-					},
-					{
-						"name":"delivery",
-						"header":"Вид доставки",
-						"type":"enum",
-						"enumvalues":["Самовывоз","Доставка до дома"],
-						"required":true,
-						"value":"Самовывоз"
-					},
-					{
-						"name":"string",
-						"header":"Строка",
-						"type":"string",
-						"value":"аааааааааааааа"
-					},
-					{
-						"name":"float",
-						"header":"Число",
-						"type":"float",
-						"value":"125365"
-					},
-					{
-						"name":"boolean",
-						"header":"Логическое",
-						"type":"boolean",
-						"value":"кккк"
-					},
-					{
-						"name":"string",
-						"header":"Строка",
-						"type":"string",
-						"value":"ббббббббббббб"
-					},
-					{
-						"name":"float",
-						"header":"Число",
-						"type":"float",
-						"value":"333.333"
-					},
-					{
-						"name":"boolean",
-						"header":"Логическое2",
-						"type":"boolean",
-						"value":"ммммм"
-					}]
-		},
-		"tabHeader":{
-			"article":"Артикул",
-			"name":"Товар/Услуга",
-			"unit":"Ед. изм.",
-			"quantity":"Кол-во",
-			"confirmed":"Подтверждено",
-			"price":"Цена",
-			"sum":"Всего",
-			"props":[{
-						"name":"paymentType",
-						"header":"Вид оплаты",
-						"type":"enum",
-						"enumvalues":["Безналичная оплата","Наличная оплата","Оплата по карте"],
-						"required":true,
-						"value":"Безналичная оплата"
-					},					
-					{
-						"name":"delivery",
-						"header":"Вид доставки",
-						"type":"enum",
-						"enumvalues":["Самовывоз","Доставка до дома"],
-						"required":true,
-						"value":"Самовывоз"
-					},
-					{
-						"name":"string",
-						"header":"Строка",
-						"type":"string",
-						"required":true,
-						"value":"Строка"
-					},
-					{
-						"name":"float",
-						"header":"Число",
-						"type":"float",
-						"required":true,
-						"value":"Число"
-					},
-					{
-						"name":"boolean",
-						"header":"Логическое",
-						"type":"boolean",
-						"value":"Логическое"
-					}]
-		},
-		"docTable":[{
-			"id":"hdhulreg",
-			"article":"0000055",
-			"name":"Автомобиль",
-			"unit":"шт","quantity":3,
-			"confirmed":1,
-			"price":5210000,
-			"sum":15630000,
-			"props":[{
-						"name":"delivery",
-						"value":"Самовывоз"
-					},
-					{
-						"name":"paymentType",
-						"value":"Безналичная оплата"
-					},
-					{
-						"name":"string",
-						"value":"Безналичная оплата"
-					},
-					{
-						"name":"float",
-						"value":"Безналичная оплата"
-					},
-					{
-						"name":"boolean",
-						"value":true
-					}]
-		}]
-	}
-}
-
-function getDocInfo(id) {/*
+function getDocInfo(id) {
 	var xhr = new XMLHttpRequest();
 	var body =	'action=Documents_GetById' +
-				'&message_ID=' + id;
+				'&message_id=' + id;
 	xhr.open("POST", '/my/ajax/action.php', true);
 	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 	xhr.onreadystatechange = function() { 
@@ -156,15 +11,15 @@ function getDocInfo(id) {/*
 			showError(xhr.responseText.replace('%err%',''));	
 			return;
 		}
-		var arResult = msgobj//jQuery.parseJSON(xhr.responseText);
+		console.log(xhr.responseText);
+		var arResult = jQuery.parseJSON(xhr.responseText);
 		initDocView(arResult);
 	};		
-	xhr.send(body);	*/
-	initDocView(msgObj.retval);
+	xhr.send(body);	
 };	
 
 function getTmpDocInfo(id) {
-	$.post('/my/ajax/order.php', { action: 'Documents_GetById', message_ID: id }, function(data) {
+	$.post('/my/ajax/order.php', { action: 'Documents_GetById', message_id: id }, function(data) {
 		initDocView(JSON.parse(data));
 	});
 };
@@ -172,7 +27,6 @@ function getTmpDocInfo(id) {
 function setEditPolicy (sender, docstatus) {
 	$("#upl_xls").addClass('hidden');
 	$('#del_item').addClass('hidden');
-	$('.cnt_inp').prop("disabled", true);
 	$('.order_item_input_row').addClass('hidden');
 	$(".order_item_list_content .col_0 .fa").addClass('hidden');
 	$(".order_item_list_content .col_4 .fa").addClass('hidden');
@@ -185,7 +39,6 @@ function setEditPolicy (sender, docstatus) {
 			case 'new':
 				$("#upl_xls").removeClass('hidden');
 				$('#del_item').removeClass('hidden');
-				$('.cnt_inp').prop("disabled", false);
 				$('.order_item_input_row').removeClass('hidden');
 				$(".order_item_list_content .col_0 .fa").removeClass('hidden');
 				$(".order_item_list_content .col_4 .fa").removeClass('hidden');
@@ -268,7 +121,7 @@ function getDocHeaderProps(arHeader) {
 		$('#order_view .sidebar-content .doc-add-props').append(
 			'<div id="'+val.name+'" class="sidebar-item-wrap">' +
 				'<div class="sidebar-item-header"><i class="fa fa-chevron-down"></i>'+val.header+'</div>' +
-				'<div class="sidebar-item-content"></div>' +
+				'<div class="sidebar-item-content item_'+i+'"></div>' +
 			'</div>'
 		);
 		
@@ -280,7 +133,7 @@ function getDocHeaderProps(arHeader) {
 					var isChecked = 'checked';
 					var faCheck = 'fa-check';
 				};
-				$('#order_view #'+val.name+' .sidebar-item-content').append(
+				$('#order_view #'+val.name+' .sidebar-item-content.item_'+i).append(
 					'<div class="sidebar-item-box '+isChecked+'" data-type='+val.name+'>' +
 						'<div class="fa '+faCheck+'"></div>' +
 						'<div class="sidebar-item-name">'+enumval+'</div>' +
@@ -289,15 +142,19 @@ function getDocHeaderProps(arHeader) {
 			});	
 		}
 		else if (val.type === 'boolean'){
-			$('#order_view #'+val.name+' .sidebar-item-content').append(
-				'<div class="sidebar-item-box" data-type='+val.name+'>' +
-					'<div class="fa"></div>' +
-					'<div class="sidebar-item-name">'+val.value+'</div>' +
+			if (val.value) {
+				var isChecked = 'checked';
+				var faCheck = 'fa-check';
+			};
+			$('#order_view #'+val.name+' .sidebar-item-content.item_'+i).append(
+				'<div class="sidebar-item-box '+isChecked+'" data-type='+val.name+'>' +
+					'<div class="fa '+faCheck+'"></div>' +
+					'<div class="sidebar-item-name">'+val.header+'</div>' +
 				'</div>'
 			);
 		}
 		else {
-			$('#order_view #'+val.name+' .sidebar-item-content').append(
+			$('#order_view #'+val.name+' .sidebar-item-content.item_'+i).append(
 				'<div class="sidebar-item-box" data-type='+val.name+'>' +
 					'<div class="sidebar-item-name"><input style="width: 100%; border: 0;"value="'+val.value+'"/></div>' +
 				'</div>'
@@ -310,7 +167,7 @@ function getDocHeaderProps(arHeader) {
 			'<div class="sidebar-item-header"><i class="fa fa-chevron-down"></i>Комментарии</div>' +
 			'<div class="sidebar-item-content">' +
 				'<div class="sidebar-item-box" data-type=comment>' +
-					'<div class="sidebar-item-name"><textarea style="width: 100%; border: 0; resize:none;" readonly>'+arHeader.comment+'</textarea></div>' +
+					'<div class="sidebar-item-name"><textarea>'+arHeader.comment+'</textarea></div>' +
 				'</div>' +
 			'</div>' +
 		'</div>'
@@ -322,48 +179,37 @@ function getDocHeaderProps(arHeader) {
 
 
 function getTabHeader(arHeader) {
-	var html_str = 	
-			'<div class="col_0">...</div>'+
-			'<div class="col_1">'+arHeader.article+'</div>'+
-			'<div class="col_2">'+arHeader.name+'</div>'+
-			'<div class="col_3">'+arHeader.unit+'</div>'+
-			'<div class="col_4">'+arHeader.quantity+'</div>'+
-			'<div class="col_5">'+arHeader.confirmed+'</div>'+
-			'<div class="col_6">'+arHeader.price+'</div>'+
-			'<div class="col_7">'+arHeader.sum+'</div>';
-
+	var html_str = ''; 	
 	var col = 8;	
 	$.each(arHeader.props, function(i, val){
-		html_str = html_str + '<div class="col_'+col+'" add-field-name='+val.name+'>'+val.header+'</div>';
+		html_str = html_str + '<td class="col_'+col+'" add-field-name='+val.name+'>'+val.header+'</td>';
 		col++;
-	});		
-		
+	});	
+	
+	html_str = 
+		'<tr  class="item item_list_header">' +
+			'<td class="col_0">...</td>'+
+			'<td class="col_1">'+arHeader.article+'</td>'+
+			'<td class="col_2">'+arHeader.name+'</td>'+
+			'<td class="col_3">'+arHeader.unit+'</td>'+
+			'<td class="col_4">'+arHeader.quantity+'</td>'+
+			'<td class="col_5">'+arHeader.confirmed+'</td>'+
+			'<td class="col_6">'+arHeader.price+'</td>'+
+			'<td class="col_7">'+arHeader.sum+'</td>' + html_str +
+		'</tr>';
 	return html_str;	
 };
 
 function getSearchStr(arHeader) {
-	var col = 8;	
-	var html_str = '';
-	$.each(arHeader, function(i, val){
-		html_str = html_str + '<div class="col_'+col+'" add-field-name='+val.name+'></div>';
-		col++;
-	});	
-	
+	console.log(arHeader.props.length);
 	var docsearchrow = 				
-		'<div  class="item input_row">' +
-			'<div class="item_content">' +
-				'<div class="item_line">' +
-					'<div class="col_0"><i class="fa fa-keyboard-o" aria-hidden="true"></i></div>' +
-					'<div class="col_1_2"><input class="input_col" placeholder="Введите артикул или наименование товара"/></div>' +
-					'<div class="col_3"></div>'+
-					'<div class="col_4"></div>'+
-					'<div class="col_5"></div>'+
-					'<div class="col_6"></div>'+
-					'<div class="col_7"></div>'+html_str
-				'</div>' +
-			'</div>' +
-		'</div>';	
-
+		'<tr  class="item input_row">' +
+			'<td class="col_0"><i class="fa fa-keyboard-o" aria-hidden="true"></i></td>' +
+			'<td colspan="2" class="col_1_2"><input class="input_col" placeholder="Введите артикул или наименование товара"/></td>' +
+			'<td colspan="'+(5+arHeader.props.length)+'" class="col_3">' +
+				'Общая сумма:<span class="total-sum">'+parseFloat(arHeader.sum).toFixed(2)+'</span><span class="currency"> '+arHeader.currencyId+'</span>' +
+			'</td>' +
+		'</tr>';	
 	return docsearchrow;	
 };
 
@@ -395,14 +241,14 @@ function getDocTable(docTable, tabHeaderProps){
 		});
 		strorderlist = strorderlist + 
 			'<tr id="it_'+item.id+'" class="item" data-it-id='+item.id+'>' +
-						'<td class="col_0"><i class="fa"></i></td>' +
-						'<td class="col_1">'+item.article+'</td>' +
-						'<td class="col_2"><span class="caption">'+item.name+'</span><i class="fa fa-chevron-up"></i></td>'+
-						'<td class="col_3">'+item.unit+'</td>' +	
-						'<td class="col_4 required"><i class="fa fa-minus" aria-hidden="true"></i><input class="quantity" value="'+item.quantity+'"><i class="fa fa-plus" aria-hidden="true"></i></td>' +						
-						'<td class="col_5"><i class="fa fa-minus" aria-hidden="true"></i><input class="confirmed" value="'+item.confirmed+'"><i class="fa fa-plus" aria-hidden="true"></i></td>'+
-						'<td class="col_6">'+item.price+'</td>'+
-						'<td class="col_7">'+item.sum+'</td>'+ html_str +			
+				'<td class="col_0"><i class="fa"></i></td>' +
+				'<td class="col_1">'+item.article+'</td>' +
+				'<td class="col_2"><span class="caption">'+item.name+'</span><i class="fa fa-chevron-up"></i></td>'+
+				'<td class="col_3">'+item.unit+'</td>' +	
+				'<td class="col_4 required"><i class="fa fa-minus" aria-hidden="true"></i><input class="quantity" value="'+item.quantity+'"><i class="fa fa-plus" aria-hidden="true"></i></td>' +						
+				'<td class="col_5"><i class="fa fa-minus" aria-hidden="true"></i><input class="confirmed" value="'+item.confirmed+'"><i class="fa fa-plus" aria-hidden="true"></i></td>'+
+				'<td class="col_6">'+parseFloat(item.price).toFixed(2)+'</td>'+
+				'<td class="col_7">'+parseFloat(item.sum).toFixed(2)+'</td>'+ html_str +			
 			'</tr>';	
 	});
 	return strorderlist;
@@ -425,8 +271,7 @@ function initDocView(arDoc) {
 					'<div class="order_header"></div>' +
 					'<div class="order_controls"></div>' +
 					'<div class="order_positions">' +
-						'<div class="order_item_list_header"></div>' +
-						'<div class="order_item_input_row"></div>' +
+						'<table class="order_item_list_head"></table>' +
 						'<table class="order_item_list_content"></table>' +
 					'</div>' +			
 					'<div class="sidebar">' +	
@@ -437,17 +282,16 @@ function initDocView(arDoc) {
 				'</div>' +	
 			'</div>'	
 	);
-	
 	var strorderinfo = 
 		'<div id="order_num">Заказ № '+docHeader.num+' от '+ docDate.day + '-' + docDate.month + '-' + docDate.year +' (' + docDate.hh + ':' + docDate.mm +':'+ docDate.ss + ')' + '</div>' +
-		'<div class="order_status"><div class="ord_hd_x1">Статус:</div><div class="ord_hd_x2">'+docStatus[docHeader.status]+'</div><br><div class="ord_hd_x1">Общая сумма:</div><div class="ord_hd_x2">'+docHeader.sum+'</div></div>' +
+		'<div class="order_status"><div class="ord_hd_x1">Статус:</div><div class="ord_hd_x2">'+docStatus[docHeader.status]+'</div></div>' +
 		'<div class="order_headline"><div class="ord_hd_x1">Получатель:</div><div class="ord_hd_x2">';
 		
 	if (sender.id == smuser.id) {
-		strorderinfo = strorderinfo + '<input class="cnt_inp" type="text" name="receiver" value="'+receiver.fullname+'" data-owner="'+receiver.name+'"/></div></div>';
+		strorderinfo = strorderinfo + '<input class="cnt_inp" type="text" name="receiver" value="'+receiver.fullname+'" data-owner="'+receiver.name+'" disabled></div></div>';
 	}
 	else {
-		strorderinfo = strorderinfo + '<input class="cnt_inp" type="text" name="sender" value="'+sender.fullname+'" data-owner="'+receiver.name+'"/></div></div>';
+		strorderinfo = strorderinfo + '<input class="cnt_inp" type="text" name="sender" value="'+sender.fullname+'" data-owner="'+receiver.name+'" disabled></div></div>';
 	};
 		
 	
@@ -459,26 +303,26 @@ function initDocView(arDoc) {
 			'<div id="del_item" class="button disabled fa fa-trash tooltip"  data-tooltip="Удалить выбранные элементы"></div>' +	
 		'</div>' +	
 		'<div class="confirm-buttons">' +
-			'<div id="save-local" class="button fa fa-floppy-o tooltip hidden" data-tooltip="Сохранить"></div>' +
-			'<div id="transmit" class="button fa fa-exchange tooltip hidden" data-tooltip="Отправить"></div>' +
-			'<div id="confirm" class="button fa fa-thumbs-o-up tooltip hidden" data-tooltip="Подтвердить"></div>' +
-			'<div id="cancel" class="button fa fa-times tooltip hidden" data-tooltip="Отменить"></div>' +
-			'<div id="ship" class="button fa fa-times tooltip hidden" data-tooltip="Готов к отгрузке"></div>' +
-			'<div id="complete" class="button fa fa-times tooltip hidden" data-tooltip="Выполнен"></div>' +
-			'<div id="process" class="button fa fa-times tooltip hidden" data-tooltip="Принять в обработку"></div>' +
-			//'<div id="close" class="button fa fa-sign-out tooltip" data-tooltip="Закрыть"></div>' +
+			'<div id="save-local" class="button fa fa-floppy-o tooltip hidden" data-tooltip="Сохранить"><span class="button-text">Сохранить</span></div>' +
+			'<div id="transmit" class="button fa fa-exchange tooltip hidden" data-tooltip="Отправить"><span class="button-text">Отправить</span></div>' +
+			'<div id="cancel" class="button fa fa-reply tooltip hidden" data-tooltip="Отменить"><span class="button-text">Отменить</span></div>' +
+			'<div id="process" class="button fa fa-share tooltip hidden" data-tooltip="Принять в обработку"><span class="button-text">Принять в обработку</span></div>' +
+			'<div id="confirm" class="button fa fa-file-text-o tooltip hidden" data-tooltip="Подтвердить"><span class="button-text">Подтвердить</span></div>' +
+			'<div id="ship" class="button fa fa-ship tooltip hidden" data-tooltip="Готов к отгрузке">Г<span class="button-text">отов к отгрузке</span></div>' +
+			'<div id="complete" class="button fa fa-thumbs-o-up tooltip hidden" data-tooltip="Выполнен"><span class="button-text">Выполнен</span></div>' +
+			
 		'</div>';
 
-	var strorderlisthead = '<div class="item"><div class="item_content" style="border-top: 1px solid #CCCCCC;"><div class="item_line">'+getTabHeader(tabHeader)+'</div></div></div>'
+	var strorderlisthead = getTabHeader(tabHeader);
 	
-	var strordersearchrow = getSearchStr(tabHeader.props);
+	var strordersearchrow = getSearchStr(docHeader);
 
 	var strorderlist = (docTable.length) ? getDocTable(docTable, tabHeader.props) : '';
 
 	$('#order_view .order_header').append(strorderinfo);
 	$('#order_view .order_controls').append(strordercontrols);
-	$('#order_view .order_positions .order_item_list_header').append(strorderlisthead);	
-	$('#order_view .order_positions .order_item_input_row').append(strordersearchrow);	
+	$('#order_view .order_positions .order_item_list_head').prepend(strorderlisthead);	
+	$('#order_view .order_positions .order_item_list_head').append(strordersearchrow);	
 	$('#order_view .order_positions .order_item_list_content').append(strorderlist);	
 	$('#order_view').show(200, function(){
 		setEditPolicy (sender.name, docHeader.status);
@@ -490,6 +334,7 @@ function initDocView(arDoc) {
 		});	
 	});
 	/*=====================================**********************=====================================================*/
+	
 	//Закрытие сайдбара по клику вне его	
 	$('#order_view').on('click', '.docview', function(e){
 		if ((!$(e.target).closest(".sidebar").length) && (!$(e.target).closest("#show_addinfo").length) && (!$(e.target).closest("#show_msg").length)) {
@@ -514,7 +359,9 @@ function initDocView(arDoc) {
 			currencyId: docHeader.currencyId, 
 			hash: docHeader.hash
 		}, function(data) {
-			console.log(data);
+			$('#order_li .order[data-order-id='+docHeader.id+'] .col_4').text(docHeader.sum.toFixed(2));
+			hideModalWindow($('#order_view'));
+			$('.dark-tooltip').remove();
 		});
 	});			
 	
@@ -527,7 +374,7 @@ function initDocView(arDoc) {
 		var xhr = new XMLHttpRequest();
 		var body =	'action=Messages_Send' +
 					'&message=' + encodeURIComponent(JSON.stringify(Doc)) +
-					'&message_type=docs' +
+					'&message_type=document' +
 					'&contact=' + encodeURIComponent((sender.id==smuser.id) ? receiver.name : sender.name);					
 		xhr.open("POST", '/my/ajax/action.php', true);
 		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -538,9 +385,42 @@ function initDocView(arDoc) {
 				showError(xhr.responseText.replace('%err%',''));
 				return;
 			}
+			hideModalWindow($('#order_view'));
+			$('.dark-tooltip').remove();
+			
 		}				
 		xhr.send(body);	
 	});
+	
+	//Подтвердить заказ
+	$('#order_view').on('click', '#confirm', function(){
+		hideModalWindow($('#order_view'));
+		$('.dark-tooltip').remove();
+	});	
+	
+	//Отменить заказ
+	$('#order_view').on('click', '#cancel', function(){
+		hideModalWindow($('#order_view'));
+		$('.dark-tooltip').remove();
+	});	
+	
+	//Заказ готов к отгрузке
+	$('#order_view').on('click', '#ship', function(){
+		hideModalWindow($('#order_view'));
+		$('.dark-tooltip').remove();
+	});	
+	
+	//Заказ выполнен
+	$('#order_view').on('click', '#complete', function(){
+		hideModalWindow($('#order_view'));
+		$('.dark-tooltip').remove();
+	});	
+	
+	//Принять заказ в обработку
+	$('#order_view').on('click', '#process', function(){
+		hideModalWindow($('#order_view'));
+		$('.dark-tooltip').remove();
+	});	
 	
 	//Закрытие окна заказа 
 	$('.close_line div').click(function() {
@@ -558,22 +438,33 @@ function initDocView(arDoc) {
 	//Изменение количества позиций в строке заказа кнопками
 	$('#order_view').on('click', '.col_4 .fa, .col_5 .fa', function(){
 		var qty = $(this).siblings('input').val();
+		var price = parseFloat($(this).closest('.item').children('.col_6').text()).toFixed(2);
 		if ($(this).hasClass('fa-plus')) {
 			qty++;
 		}
 		else if ($(this).hasClass('fa-minus')) {
-			qty > 0 ? qty-- : qty;			
+			qty > 1 ? qty-- : qty;			
 		};	
 		$(this).siblings('input').val(qty);
-		$('#order_view .col_4 input, #order_view .col_5 input').trigger('keyup');	
+		$(this).closest('.item').children('.col_7').text(parseFloat(price*qty).toFixed(2));
+		getTotalSum();
 	});
 	//Изменение количества позиций в строке заказа вручную
-	$('#order_view').on('keyup', '.col_4 input, .col_4 input', function(){
-		var price = $(this).closest('.item').children('.col_6').text();
-		var qty = $(this).val();
-		$(this).closest('.item').children('.col_7').text(price*qty);
+	$('#order_view').on('keydown keyup', '.col_4 input, .col_5 input', function(e){
+		var arKey = [8, 9, 37, 39, 46];
+		console.log($.inArray(e.which, arKey));
+		if ((e.which >= 48 && e.which <=57) || (e.which >= 96 && e.which <=105) || ($.inArray(e.which, arKey)>=0)) {
+			if (!$(this).val().length || ($(this).val() == 0)) {$(this).val(1)};
+			var price = parseFloat($(this).closest('.item').children('.col_6').text()).toFixed(2);
+			var qty = $(this).val();
+			$(this).closest('.item').children('.col_7').text(parseFloat(price*qty).toFixed(2));
+			getTotalSum();
+		} 
+		else {
+			e.preventDefault();
+		}		
 	});	
-	
+
 	//Отметить позицию в заказе
 	$('#order_view').on('click', '.order_item_list_content .col_0 .fa', function(){
 		$(this).toggleClass('fa-check').parents('.item').toggleClass('checked');
@@ -589,11 +480,13 @@ function initDocView(arDoc) {
 		e.stopPropagation();
 		$('#order_view .order_item_list_content .item.checked').remove();		
 		$(this).addClass('disabled');	
+		getTotalSum();
 	});
 	
 	//Просмотр подробой информации о позиции
 	$('#order_view').on('click', '.order_item_list_content .col_2', function(){
 		var obj = $(this).parents('.item');
+		obj.siblings('.item').children('.col_2').removeClass('opened');
 		obj.toggleClass('opened');
 		$(this).children('.fa').toggleClass('fa-chevron-down fa-chevron-up');
 		obj.hasClass('opened') ? getItemInfo(obj, receiver.name) : obj.next('#order-item-info').remove();
@@ -625,20 +518,7 @@ function initDocView(arDoc) {
 		$(this).siblings('.sidebar-item-content').slideToggle(100);
 		$('.fa',this).toggleClass('fa-chevron-down fa-chevron-up');
 	});
-	
-	//Показ сообщений в сайдбаре
-	$('#order_view').on('click', '#show_msg', function(e) {
-		if (!$(this).hasClass('active')){
-			showSidebarMsg((sender.id==smuser.id) ? receiver.name: sender.name);
-		};	
-		$('#order_view .pan_bar').trigger('click');		
-	});
-	
-	//Добавление файлов к сообщению в сайдбаре
-	$('#order_view').on('click', '#add_file', function() {
-		$(this).siblings('#uploadifive-file_upload').children().last().click();
-	});
-	
+	/*
 	//Выпадающий список контактов
 	$('#order_view .cnt_inp').keydown(function(e) {	
 		var obj = $(this);
@@ -689,7 +569,7 @@ function initDocView(arDoc) {
 			obj.removeClass('not_find');
 		}, 200 );
 	});
-	
+	*/
 	//Выпадающий список позиций
 	$('#order_view .order_positions .input_col').keydown(function(e) {	
 		var obj = $(this);
@@ -716,10 +596,17 @@ function initDocView(arDoc) {
 			};	
 		}
 		else if(e.which == 13 && item_sel.length) {		
-			setNewDocPosition($('.item.selected', item_sel), tabHeader.props);	
-			setEditPolicy (sender.name, docHeader.status);
-			obj.blur();
-			obj.focus();
+			var newItem = $('.item.selected', item_sel);
+			var	exitem = $('.order_item_list_content .item[data-it-id='+newItem.attr('data-it-id')+']');	
+			if ( exitem.length && (parseFloat(newItem.attr('data-price')).toFixed(2) == parseFloat($('.col_6', exitem).text()).toFixed(2)) ) {
+				mergeItems(newItem, exitem);
+			}
+			else {
+				setNewDocPosition($('.item.selected', item_sel), tabHeader.props);	
+				setEditPolicy (smuser.name, docHeader.status);
+			};
+			getTotalSum();
+			obj.blur().focus();
 		}
 		else {
 			obj.removeClass('not_find');
@@ -731,8 +618,15 @@ function initDocView(arDoc) {
 	
 	//Выбор позиции в выпадающем списке
 	$('#order_view').on('click', '.item_sel .item', function(e) {
-		setNewDocPosition($(this), tabHeader.props);
-		setEditPolicy (sender.name, docHeader.status);
+		var	exitem = $('.order_item_list_content .item[data-it-id='+$(this).attr('data-it-id')+']');		
+		if ( exitem.length && (parseFloat($(this).attr('data-price')).toFixed(2) == parseFloat($('.col_6', exitem).text()).toFixed(2)) ) {
+			mergeItems($(this), exitem);
+		}
+		else {
+			setNewDocPosition($(this), tabHeader.props);
+			setEditPolicy (smuser.name, docHeader.status);
+		};	
+		getTotalSum();
 		$('#order_view .order_positions .input_col').focus();
 	});	
 	
@@ -744,6 +638,35 @@ function initDocView(arDoc) {
 			$('.modal_window.item_sel').remove();
 		},200);	
 	});
+	
+	//Показ сообщений в сайдбаре
+	$('#order_view').on('click', '#show_msg', function(e) {
+		if (!$(this).hasClass('active')){
+			showSidebarMsg((sender.id==smuser.id) ? receiver.name: sender.name);
+		};	
+		$('#order_view .pan_bar').trigger('click');		
+	});
+	
+	//Добавление файлов к сообщению в сайдбаре
+	$('#order_view').on('click', '#uploadfile', function() {
+		$(this).closest('#input_block').siblings('#uploadifive-file_upload').children().last().click();
+	});
+	
+	//Показ кнопки отправки сообщения
+	$('#order_view').on('keyup', '#msgBox', function(e) {
+		event.stopPropagation();
+		if($('#msgBox').hasClass('sending')) {
+			event.preventDefault();
+			return;
+		}
+		var inp_str = $(this).val();
+		if($('#send_msg').css('display') == 'none' && $(this).val() != '' && $('#process_msg').css('display') == 'none') {
+			$('#send_msg').show(200);
+		} 
+		else if($(this).val() == '' && $('#msg_fn').length == 0) {
+			$('#send_msg').hide();
+		}
+	});	
 	
 	//Отправка сообщения по нажатию кнопки
 	$('#order_view').on('click', '#send_msg', function(event){
@@ -764,86 +687,119 @@ function initDocView(arDoc) {
 		};
 	});
 
-	//Показ кнопки отправки сообщения
-	$('#order_view').on('keyup', '#msgBox', function(e) {
-		event.stopPropagation();
-		if($('#msgBox').hasClass('sending')) {
-			event.preventDefault();
-			return;
-		}
-		var inp_str = $(this).val();
-		if($('#send_msg').css('display') == 'none' && $(this).val() != '' && $('#process_msg').css('display') == 'none') {
-			$('#send_msg').show(200);
-		} 
-		else if($(this).val() == '' && $('#msg_fn').length == 0) {
-			$('#send_msg').hide();
-		}
-	});	
-	
 	//Отправка сообщения
-	$('#order_view').on('submit', ' #msg_form', function(event){
-		msg_arResult = [];
-	
-		event.preventDefault();
+	$('#order_view').on('submit', ' #msg_form', function(e){
+		e.preventDefault();
 		if($('#msgBox').hasClass('sending')) {
-			return;
-		}
-		
-		var msg_text= $('#msgBox').val();
-		if(msg_text == '' && $("#msg_form .uploadifive-queue-item").length == 0)
-			{return;}
-		else if	(msg_text == '') {
-			msg_text = "...";
-		}
+			return
+		};
 
+		var msg_text= $('#msgBox').val();
+		if(msg_text == '' && $("#msg_form .uploadifive-queue-item").length == 0){
+			return
+		};
+		
 		$('#msgBox').addClass('sending');
 		$('#content').append('<div id="mess_block" class="mess_send_block"></div>');
 		
 		var msg_type = 'text';
-		if($("#msg_form .uploadifive-queue-item").length != 0) {
+		var files_count = $("#msg_form .uploadifive-queue-item").length;
+		if(files_count != 0) {
 			msg_type = 'text_attach';
-			showMessageBox('<div style="font-weight: 600;">Отправка файлов...</div><div><img src="/include/wait.gif"/></div>','');
-		}
-
-		var body =	'action=send_msg' +
-			'&message_type=' + msg_type +
-			'&contact=' + encodeURIComponent(receiver.name) +
-			'&message='+encodeURIComponent(msg_text);
+			showMessageBox('<div style="font-weight: 600; z-index: 9999;">Отправка файлов...</div><div><img src="/include/wait.gif"/></div>','');
+		}	
 		
-		var xhr = new XMLHttpRequest();
-		xhr.open("POST", '/my/ajax/action.php', true);
-		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-		xhr.onreadystatechange = function() 
-		{ 
-			if (xhr.readyState != 4) return;
+		var contact = (sender.name==smuser.name) ? receiver.name : sender.name;
+		
+		if((msg_type == 'text' || files_count>1) && (msg_text != '')) {
+			
+			var tmp_guid = "tmp_"+createGuid();
 
-			if(!(xhr.responseText.indexOf('%err%') == -1)) {
-				showError(xhr.responseText.replace('%err%',''));
-				msg_init();
-				return;
+			var body = new FormData(document.forms.msg_form);//
+			body.append("action", "send_msg");
+			body.append("message_type", msg_type);
+			body.append("contact", contact);
+			body.append("message", msg_text);
+			body.append("tmpGUID", tmp_guid);
+			
+			
+			var xhr = new XMLHttpRequest();
+			xhr.open("POST", '/my/ajax/action.php', true);
+			xhr.onreadystatechange = function() 
+			{ 
+				if (xhr.readyState != 4) return;
+				if(!(xhr.responseText.indexOf('%err%') == -1)) {
+					showError(xhr.responseText.replace('%err%',''));
+					msg_init();
+					return;
+				}
+
+				try {
+					var msg_tmpGUID = '';
+					msg_arResult = $.parseJSON(xhr.responseText);
+					msg_tmpGUID = msg_arResult[0].tmpGUID;
+					addSentMessages(msg_arResult);
+				}	
+				catch (err)	{
+					showError('Не удалось отправить сообщение. <br>Сбой операции <br> Повторите попытку позже');
+					console.log(xhr.responseText);
+					console.log(err);
+					msg_init();
+					$('#msg_li #msg_'+msg_tmpGUID).remove();
+					return;
+				}
+			}		
+			xhr.send(body);
+
+			var tmp_arResult = {
+				"ID": tmp_guid,
+				"type": "text",
+				"dt": getStringFromDate(new Date()),
+				"from": smuser.name,
+				"to": contact,
+				"status": "new",
+				"msg_text": htmlspecialchars(msg_text),
+				"tmpGUID": "",
+				"tmp_msg": "true",
+				"files": {}
+			}
+			var ar_tmp = [tmp_arResult];
+			msg_reset(ar_tmp);
+		}
+		if(files_count>0) {
+			$("#file_upload").uploadifive('appendFormData','message_type',msg_type);
+			$("#file_upload").uploadifive('appendFormData','contact',contact);
+			if(files_count > 1) {
+				$("#file_upload").uploadifive('appendFormData','message','');
+			} else {
+				$("#file_upload").uploadifive('appendFormData','message',msg_text);
 			}
 
-			try {
-				msg_arResult = $.parseJSON(xhr.responseText);
-			}	
-			catch (err)	{
-				showError('Не удалось отправить сообщение. <br>Сбой операции <br> Повторите попытку позже');
-				msg_init();
-				return;
-			}
-			if($("#msg_form .uploadifive-queue-item").length != 0) {
-				$("#file_upload").uploadifive('appendFormData','message_ID',msg_arResult[0].ID);
-				$("#file_upload").uploadifive('appendFormData','contact',contact.name);
-				msg_arResult[0].files = [];
-				$('#file_upload').uploadifive('upload');
-			}
-			else {
-				msg_reset();
-			}
-		}		
-		xhr.send(body);
+			$('#file_upload').uploadifive('upload');
+		}
+	});
+	
+	//Просмотр изображений в сайдбаре (сообщения)
+	$('#order_view .sidebar').on('click', '#msg_li .image_file .close_line svg', function(e) {	
+		e.stopPropagation();
+		var obj = $(this).parent().parent();
+		obj.toggleClass('close_image');
+		if(obj.hasClass('close_image')) {
+			var im_svg = '<svg fill="#000000" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">'+
+				'<path d="M7 10l5 5 5-5z"/>'+
+				'<path d="M0 0h24v24H0z" fill="none"/>'+
+				'</svg>';
+		}
+		else {
+			var im_svg = '<svg fill="#000000" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">'+
+				'<path d="M7 14l5-5 5 5z"/>'+
+				'<path d="M0 0h24v24H0z" fill="none"/>'+
+				'</svg>';
+		}
+		$(this).replaceWith($(im_svg));
 	});
 };
+
 
 var delay = (function(){
   var timer = 0;
@@ -853,6 +809,22 @@ var delay = (function(){
   };
 })();
 
+function getTotalSum() {
+	var totalSum = 0.00;
+	$('.order_item_list_content .col_7').each(function(){
+		totalSum = totalSum*1 + $(this).text()*1;
+	});
+	$('.input_row .total-sum').text(totalSum.toFixed(2));
+};
+
+function mergeItems(newItem, exItem){
+	var qty = $('.quantity', exItem).val() || 0;
+	var price = parseFloat(newItem.attr('data-price')).toFixed(2) || 0.00;
+	var total = parseFloat(++qty*price).toFixed(2);
+	$('.quantity', exItem).val(qty);
+	$('.col_7', exItem).text(total);
+};
+
 function buildTmpDoc (tmpDoc){
 	var hash = '';
 	var sum = 0.00;
@@ -861,15 +833,14 @@ function buildTmpDoc (tmpDoc){
 	});	
 	tmpDoc.docHeader.hash = hash;
 	tmpDoc.docHeader.sum = sum;
-	tmpDoc.docHeader.comment = $('.sidebar .comment textarea').text();
-	
+	tmpDoc.docHeader.comment = $('.sidebar .comment textarea').val();
 	if (tmpDoc.docHeader.props.length){
 		$.each(tmpDoc.docHeader.props, function(i, val){
 			(val.type=='enum') ?
-			val.value = $('.sidebar #'+val.name+' .sidebar-item-box.checked .sidebar-item-name').text() :
+			val.value = $('.sidebar #'+val.name+' .item_'+i+' .sidebar-item-box.checked .sidebar-item-name').text() :
 			(val.type=='boolean') ?
-			val.value = $('.sidebar #'+val.name+' .sidebar-item-box').hasClass('checked') :
-			val.value = $('.sidebar #'+val.name+' .sidebar-item-box .sidebar-item-name input').val()
+			val.value = $('.sidebar #'+val.name+' .item_'+i+' .sidebar-item-box').hasClass('checked') :
+			val.value = $('.sidebar #'+val.name+' .item_'+i+' .sidebar-item-box .sidebar-item-name input').val()
 		});
 	};
 	
@@ -917,7 +888,33 @@ function buildTmpDoc (tmpDoc){
 	tmpDoc.docTable = arItems;
 };
 
+function setNewDocPosition(obj, arHeader){
+	var col = 8;	
+	var html_str = '';
+	$.each(arHeader, function(i, val){
+		html_str = html_str + '<td class="col_'+col+' '+val.name+'"></td>';
+		col++;
+	});	
+	var name = $('.col_2', obj).text();
+	var qty = 1;
+	var price = parseFloat(obj.attr('data-price')).toFixed(2);
+	var sum = (price*qty).toFixed(2);
+	$('#order_view .order_item_list_content').prepend(
+		'<tr id="it_'+obj.attr('data-it-id')+'" class="item" data-it-id='+obj.attr('data-it-id')+'>' +
+			'<td class="col_0"><i class="fa"></i></td>' +
+			'<td class="col_1"></td>' +
+			'<td class="col_2"><span class="caption">'+name+'</span><i class="fa fa-chevron-up"></i></td>'+
+			'<td class="col_3">шт</td>'+
+			'<td class="col_4 required"><i class="fa fa-minus" aria-hidden="true"></i><input class="quantity" value="'+qty+'"><i class="fa fa-plus" aria-hidden="true"></i></td>'+
+			'<td class="col_5"><i class="fa fa-minus" aria-hidden="true"></i><input class="confirmed" value="0"><i class="fa fa-plus" aria-hidden="true"></i></td>'+
+			'<td class="col_6">'+price+'</td>'+
+			'<td class="col_7">'+sum+'</td>'+	html_str +						
+		'</tr>'
+	);
+	setOrderItemListContentHeight();
+};
 
+/*
 function selectCntInList(obj){
 	if (obj.attr('data-usr-id') !== undefined) {
 		var contact = obj.attr('data-usr-name');
@@ -928,105 +925,6 @@ function selectCntInList(obj){
 		obj.closest('.modal_window').remove();	
 	};
 };
-
-function setNewDocPosition(obj, arHeader){
-	var col = 8;	
-	var html_str = '';
-	$.each(arHeader, function(i, val){
-		html_str = html_str + '<div class="col_'+col+' '+val.name+'"></div>';
-		col++;
-	});	
-	var name = $('.col_2', obj).text();
-	var qty = 5;
-	var price = 200;
-	var sum = 1000;
-	$('#order_view .order_item_list_content').prepend(
-		'<tr id="it_'+obj.attr('data-it-id')+'" class="item" data-it-id='+obj.attr('data-it-id')+'>' +
-			'<td class="col_0"><i class="fa"></i></td>' +
-			'<td class="col_1"></td>' +
-			'<td class="col_2"><span class="caption">'+name+'</span><i class="fa fa-chevron-up"></i></td>'+
-			'<td class="col_3">шт</td>'+
-			'<td class="col_4 required"><i class="fa fa-minus" aria-hidden="true"></i><input class="quantity" value="'+qty+'"><i class="fa fa-plus" aria-hidden="true"></i></td>'+
-			'<td class="col_5"><i class="fa fa-minus" aria-hidden="true"></i><input class="confirmed" value="'+qty+'"><i class="fa fa-plus" aria-hidden="true"></i></td>'+
-			'<td class="col_6">'+price+'</td>'+
-			'<td class="col_7">'+sum+'</td>'+	html_str +						
-		'</tr>'
-	);
-};
-
-function setOrderItemListContentHeight(){
-	var h1 = $('#order_view .docview').height();
-	var h2 = $('#order_view .order_header')[0].clientHeight;
-	var h3 = $('#order_view .order_controls')[0].clientHeight;
-	var h4 = $('#order_view .order_positions .order_item_list_header')[0].clientHeight;
-	var h5 = $('#order_view .order_positions .input_row')[0].clientHeight;
-	var h = h1-h2-h3-h4-h5-20;
-	$('#order_view .order_positions .order_item_list_content').slimScroll({height: h, size: '7px', disableFadeOut: false});
-	
-	$('.order_item_list_content tr:first-child td').each(function(i){
-		var contentWidth = $(this).width();
-		var headerWidth = $('.order_item_list_header .col_'+i).width();
-		
-		if (contentWidth >= headerWidth) {
-			$('.order_item_list_header .col_'+i).css('min-width', contentWidth);
-			$('.order_item_input_row .col_'+i).css('min-width', contentWidth);
-		}
-		else {
-			$(this).css('min-width', headerWidth);
-			$('.order_item_input_row .col_'+i).css('min-width', headerWidth);
-		};	
-	});
-	$('.order_item_list_header').css('width', '100%');
-};
-
-function showPosList(obj, contact){
-	console.log(contact);
-	var inp_str = obj.val();
-	it_filter = [];
-	it_filter = [{"mode": "item", "name":"name", "operation":"LIKE", "value": '%'+inp_str+'%'}];
-
-	if(!(contact == undefined)){
-		var arr_fld = ['id', 'article','name','person_price','stock'];
-		//var req_object = {"filter": it_filter, "fields": arr_fld};
-
-		var xhr = new XMLHttpRequest();
-		var body =	'action=catalog_get' +
-					'&contact=' + encodeURIComponent(contact) +
-					'&filters=' + encodeURIComponent(JSON.stringify(it_filter)) +
-					'&fields=' + encodeURIComponent(JSON.stringify(arr_fld)) +
-					'&limit=30' + 
-					'&nom=1';
-
-		xhr.open("POST", '/my/ajax/action.php', true);
-		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-		xhr.onreadystatechange = function() { 
-			if (xhr.readyState != 4) return;
-						
-			if(!(xhr.responseText.indexOf('%err%') == -1)) {
-				showError(xhr.responseText.replace('%err%',''));
-				return;
-			};
-			var html_str = xhr.responseText;
-			if (html_str.length) {	
-				($('.modal_window.item_sel').length) 
-				?
-				$('.modal_window.item_sel .items_short').html(html_str)
-				:
-				obj.closest('.item.input_row').append('<div class="modal_window item_sel" ><div class="items_short">'+html_str+'</div></div>');
-				$('.modal_window.item_sel').slideDown(100);
-				setTimeout(function(){
-					var h = $('.modal_window.item_sel').height();
-					$('.modal_window.item_sel .items_short').slimScroll({height: h, size: '7px', disableFadeOut: false});
-				},150);
-			}
-			else {
-				obj.addClass('not_find');
-			};
-		}		
-		xhr.send(body);
-	};				
-};		
-
 
 function showCntList(obj){
 	var inp_str = encodeString(obj.val().toLowerCase());		
@@ -1051,20 +949,91 @@ function showCntList(obj){
 			$('.modal_window.cnt_sel .contact_short').slimScroll({height: h, size: '7px', disableFadeOut: false});
 		},150);
 	};
-};	
+};
+*/
+
+function setOrderItemListContentHeight(){
+	var h1 = $('#order_view .docview').height();
+	var h2 = $('#order_view .order_header')[0].clientHeight;
+	var h3 = $('#order_view .order_controls')[0].clientHeight;
+	var h4 = $('#order_view .order_positions .order_item_list_head')[0].clientHeight;
+	var h = h1-h2-h3-h4-20;
+	$('#order_view .order_positions .order_item_list_content').slimScroll({height: h, size: '7px', disableFadeOut: false});
+	
+	$('#order_view .order_positions .item_list_header td').each(function(i){
+		var headerWidth = $(this).width() || 0;
+		var contentWidth = $('#order_view .order_item_list_content .col_'+i).width() || 0;
+		var width = Math.max(headerWidth, contentWidth);
+		$(this).css({'min-width':width+21, 'max-width':width+21, 'width':width+21});
+		$('#order_view .order_item_list_content .col_'+i).css({'min-width':width+21, 'max-width':width+21, 'width':width+21});
+	})
+};
+
+function showPosList(obj, contact){
+	if(!(contact == undefined)){
+		var arr_fld = ['*'];
+		it_filter = [{"mode": "item", "name":"name", "operation":"LIKE", "value": '%'+obj.val()+'%'}];
+		var xhr = new XMLHttpRequest();
+		var body =	'action=catalog_get' +
+					'&adds=json' +
+					'&contact=' + encodeURIComponent(contact) +
+					'&filters=' + encodeURIComponent(JSON.stringify(it_filter)) +
+					'&fields=' + encodeURIComponent(JSON.stringify(arr_fld)) +
+					'&limit=30' + 
+					'&nom=1';
+
+		xhr.open("POST", '/my/ajax/action.php', true);
+		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+		xhr.onreadystatechange = function() { 
+			if (xhr.readyState != 4) return;
+						
+			if(!(xhr.responseText.indexOf('%err%') == -1)) {
+				showError(xhr.responseText.replace('%err%',''));
+				return;
+			};
+			var item = JSON.parse(xhr.responseText);	
+			if (item.catalog.length) {	
+				var html_str = '';	
+				$.each(item.catalog, function(key, item){
+					html_str = html_str + '<div id="'+item.id+'" class="item" data-it-id='+item.id+' data-article='+item.article+' data-price='+item.price+' data-stock='+item.stock+'><div class="item_content"><div class="item_line"><div class="col_2">'+item.name+'</div></div></div></div>';
+					
+				});					
+				($('.modal_window.item_sel').length) 
+				?
+				$('.modal_window.item_sel .items_short').html(html_str)
+				:
+				obj.closest('.item.input_row').append('<div class="modal_window item_sel"><div class="items_short">'+html_str+'</div></div>');
+				$('.modal_window.item_sel').slideDown(100);
+				$('.modal_window.item_sel').width($('.input_row .col_1_2').width()).css('left', $('.item.input_row .col_0').width()+30);
+				setTimeout(function(){
+					var item_sel_height = (item.catalog.length*43>300) ? 300 :  item.catalog.length*43;
+					$('.modal_window.item_sel').height(item_sel_height);
+					var h = $('.modal_window.item_sel').height();
+					console.log(h);
+					$('.modal_window.item_sel .items_short').slimScroll({height: h, size: '7px', disableFadeOut: false});				
+				},150);
+			}
+			else {
+				obj.addClass('not_find');
+			};
+		}		
+		xhr.send(body);
+	};				
+};		
 
 function getItemInfo(obj, contact) {
 	var item_id = obj.attr('data-it-id');
 	if(!(contact == undefined)){
-		var arr_filter_elem = {"mode": "item", "compare": "", "name":"id", "type":"=", "value": item_id};
-		var arr_filter = [arr_filter_elem];
-		var req_object = {"filter": arr_filter};
+		var arr_fld = ['*'];
+		var arr_props = ['*'];
+		var arr_filter = [{"mode": "item", "name":"id", "operation":"=", "value": item_id}];
 		var xhr = new XMLHttpRequest();
 		var body =	'action=catalog_getItem' +
-					'&rtype=json' +
-					'&listType=block' +
-					'&contact=' + contact +
-					'&requestXML=' + encodeURIComponent(JSON.stringify(req_object)) +
+					'&list_type=block' +
+					'&contact=' + encodeURIComponent(contact) +
+					'&fields=' + encodeURIComponent(JSON.stringify(arr_fld)) +
+					'&properties=' + encodeURIComponent(JSON.stringify(arr_props)) +
+					'&filters=' + encodeURIComponent(JSON.stringify(arr_filter)) +
 					'&limit=1' + 
 					'&nom=1';
 		xhr.open("POST", '/my/ajax/action.php', true);
@@ -1085,14 +1054,26 @@ function getItemInfo(obj, contact) {
 
 };
 
+
 function showSidebarMsg(contact){	
-	console.log(contact);
 	$('#order_view #show_addinfo').removeClass('active');
 	$('#order_view #show_msg').addClass('active');	
 	$('#order_view .pan_bar').removeClass('opened').siblings().hide(0).parent('.sidebar').removeClass('opened');
 
 	$('#order_view .sidebar-header').html('Сообщения');
-	$('#order_view .sidebar-content').html('');
+	$('#order_view .sidebar-content').html('<div id="msg_li"></div>');
+
+	var delete_svg = '<svg fill="#BBB" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">'+
+					 '<path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>'+
+					 '<path d="M0 0h24v24H0z" fill="none"/></svg>';
+					 
+	var file_html = '<div class="msg_file uploadifive-queue-item"><div class="upfile" id="msg_fn"><div class="file_icon"></div>'+
+					'<div class="file_block"><p class="filename"></p>'+
+					'<p class="file_info"></p></div>'+
+					'<a class="del_file close"><div class="cloud">'+delete_svg+'</div></a>'+
+					'<div class="fileinfo">Готов к отправке</div>'+
+					'<div class="progress"><div class="progress-bar"></div></div>'+
+					'</div>';
 
 	var html_str = 
 	'<div id="mess_send" class="mess_send" style="display: block;">' +
@@ -1109,7 +1090,6 @@ function showSidebarMsg(contact){
 											'<path d="M0 0h24v24H0z" fill="none"></path>' +
 										'</svg>' +
 									'</div>' +
-									'<input type="file" name="file_upload" id="file_upload">' +
 								'</div>' +
 							'</td>' +
 							'<td>' +
@@ -1130,26 +1110,31 @@ function showSidebarMsg(contact){
 					'</tbody>' +
 				'</table>' +
 			'</div>' +
-			'<div id="usr-filename"></div>' +
+			'<div id="msgBoxdiv" class="message_box" style="width: 935px;"><pre><pre></pre></pre></div>' +
+			'<input type="file" name="file_upload" id="file_upload" value="" style="display: none;">' +
+			'<input type="hidden" name="action" value="send_msg">' +
+			'<input type="hidden" name="message_type" value="text">' +
+			'<div id="usr-filename"></div>' +			
 		'</form>' +	
 	'</div>';
 	
 	$('#order_view .sidebar-content').append(html_str);
-
+	$('#order_view .sidebar-content').prepend('<div class="loading" style="width: 100%; height: 100%; text-align: center; margin-top: 100%;"><img src="/include/wait.gif"/></div>');
 	var start_date = new Date();
 	var formated_date = getStringFromDate(start_date);
 	var xhr = new XMLHttpRequest();
 	var body =	'action=msg_get' +
-				'&rtype=json' +
+				'&adds=json' +
+				'&mode=begin' +
 				'&receiver=' + encodeURIComponent(contact) +
 				'&type=all' +
 				'&start_date=' + formated_date +
-				'&limit=30';
+				'&limit=100';			
 	xhr.open("POST", '/my/ajax/action.php', true);
 	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 	xhr.onreadystatechange = function()	{ 
 		if (xhr.readyState != 4) return;
-
+		$('#order_view .sidebar-content .loading').remove();
 		if(!(xhr.responseText.indexOf('%err%') == -1)) {
 			showError(xhr.responseText.replace('%err%',''));
 			return;
@@ -1158,29 +1143,20 @@ function showSidebarMsg(contact){
 			var arResult = jQuery.parseJSON(xhr.responseText);
 		}
 		catch (e) {
-			$('#order_view .sidebar-content').html('<div style="text-align: center;">Ошибка соединения c сервером...</div>');
+			showTelebotInfo('Ошибка соединения c сервером...','amaze',0);
+			$('#mess_list #msg_li').attr('data-cnt-id','');
 			return;
 		}
-		showMessages(contact, arResult.result.reverse(), 'begin');
-		calcMsgBoxHeight();
+		if(arResult.length) {
+			addMessageToList(arResult.reverse(), 'begin');
+			calcMsgBoxHeight();
+		}		
 	}		
 	xhr.send(body);	
 
-	
-	var delete_svg = '<svg fill="#BBB" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">'+
-	'<path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>'+
-	'<path d="M0 0h24v24H0z" fill="none"/></svg>';
-	
-	var file_html = '<div class="msg_file uploadifive-queue-item"><div class="upfile" ><div class="file_icon"></div>'+
-	'<div class="file_block"><p class="filename"></p>'+
-	'<p class="file_info"></p></div>'+
-	'<a class="del_file close"><div class="cloud">'+delete_svg+'</div></a>'+
-	'<div class="fileinfo">Готов к отправке</div>'+
-	'<div class="progress"><div class="progress-bar"></div></div>'+
-	'</div>';
-	
 	$(function() {	
 		$("#order_view #file_upload").uploadifive({
+			'multi' : false,
 			'auto' : false,
 			'uploadScript' : '/my/ajax/action.php',
 			'buttonText' : '',
@@ -1189,7 +1165,7 @@ function showSidebarMsg(contact){
 			'queueID' : 'usr-filename',
 			'fileSizeLimit' : '20MB',
 			'uploadLimit' : 0,
-			'queueSizeLimit' : 10,
+			'queueSizeLimit' : 1,
 			'simUploadLimit' : 0,
 			'itemTemplate' : file_html,
 			'formData': {'action': 'send_msg'},
@@ -1213,49 +1189,53 @@ function showSidebarMsg(contact){
 				$('#send_msg').show(200);
 			},
 			'onUploadComplete' : function(file, data) {
-				arFiles = jQuery.parseJSON(data);
-				msg_arResult[0].files.push(arFiles);
+				if(!(data.indexOf('%err%') == -1)) {
+					showError(data.replace('%err%',''));
+					msg_init();
+					return;
+				}
+				try {
+					msg_arResult = $.parseJSON(data);
+				}	
+				catch (err)	{
+					showError('Не удалось отправить сообщение. <br>Сбой операции <br> Повторите попытку позже');
+					console.log(err);
+					console.log(data);
+					msg_init();
+					return;
+				}
+				msg_reset(msg_arResult);
 			},
 			'onQueueComplete' : function() {
 				msg_reset();
 			},
 			'onClearQueue' : function() {
-				setTimeout(function(){calcMsgBoxHeight()},500);
+				setTimeout(function(){calcMsgBoxHeight()},200);
 			},
 			'onCancel'     : function() {
-				setTimeout(function(){calcMsgBoxHeight()},500);
+				setTimeout(function(){calcMsgBoxHeight()},400);
 			},
 			'onSelect'     : function() {
-				setTimeout(function(){calcMsgBoxHeight();},500);
+				setTimeout(function(){calcMsgBoxHeight();},200);
 			}	
 		});
 	});	
 };	
-
 
 function calcMsgBoxHeight() {
 	var h1 = $('#order_view .sidebar').height();
 	var h2 = $('#order_view .sidebar .sidebar-header')[0].clientHeight;
 	var h3 = $('#order_view .sidebar .mess_send')[0].clientHeight;
 	var h = h1 - h2 - h3;
-	$('#order_view .sidebar-msg-content').height(h);
-	$('#order_view .sidebar-msg-content').slimScroll({height: h, size: '7px', disableFadeOut: false});
+	$('#order_view #msg_li').height(h);
+	$('#order_view #msg_li').slimScroll({height: h, size: '7px', disableFadeOut: false, start: 'bottom'});
 };
-
-function showMessages(contact, arMsg, mode){
-	if(arMsg.length == 0) {
-		return;
-	}	
-	addMessageToList(arMsg, mode);
-	if(mode == 'begin') {
-		$('#msg_li').attr('data-start_date', arMsg[0].dt);
-	};
-}	
 
 function addMessageToList(arResult, mode) {
 		if(arResult.length == 0) {
 			return;
 		}	
+		var rcv_from_obj = getContactInfo((arResult[0].from == smuser.name)?arResult[0].to:arResult[0].from);
 
 		var arStatus = {'new': 'Новый',
 			'sent': 'Отправлено',
@@ -1263,8 +1243,9 @@ function addMessageToList(arResult, mode) {
 			'processed': 'Обработано',
 			'confirmed': 'Подтверждено',
 			'viewed': 'Просмотрено'};
-
+		var repMessages = 0;
 		var nowDate = new Date();
+		
 		var yesterdayDate = new Date();
 		yesterdayDate.setDate(yesterdayDate.getDate() - 1); 
 		
@@ -1284,8 +1265,6 @@ function addMessageToList(arResult, mode) {
 			var myAvatar = '<div class="cnt_image cnt_avatar" style="background-image: '+myAvatarURL+'"></div>';
 		}
 		var myheader = (smuser.fullname == smuser.name)?smuser.fullname:smuser.fullname +"  '" + smuser.name + "'";
-		
-		var rcv_from_obj = getContactInfo((arResult[0].from == smuser.name)?arResult[0].to:arResult[0].from);
 		var rcvAvatarURL = $('#cnt_'+ rcv_from_obj.id).find('.cnt_avatar').css('background-image') || $('#login_image').find('.cnt_avatar').css('background-image') || 'url(/include/no_avatar.svg)';
 		rcvAvatarURL = rcvAvatarURL.replace(new RegExp('"','g'),"");
 		if(rcvAvatarURL == 'none') {
@@ -1294,7 +1273,7 @@ function addMessageToList(arResult, mode) {
 			var rcvAvatar = '<div class="cnt_image cnt_avatar" style="background-image: '+rcvAvatarURL+'"></div>';
 		}
 		var rcvheader = (rcv_from_obj.fullname == rcv_from_obj.name)?rcv_from_obj.fullname:rcv_from_obj.fullname +"  '" + rcv_from_obj.name + "'";
-		$('#msg_li').attr('data-cnt-id',rcv_from_obj.id);
+		$('#msg_li').attr('data-cnt-id',rcv_from_obj.name);
 		
 		var last_msg = $('#msg_li .message_line').last();
 		var last_msg_cnt = last_msg.attr('data-ms-inf');
@@ -1313,6 +1292,11 @@ function addMessageToList(arResult, mode) {
 			var status_text = '';
 			var resend_text = '';
 			var txtNode = msg_object.msg_text;
+			var str_temp = '';
+			
+			if(!(msg_object.tmp_msg == undefined) || msg_object.tmp_msg == 'true' || msg_object.tmp_msg) {
+				str_temp = ' message_tmpline';
+			}
 
 			//date_inf
 			var msg_date = getDateFromString(msg_object.dt);
@@ -1327,19 +1311,18 @@ function addMessageToList(arResult, mode) {
 			var msg_header = (msg_object.from == smuser.name)?myheader:rcvheader;
 			var msg_avatar = (msg_object.from == smuser.name)?myAvatar:rcvAvatar;
 			
-			html_cnt = 
-				'<div id="msg_inf" style="margin-top: -10px;">' + msg_avatar +
+			html_cnt = '<div id="msg_inf" style="margin-top: -10px;">' + msg_avatar +
 					'<div class="message_header"><a>'+msg_header+'</a></div>' + 
 					'<div class="message_date">'+getTimeStringFromDate(msg_date)+'</div>'+
 				'</div>';
 
 			//files
 			$(msg_object.files).each(function() {
-				
-				files_html = files_html + addFileToList($(this), false);
+				if(!($(this).attr('ID') == undefined))
+					files_html = files_html + addFileToList($(this), false);
 			});
 			if(!files_html=='') {
-				files_html = '<div class="att_text">Вложенный(е) файлы:</div><div class="msg_file">' + files_html + '</div>';
+				files_html = '<div class="att_text">Вложенный файл:</div><div class="msg_file">' + files_html + '</div>';
 			}
 			
 			//message
@@ -1347,7 +1330,7 @@ function addMessageToList(arResult, mode) {
 				status_text = '<div class="msg_status" title="Статус сообщения">'+ arStatus[msg_object.status] +'</div>';
 			}
 			
-			var msg_ubody = '<div class="message_text">' +
+			var msg_ubody = '<div class="message_text'+str_temp+'">' +
 							'<div class="msg_time">'+getTimeStringFromDate(msg_date)+'</div><pre>'+txtNode+'</pre>' + files_html +
 							'<div class="msg_addblock">' + status_text + '</div>' +
 						'</div>'+
@@ -1362,18 +1345,26 @@ function addMessageToList(arResult, mode) {
 			var msg_html = "";
 			if ($("div").is('#' + 'msg_'+ msg_object.ID)) {
 				msg_html = '<div id="msg_'+ msg_object.ID+ '" class="message_line" data-ms-inf="'+msg_object.from+'">' + html_cnt + msg_ubody;
-				if($('#' + 'msg_'+ msg_object.ID).find('#msg_inf').length != 0) {
-					$('#' + 'msg_'+ msg_object.ID).replaceWith(msg_html);
+
+				var addInfo = (($('#' + 'msg_'+ msg_object.ID).find('#msg_inf').length != 0) || (!files_html==''));
+				$('#' + 'msg_'+ msg_object.ID).replaceWith(msg_html);
+				if (!addInfo) {
+					$('#' + 'msg_'+ msg_object.ID).find('#msg_inf').remove();
 				}
-				else {
-					$('#' + 'msg_'+ msg_object.ID).replaceWith(msg_html);
+			}
+			else if ((!msg_object.tmpGUID == '') && $("div").is('#' + 'msg_'+ msg_object.tmpGUID)) {
+				msg_html = '<div id="msg_'+ msg_object.ID+ '" class="message_line" data-ms-inf="'+msg_object.from+'">' + html_cnt + msg_ubody;
+
+				var addInfo = (($('#' + 'msg_'+ msg_object.tmpGUID).find('#msg_inf').length != 0) || (!files_html==''));
+				$('#' + 'msg_'+ msg_object.tmpGUID).replaceWith(msg_html);
+				if (!addInfo) {
 					$('#' + 'msg_'+ msg_object.ID).find('#msg_inf').remove();
 				}
 			}
 			else {
 				msg_html = '<div id="msg_'+ msg_object.ID+ '" class="message_line" data-ms-inf="'+msg_object.from+'">';
 				if((prev_cnt == '' && prev_date == '') || (prev_date != html_date)) {
-					if (mode == 'end' && first_cnt == '' && last_msg_cnt == msg_object.from) {
+					if (mode == 'end' && first_cnt == '' && last_msg_cnt == msg_object.from && files_html=='') {
 						msg_html = html_date + msg_html;
 					} 
 					else {
@@ -1384,7 +1375,7 @@ function addMessageToList(arResult, mode) {
 					first_cnt = (first_cnt == "")?msg_object.from:first_cnt;
 					last_date = str_msgdate;
 				}
-				else if(prev_cnt != msg_header) {
+				else if((prev_cnt != msg_header) || (!files_html=='')) {
 					msg_html = msg_html + html_cnt;
 				}
 				msg_html = msg_html + msg_ubody;
@@ -1398,30 +1389,35 @@ function addMessageToList(arResult, mode) {
 		if(html_block != ""){
 			if(mode == 'begin') {
 				$('[data-msg-date='+last_date+']').remove();
-				$("#order_view .sidebar-content").prepend('<div class="sidebar-msg-content">'+html_block+'</div>');
+				$("#msg_li").prepend('<div class="mess-list">' + html_block + '</div>');
 			}
 			else if(mode == 'end') {
-				$("#order_view .sidebar-content").append('<div class="sidebar-msg-content">'+html_block+'</div>');
+				$("#msg_li .mess-list").append(html_block);
 				if ($('[data-msg-date='+first_date+']').length != 0) {
 					var obj = $('[data-msg-date='+first_date+']')[$('[data-msg-date='+first_date+']').length-1];
 					$(obj).remove();
 				}
 			}
-		}	
-};
+		}		
+}
 
 function addFileToList(obj, hide_image) {
 	var cloud_svg = '<svg fill="#CCCCCC" height="36" viewBox="0 0 24 24" width="36" xmlns="http://www.w3.org/2000/svg">'+
-			'<path d="M0 0h24v24H0z" fill="none"/>'+
-			'<path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/>'+
-			'</svg>	';
-			
+					'<path d="M0 0h24v24H0z" fill="none"/>'+
+					'<path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/>'+
+					'</svg>	';
+					
 	var file_size = Math.round(obj.attr('fsize')/1024);
 	var file_idat = getFileType(obj.attr('fext'));
 	var file_type = file_idat.type;
 	var att_svg = file_idat.svg;
-	var file_url = '/my/ajax/fld.php?a=dload&i='+obj.attr('ID');//$(this).attr('furl');
-	var pvfile_url = '/my/ajax/fld.php?a=prv&i='+obj.attr('ID');//$(this).attr('furl');
+	var file_url = '/my/ajax/files.php?a=detail&i='+obj.attr('ID');
+	if(obj.attr('prev').toLowerCase() == 'true') {
+		var pvfile_url = '/my/ajax/files.php?a=prev&i='+obj.attr('ID');
+	}
+	else {
+		var pvfile_url = '/my/ajax/files.php?a=detail&i='+obj.attr('ID');
+	}
 	var file_met = "KB";
 	if(file_size > 1024) { 
 		file_size = Math.round(file_size/1024);
@@ -1446,15 +1442,7 @@ function addFileToList(obj, hide_image) {
 					'</div>';
 
 	return str_html;
-};
-
-function msg_reset() {
-	//addMessageToList(msg_arResult, 'end');
-	$('#msgBox').val('');
-	$('#send_msg').hide();
-	msg_init();
-	msg_arResult = [];
-};
+}
 
 function msg_init() {
 	hideModalWindow($('.msgInfo_box'));
@@ -1462,9 +1450,22 @@ function msg_init() {
 	$('#process_msg').css('display','none');
 	$('#file_upload').uploadifive('clearQueue');
 	$('#content #mess_block').remove();
-};
+}
 
-			
+function msg_reset(msg_arResult) {
+	addSentMessages(msg_arResult);
+	$('#msgBox').val('');
+	$('#send_msg').hide();
+	msg_init();
+}
+
+function addSentMessages(msg_arResult) {
+	if(!(msg_arResult == undefined)) {
+		addMessageToList(msg_arResult, 'end')
+	};	
+	console.log($('.mess-list').height());
+	$('#msg_li').scrollTop($('.mess-list').height());
+}
 
 			
 			
