@@ -1,0 +1,75 @@
+#carousel-window {
+	background-color: #3E4757;
+	border: 20px solid #3E4757;
+	height: 30%;
+	left: 50%;
+	overflow: hidden;
+	position: absolute;
+	top: 10;
+	transform: translate(-50%);
+	max-width: 600px;
+	z-index: 1010;
+}
+
+#fullsize-window {
+	background-color: #3E4757;
+	border: 10px solid #3E4757;
+	left: 50%;
+	position: absolute;
+	top: 10;
+	transform: translate(-50%);
+	z-index: 1020;
+}
+
+.thumbnail-fullsize {
+	height: 300px;
+	width: 300px;
+}
+
+.carousel-wrapper {
+	height: calc(100% - 92px);
+	position: relative;
+	width: 10000px;
+}
+
+.thumbnail {
+	border: 2px solid #CCCCCC; 
+	cursor: pointer;
+	float: left;
+	height: 100%;
+	margin-right: 40px;
+	padding: -5px;
+	width: 150px;
+	moz-background-size: 100%; 
+  -webkit-background-size: 100%;
+  -o-background-size: 100%; 
+  background-size: cover;
+}
+
+.thumbnail:hover {
+	box-shadow: 2px 2px 4px #777777;
+}
+
+#thumbnail-0 {
+	background-image: url(/include/butterfly_0.jpg);
+}
+
+#thumbnail-1 {
+	background-image: url(/include/butterfly_1.jpg);
+}
+
+#thumbnail-2 {
+	background-image: url(/include/butterfly_2.jpg);
+}
+
+#thumbnail-3 {
+	background-image: url(/include/butterfly_3.jpg);
+}
+
+.carousel-nav {
+	bottom: 0%;
+	left: 0;
+	position: absolute;
+	width: 100%;
+	z-index: 1000;
+}

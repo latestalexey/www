@@ -47,7 +47,7 @@ function  getPageSize(){
 
 function getStringFromDate(objDate) {
 
-	var formated_date = objDate.getFullYear() + '-' + ('0' + (objDate.getMonth() + 1)).slice(-2) + '-' + ('0' + objDate.getDate()).slice(-2) + "T" + ('0' + objDate.getHours()).slice(-2) + ':' + ('0' + objDate.getMinutes()).slice(-2) + ':' + ('0' + objDate.getSeconds()).slice(-2) + '.' + objDate.getMilliseconds();// + '+03:00';
+	var formated_date = objDate.getFullYear() + '-' + ('0' + (objDate.getMonth() + 1)).slice(-2) + '-' + ('0' + objDate.getDate()).slice(-2) + "T" + ('0' + objDate.getHours()).slice(-2) + ':' + ('0' + objDate.getMinutes()).slice(-2) + ':' + ('0' + objDate.getSeconds()).slice(-2);// + '+03:00';
 	return formated_date;
 }
 function getUserStringFromDate(objDate) {
@@ -125,12 +125,6 @@ function showModalWindow(obj) {
 		}	
 		$(this).parent().parent().hide(100);
 		$(this).parent().parent().remove();
-		//RB
-		hideCtxChannelMenu($('#ctx-channel-menu'));
-		hideSelectedList();
-		hideContactMoveList();
-		//RB
-		
 	});
 }
 function hideModalWindow(obj) {
@@ -216,10 +210,6 @@ function htmlspecialchars(text) {
       .replace(/'/g, "&#039;");
 }
 function encodeString(str) {
-	if(str == undefined) {
-		return "";
-	}	
-	
 	var fname = str.replace(new RegExp("@",'g'),'\\@');
 	fname = fname.replace(new RegExp("\\.",'g'),'\\.');
 	fname = fname.replace(new RegExp(" ",'g'),'\\ ');
@@ -409,6 +399,7 @@ function sendCntRequest(name, msg_text, obj) {
 		}
 	xhr.send(body);
 }
+
 function ContactInfoView(name) {
 		var xhr = new XMLHttpRequest();
 		var body =	'action=getPersonInfo' +
@@ -435,6 +426,39 @@ function ContactInfoView(name) {
 			$('#cnt_view').append(str_html);
 			showModalWindow($('#cnt_view'));
 			
+			$('#cnt_view #cnt_logo').on('click',function(e){																			//	добавлен обработчик для выбора логотипа организации
+				if($(e.target).parents().is('#add_photo')) {
+					e.stopPropagation();
+					var fform = document.forms['fs_logo'];
+					fform['filename'].click();
+
+					if($('#cnt_view #cnt_info_save').css('display') == 'none') {
+						$('#cnt_view #cnt_info_save').css('display','block');
+					}
+				}
+				else if($(e.target).parents().is('#clear_photo')) {
+					e.stopPropagation();
+					$('#cnt_logo img').attr('src', '/include/no_avatar.svg');
+					$('#cnt_logo img').attr('data-change', "2");
+					$('#cnt_logo img').attr('data-width', 0);
+					$('#cnt_logo img').attr('data-height', 0);
+					
+					if($('#cnt_view #cnt_info_save').css('display') == 'none') {
+						$('#cnt_view #cnt_info_save').css('display','block');
+					}
+				}
+				else {
+					var strPhoto = '<div class="modal_back back_curt"></div><div id="detail_photo" class="modal_window">' +
+						'<div class="close_line"><div class="clw"><img style="height: 18px;" src="/include/close_window.svg"/></div></div>'+
+						'<img src="'+$(this).find('img').attr('src')+'" style="max-height: 600px;"/>'+
+						'</div>';
+					$('#main_content').append(strPhoto);
+					$('#detail_photo img').css('max-height', $('#content').height() - 80);
+					$('#detail_photo').css('left', ($('#content').width() - $('#detail_photo').width())/2);
+					showModalWindow($('#detail_photo'));
+				}
+			});
+
 			$('#cnt_view #cnt_photo').on('click',function(e){
 				if($(e.target).parents().is('#add_photo')) {
 					e.stopPropagation();
@@ -474,59 +498,28 @@ function ContactInfoView(name) {
 				}
 			});
 
-			$('#cnt_view #cnt_logo').on('click',function(e){																			
-				if($(e.target).parents().is('#add_photo')) {
-					e.stopPropagation();
-					var fform = document.forms['fs_logo'];
-					fform['filename'].click();
-					
-					if($('#cnt_view #cnt_info_save').css('display') == 'none') {
-						$('#cnt_view #cnt_info_save').css('display','block');
-					}
-				}
-				else if($(e.target).parents().is('#clear_photo')) {
-					e.stopPropagation();
-					$('#cnt_logo img').attr('src', '/include/no_logo.png');
-					$('#cnt_logo img').attr('data-change', "2");
-					$('#cnt_logo img').attr('data-width', 0);
-					$('#cnt_logo img').attr('data-height', 0);
-					
-					if($('#cnt_view #cnt_info_save').css('display') == 'none') {
-						$('#cnt_view #cnt_info_save').css('display','block');
-					}
-				}
-				else {
-					var strPhoto = '<div class="modal_back back_curt"></div><div id="detail_photo" class="modal_window">' +
-						'<div class="close_line"><div class="clw"><img src="/include/close_window.svg"/></div></div>'+
-						'<img src="'+$(this).find('img').attr('src')+'" style="max-height: 600px;"/>'+
-						'</div>';
-					$('#main_content').append(strPhoto);
-					$('#detail_photo img').css('max-height', $('#content').height() - 80);
-					$('#detail_photo').css('left', ($('#content').width() - $('#detail_photo').width())/2);
-					showModalWindow($('#detail_photo'));
-				}
-			});
-
 			$('#cnt_view #cnt_company_info').on('click',function(e){
 				e.stopPropagation();
 				$('#cnt_view #buttons').hide(0);
 				$('#cnt_view #cnt_info_body').hide(0);
 				$('#cnt_view #cnt_company_card').show(0);
-				$('#cnt_view #cnt_photo').hide(0, function(){
-						$('#cnt_view #cnt_logo').show(300);
-					});
+
+				$('#cnt_view #cnt_photo').hide(0, function(){												// переключиться
+					$('#cnt_view #cnt_logo').show(300);																// с photo
+				});																																	// на logo
 			});
+
 			$('#cnt_view #back_main').on('click',function(e){
 				e.stopPropagation();
 				$('#cnt_view #cnt_company_card').hide(0);
 				$('#cnt_view #cnt_settings').hide(0);
 				$('#cnt_view #cnt_addings').hide(0);
-				$('#cnt_view #cnt_filelist').hide(0);
 				$('#cnt_view #cnt_info_body').show(0);
 				$('#cnt_view #buttons').show(0);
-				$('#cnt_view #cnt_logo').hide(0, function(){
-					$('#cnt_view #cnt_photo').show(300);
-				});
+
+				$('#cnt_view #cnt_logo').hide(0, function(){													// переключиться 
+					$('#cnt_view #cnt_photo').show(300);																// с logo 
+				});																																		// на photo
 			});
 
 			$('#cnt_view #nav-back').on('click',function(e){
@@ -537,7 +530,8 @@ function ContactInfoView(name) {
 				$('#cnt_view #cnt_gallery').hide(0);																	// Прячем галерею
 				$('#cnt_view #cnt_info_body').show(0);
 				$('#cnt_view #buttons').show(0);
-			});			
+			});
+
 			$('#cnt_view .checkbox').click(function(e) {
 				if($(this).hasClass('checkbox_disabled')) {
 					return;
@@ -555,10 +549,79 @@ function ContactInfoView(name) {
 			});
 			$('#cnt_view #cnt_info_add').click(function(e) {
 				e.stopPropagation();
+
 				$('#cnt_view #buttons').hide(0);
 				$('#cnt_view #cnt_info_body').hide(0);
 				$('#cnt_view #cnt_addings').show(0);
 			});
+
+			$('#cnt_view #cnt_info_gallery').click(function(e) {
+				function resetCarouselEventListener(){
+					$('.thumbnail').off();
+					$('.thumbnail').on('click', function(e){
+						var bgi = $(this).css('background-image');
+						bgi = bgi.replace('url("','').replace('")','');
+						obj = $('\
+							<div class="modal_back back_curt" style="z-index: 10500;"></div>\
+							<div class="modal_window" id="fullsize-window">\
+								<div class="thumbnail-fullsize" style="background-image: url(' + encodeURI(bgi) + '); background-size: cover;"></div>\
+							</div>');
+
+						$('#cnt_view').append(obj);
+
+						showModalWindow($('#fullsize-window'));
+					});
+				}
+
+				e.stopPropagation();
+
+				$('#cnt_view #buttons').hide(0);
+				$('#cnt_info_body').hide(0);
+				$('#cnt_company_card').hide(0);
+				$('#cnt_gallery').show('fast');
+
+				resetCarouselEventListener();
+
+				$('.nav-left').on('click', function(e){
+					$(".thumbnail").eq(-1).clone().prependTo($(".carousel-wrapper")).on('click', function(e){
+						var bgi = $(this).css('background-image');
+						bgi = bgi.replace('url("','').replace('")','');
+						obj = $('\
+							<div class="modal_back back_curt" style="z-index: 10500;"></div>\
+							<div class="modal_window" id="fullsize-window">\
+								<div class="thumbnail-fullsize" style="background-image: url(' + encodeURI(bgi) + '); background-size: cover;"></div>\
+							</div>');
+
+						$('#cnt_view').append(obj);
+
+						showModalWindow($('#fullsize-window'));
+					}); 
+					$(".carousel-wrapper").css({ left: "-150px" });
+					$(".thumbnail").eq(-1).remove();
+					$(".carousel-wrapper").animate({ left: "0px"}, 200, "linear");
+				});
+
+				$('.nav-right').on('click', function(e){
+					  $(".carousel-wrapper").animate({left: "-150px"}, 200, function(){
+						$(".thumbnail").eq(0).clone().appendTo($(".carousel-wrapper")).on('click', function(e){
+							var bgi = $(this).css('background-image');
+							bgi = bgi.replace('url("','').replace('")','');
+							obj = $('\
+								<div class="modal_back back_curt" style="z-index: 10500;"></div>\
+								<div class="modal_window" id="fullsize-window">\
+									<div class="thumbnail-fullsize" style="background-image: url(' + encodeURI(bgi) + '); background-size: cover;"></div>\
+								</div>');
+
+							$('#cnt_view').append(obj);
+
+							showModalWindow($('#fullsize-window'));
+						}); 
+				    $(".thumbnail").eq(0).remove(); 
+				    $(".carousel-wrapper").css({ left: "0px"}); 
+				 	});	
+				});
+			});
+
 			$('#cnt_view .svd').keyup(function() {
 				if($('#cnt_view #cnt_info_save').css('display') == 'none') {
 					$('#cnt_view #cnt_info_save').css('display','block');
@@ -593,18 +656,23 @@ function ContactInfoView(name) {
 					}
 					body =	body + '&'+this_id+'='+ encodeURIComponent(inf_value);
 				});
+				
 				if($('#cnt_view #cnt_photo img').attr('data-change') == '1') {
 					body =	body + '&photo='+ encodeURIComponent($('#cnt_view #cnt_photo img').attr('src'));
 				}	
 				else if($('#cnt_view #cnt_photo img').attr('data-change') == '2') {
 					body =	body + '&photo=';
 				}
+
 				if($('#cnt_view #cnt_logo img').attr('data-change') == '1') {
 					body =	body + '&company_logo='+ encodeURIComponent($('#cnt_view #cnt_logo img').attr('src'));
 				}	
 				else if($('#cnt_view #cnt_logo img').attr('data-change') == '2') {
 					body =	body + '&company_logo=';
 				}
+
+				alert(body);
+				
 				xhr.open("POST", '/my/ajax/action.php', true);
 				xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 				xhr.onreadystatechange = function()	{ 
@@ -629,6 +697,7 @@ function ContactInfoView(name) {
 				}
 				xhr.send(body);
 			});	
+			
 			$('#cnt_view #cnt_adress_map, #cnt_view #cnt_adress_map_edit').on('click',function(e){
 				e.stopPropagation();
 				$('#main_content #map_view').remove();
@@ -665,8 +734,34 @@ function ContactInfoView(name) {
 				
 			});	
 
+			$('#cnt_view').on('click', '#cnt_company_dld', function(e){
+				var $fields = ['name', 'INN', 'KPP', 'OGRN', 'account', 'bank', 'BIK', 'coraccount', 'address', 'phone', 'chief', 'buh'];
+				var $url = '/my/ajax/generate-xls.php?';
+				var $obj;
+
+				for (var i = 0; i < $fields.length; i++) {
+					if($fields[i] == 'name')
+						$obj = $('#cnt_company_card').find('#inf_company');
+					else
+						$obj = $('#cnt_company_card').find('#inf_company' + '_' + $fields[i]);
+					
+					if($obj.length){
+						$url += ('&' + $fields[i] + '=' + encodeURIComponent($obj.val()));
+					}
+				}
+				
+				location.href = $url;																										
+			});
+
 			$('#cnt_view').on('click', '#cnt_info_docs' ,function() {
-				SearchCntFiles();
+				if ($('#cnt_filelist').length) {
+					$('#cnt_filelist').remove();
+				}
+				else {
+					$('#cnt_view').append('<div id="cnt_filelist" style="max-height:350px; margin-top: 20px; display:none;"><div id="cnt_filelist_header"></div><div id="cnt_filelist_content"></div></div>');
+					$('#telebot_info').remove();
+					SearchCntFiles()
+				};
 			});
 			$('#cnt_view').on('click', '#add_cntfile' ,function() {
 				$(this).siblings('#uploadifive-cntfile_upl').children().last().click();
@@ -683,10 +778,12 @@ function ContactInfoView(name) {
 function SearchCntFiles() {
 	var contact = $('#main_content #cnt_view #cnt_info_main').attr('data-usr-name');
 	var xhr = new XMLHttpRequest();
-	var body =	'action=filesList' +
+	var body =	'action=files_getList' +
 				'&adds=json' +
 				'&contact=' + encodeURIComponent(contact) +
-				'&Category=userFiles';					
+				'&status=*' +
+				'&limit=100' +
+				'&nom=1';					
 	xhr.open("POST", '/my/ajax/action.php', true);
 	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 	xhr.onreadystatechange = function() 
@@ -699,7 +796,7 @@ function SearchCntFiles() {
 		}
 		try {
 			var arResult = jQuery.parseJSON(xhr.responseText);
-			requestCntFileBrowser(arResult);
+			requestCntFileBrowser(arResult.result.reverse());
 		}	
 		catch (err)	{
 			showError('Не удалось получить список файлов. <br>Сбой операции <br> Повторите попытку позже');
@@ -711,27 +808,20 @@ function SearchCntFiles() {
 function requestCntFileBrowser(arResult) {	
 	var contact = $('#main_content #cnt_view #cnt_info_main').attr('data-usr-name');
 	var contactfn = $('#main_content #cnt_view #cnt_info_main').attr('data-usr-flname');
-	
-	$('#cnt_filelist_content').removeClass('border_block');
-	$('#cnt_view #cnt_filelist_content').html('');
-	$('#cnt_view #cnt_filelist_content').off();
-	
+	$('#cnt_filelist_header').append('<div style="text-align: center; padding: 13px 10px; color: #777; font-weight: 800; border-bottom: 1px solid #CCC;">Файлы контакта '+contactfn+'</div>');
 	var files_html = '';
-	
 	var delete_svg = '<svg fill="#BBB" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">'+
-		'<path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>'+
-		'<path d="M0 0h24v24H0z" fill="none"/></svg>';
-
+	'<path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>'+
+	'<path d="M0 0h24v24H0z" fill="none"/></svg>';
 	var file_html = '<div class="msg_file uploadifive-queue-item"><div class="upfile" ><div class="file_icon"></div>'+
-		'<div class="file_block"><p class="filename"></p>'+
-		'<p class="file_info"></p></div>'+
-		'<a class="del_file close"><div class="cloud">'+delete_svg+'</div></a>'+
-		'<div class="fileinfo">Готов к отправке</div>'+
-		'<div class="progress"><div class="progress-bar"></div></div>'+
-		'</div>';
-		
+	'<div class="file_block"><p class="filename"></p>'+
+	'<p class="file_info"></p></div>'+
+	'<a class="del_file close"><div class="cloud">'+delete_svg+'</div></a>'+
+	'<div class="fileinfo">Готов к отправке</div>'+
+	'<div class="progress"><div class="progress-bar"></div></div>'+
+	'</div>';
 	$(arResult).each(function(){
-		files_html = files_html + '<div class="msg_file">' + addCntFileToList($(this), true) + '</div>';
+		files_html = files_html + '<div class="msg_file" style="padding: 0px 0 10px 0; width:99%; max-width:99%">' + addCntFileToList($(this), true) + '</div>';
 	});	
 	
 	if (contact == smuser.name) {
@@ -742,10 +832,7 @@ function requestCntFileBrowser(arResult) {
 							'<path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path>' +
 							'<path d="M0 0h24v24H0z" fill="none"></path>' +
 						'</svg>' +
-						'<p>Добавить файл в профиль контакта</p>' +
-						'<p style="font-size: 12px; font-weight: 400; font-style: italic;">\
-							Ваши бланки договоров, сертификаты, пресс-релизы и прайс-листы все ваши контакты смогут свободно скачивать здесь и не отвлекать вас. (Макс. 60Мб каждый файл)\
-						</p>'+
+						'<p>Добавить файл</p>' +
 					'</div>' +
 					'<div id="send_cntfile" style="display:none;">' +
 						'<svg fill="#777" height="36" viewBox="0 0 24 24" width="36" xmlns="http://www.w3.org/2000/svg">' +
@@ -764,26 +851,13 @@ function requestCntFileBrowser(arResult) {
 					'<input type="hidden" name="action" value="upload_cntfile">' +	
 				'</form>';		
 		$('#cnt_filelist_content').append(html_str);
-	} else if(files_html == '') {
-		files_html = '<div id="empty_files">\
-			Файлы в профиле контакта отсутствуют\
-			<p style="font-size: 14px;font-weight: 400;font-style: italic;color: rgba(255, 108, 0, 0.8);">\
-				Не теряйте время на отправку необходимых шаблонов и документов.<br>\
-				В файлах профиля можно выкладывать и безопасно хранить для своих контактов любые файлы. Бланки договоров, сертификаты, пресс-релизы, прайс-листы и многое другое, что необходимо для работы. <br>\
-				Файлы будут доступны только вашим контактам.\
-			</p>\
-			</div>';
-		$('#cnt_filelist_content').addClass('border_block');
 	};
 	
 	$('#cnt_filelist_content').append(files_html);
 	$('#cnt_filelist_content').wrapInner('<div class="scrolllist"></div>');	
-
-	$('#cnt_view #buttons').hide(0);
-	$('#cnt_view #cnt_info_body').hide(0);
-	$('#cnt_filelist').show(0);
+	$('#cnt_filelist').show();
 	
-	$('#cnt_filelist_content').height($('#cnt_filelist').height() - $('#cnt_filelist .cnt_headline').height());
+	$('#cnt_filelist_content').height($('#cnt_filelist').height()-$('#cnt_filelist_header').height());
 	$('#cnt_filelist_content .scrolllist').slimScroll({height: 'auto', size: '7px', disableFadeOut: false});
 
 	$('#cnt_filelist_content').on('click','.image_file .close_line svg',function(e) {	
@@ -850,12 +924,12 @@ function addCntFileToList(obj, hide_image) {
 		'<path d="M0 0h24v24H0z" fill="none"/>'+
 		'<path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/>'+
 		'</svg>	';
-	var file_size = Math.round(obj.attr('file_size')/1024);
-	var file_idat = getFileType(obj.attr('file_extention'));
+	var file_size = Math.round(obj.attr('fsize')/1024);
+	var file_idat = getFileType(obj.attr('fext'));
 	var file_type = file_idat.type;
 	var att_svg = file_idat.svg;
-	var file_url = '/my/ajax/files.php?a=detail&i='+obj.attr('file_id');//$(this).attr('furl');
-	var pvfile_url = '/my/ajax/files.php?a=prev&i='+obj.attr('file_id');//$(this).attr('furl');
+	var file_url = '/my/ajax/fld.php?a=dload&i='+obj.attr('ID');//$(this).attr('furl');
+	var pvfile_url = '/my/ajax/fld.php?a=prv&i='+obj.attr('ID');//$(this).attr('furl');
 	var file_met = "KB";
 	if(file_size > 1024) { 
 		file_size = Math.round(file_size/1024);
@@ -873,8 +947,8 @@ function addCntFileToList(obj, hide_image) {
 		'<img src="'+pvfile_url+'"/>'+
 		'</div>';
 	}
-	var str_html = 	'<div class="upfile" id="fn_'+obj.attr('file_id') + '" data-furl="'+file_url+'"><a target="_blank" href="'+file_url+'"><div class="file_icon">'+att_svg+'</div></a>'+
-					'<div class="file_block"><a target="_blank" href="'+file_url+'"><p class="filename">' + obj.attr('file_name') + '</p></a>'+
+	var str_html = 	'<div class="upfile" id="fn_'+obj.attr('ID') + '" data-furl="'+file_url+'"><a target="_blank" href="'+file_url+'"><div class="file_icon">'+att_svg+'</div></a>'+
+					'<div class="file_block"><a target="_blank" href="'+file_url+'"><p class="filename">' + obj.attr('fname') + '</p></a>'+
 					'<p class="file_info">'+file_size+file_met+' '+file_type+'</p></div>'+
 					'<a target="_blank" href="'+file_url+'"><div class="cloud help_icon"><div class="help_info">Скачать файл</div>'+cloud_svg+'</div></a>'+ img_str +
 					'</div>';

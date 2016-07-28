@@ -50,11 +50,11 @@ elseif(count($login_res["ResponseStatus"]) == 0)
 			die();
 		}
 	}
-	if(($_POST['norem'] == 'true')) {
+	if(!($_POST['norem'] == 'true')) {
 		$arPass = ''.$login.':'.$password;
 		$arPass = encryptString($arPass, 'ZfpDLCk7');
 		$ciphertext_base64 = base64_encode($arPass);
-		setcookie('tlp_sid',$ciphertext_base64,time()+(30*24*60*60),'/');
+		setcookie('tlp_sid',$ciphertext_base64,time()+(7*365*24*60*60),'/');
 	}	
 	
 	include ($_SERVER["DOCUMENT_ROOT"]."/my/admin/init.php");

@@ -22,22 +22,19 @@ if($mode=='')
 	$mode = 'catalog';
 ?>
 <title>TELEPORT. Личный портал</title>
-<link href="<?=SITE_TEMPLATE_PATH?>/css/slider.css" rel="stylesheet" type="text/css">
-<link href="<?=SITE_TEMPLATE_PATH?>/css/style_max.css" rel="stylesheet" type="text/css">
-<link href="<?=SITE_TEMPLATE_PATH?>/css/cnt_mngr.css" rel="stylesheet" type="text/css">
-<link href="<?=SITE_TEMPLATE_PATH?>/css/darktooltip.css" rel="stylesheet" type="text/css">
-<!--<link href="<?=SITE_TEMPLATE_PATH?>/css/font-awesome.min.css" rel="stylesheet" type="text/css">-->
-<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
-
 <script type="text/javascript" src="<?=SITE_TEMPLATE_PATH?>/js/teleport.js"></script>
 <script type="text/javascript" src="<?=SITE_TEMPLATE_PATH?>/js/main.js"></script>
 <script type="text/javascript" src="<?=SITE_TEMPLATE_PATH?>/js/lz-string.js"></script>
 <script type="text/javascript" src="<?=SITE_TEMPLATE_PATH?>/js/uploadifive.js"></script>
-
-<script async type="text/javascript" src="<?=SITE_TEMPLATE_PATH?>/js/darktooltip.js"></script>
-<script async type="text/javascript" src="<?=SITE_TEMPLATE_PATH?>/js/defiant.min.js"></script>
+<script type="text/javascript" src="<?=SITE_TEMPLATE_PATH?>/js/darktooltip.js"></script>
+<script type="text/javascript" src="<?=SITE_TEMPLATE_PATH?>/js/responsiveFloats.js"></script>
 <script async type="text/javascript" src="//api-maps.yandex.ru/2.1/?lang=ru_RU"></script>
-<script async type="text/javascript" src="/my/js/cnt_mngr.js"></script>
+
+<link href="<?=SITE_TEMPLATE_PATH?>/css/slider.css" rel="stylesheet" type="text/css">
+<link href="<?=SITE_TEMPLATE_PATH?>/css/style_max.css" rel="stylesheet" type="text/css">
+<link href="<?=SITE_TEMPLATE_PATH?>/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+<link href="<?=SITE_TEMPLATE_PATH?>/css/darktooltip.css" rel="stylesheet" type="text/css">
+
 
 <div id="main_content">
 	<a href="/"><div id="logo"></div></a>
@@ -92,7 +89,7 @@ if($mode=='')
 						<div style="margin: 0px 10px;">
 							<p id="add_channel">Создать новый канал</p>
 							<p id="add_cnt">Пригласить новый контакт</p>
-							<p id="manage_cnt">Управление контактами</p>
+							<p id="manage_cnt">Управлять контактами</p>																								<!-- Добавлен пункт меню для вызова менеджера контактов -->
 						</div>
 					</div>
 				</div>
@@ -100,6 +97,9 @@ if($mode=='')
 			</h3>
 			<div id="contacts_menu"></div>
 			<div id="my_contacts">
+					<div id="cnt-manager" class="modal_window">
+						<? require($_SERVER["DOCUMENT_ROOT"]."/my/ajax/cnt_mngr.php"); ?>													<!-- Добавлен менеджер контактов -->
+					</div>
 				<div id="cnt_list" class="contact_list">
 					<?
 					require($_SERVER["DOCUMENT_ROOT"]."/my/ajax/cnt.php");

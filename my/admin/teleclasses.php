@@ -112,7 +112,7 @@ class CTSession
 		if($name == 'MD5') {
 			return $res;
 		}
-		elseif ($name == 'Messages_Get' || $name == 'Messages_GetNew' || $name == 'Messages_Request' || $name == 'filesList') {
+		elseif ($name == 'Messages_Get' || $name == 'Messages_GetNew' || $name == 'Messages_Request') {
 			return $res;
 		}
 		else {

@@ -55,31 +55,17 @@ elseif($action == 'Documents_addItemToExistDoc')
 {
 	$receiver = $_POST["receiver"];
 	$item = json_decode($_POST["item"], true);
-	$itemid = $item[id];
-	$itemsum = $item[sum];
-	$itemqty = $item[quantity];
 	$result = mysql_query ("SELECT message_id, message, sum FROM t_documents WHERE receiver = '$receiver' order by message_id desc limit 1") or die (mysql_error());
 	$id = json_decode(mysql_result ($result,0,0));
 	$message = json_decode(mysql_result ($result,0,1));
 	$docsum = json_decode(mysql_result ($result,0,2));
-	$totalsum = $docsum + $itemsum;
-	$message->docHeader->sum = $totalsum;
+	$sum = $docsum + $item->sum;
+	$message->docHeader->sum = $sum;
 	$message->docHeader->hash = '';
-	$itemInDoc = 0;
-	foreach ( $message->docTable as $docitem ) {
-		if ($itemid  == $docitem->id) {
-			$itemInDoc = 1;
-			$docitem->sum = $docitem->sum + $itemsum;
-			$docitem->quantity = $docitem->quantity + $itemqty;
-			break;
-		};
-	};
-	if (!$itemInDoc) {
-		array_push($message->docTable, $item);
-	};
+	array_push($message->docTable, $item);
 	print_r($message);
 	$jsonmessage = json_encode_cyr($message);
-	mysql_query ("UPDATE t_documents SET sum = $totalsum, message = '$jsonmessage' where message_id = $id") or die (mysql_error());
+	mysql_query ("UPDATE t_documents SET sum = $sum, message = '$message' where message_id = $id") or die (mysql_error());
 }
 elseif($action == 'Documents_addNew')
 {	
@@ -131,21 +117,10 @@ elseif($action == 'Documents_GetList')
 }
 elseif($action == 'Documents_GetById')
 {
-	$message_ID = $_POST["message_id"];
+	$message_ID = $_POST["message_ID"];
 	$result = mysql_query ("SELECT message FROM t_documents WHERE message_id=$message_ID") or die (mysql_error());
 	$message = mysql_result ($result,0);
 	echo $message;
-}
-elseif($action == 'Documents_getItemPosInfo')
-{	
-	$receiver = $_POST["receiver"];
-	$query = "SELECT message  FROM t_documents WHERE receiver = '$receiver'";
-	$result = mysql_query ($query) or die (mysql_error());
-	$data = array();
-	while($row=mysql_fetch_assoc($result)) {
-		array_push($data, json_decode($row['message']));
-	};
-	echo json_encode_cyr($data);
 };
 
 

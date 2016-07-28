@@ -5,7 +5,6 @@ var noItems = false;
 var last_filter_value = "";
 var timer_ID = "";
 var searchIdletime = 0;
-var vi_timeout = "";
 /*var div_waiting = '<div class="wait" style="margin-top: 250px;">\
 			<img src="/include/telebot.png"/><br>\
 			<span style="font-size: 14px; font-weight: 600;">Просматриваю каталог...</span><br>\
@@ -35,8 +34,7 @@ $(document).ready(function()
 		getMyCatalogItems();
 	}
 	else {	
-		showTelebotInfo('Формирую каталог товаров','',0);
-		getItemPosInfo();
+		showTelebotInfo('Просматриваю каталог','',0);
 		initContactItems();
 	}	
 
@@ -52,19 +50,15 @@ $(document).ready(function()
 	
 	$('#contact_filter').on('click', function(e) {
 		e.stopPropagation();
+
 		hideModalWindow($('.modal_window'));
 		$('.modal_back').remove();	
-		hideMenuItems();
+		hideMenuItems()
+
 		if(!$('#contact_filter').hasClass('ext_selected')) {
 			getMyCatalogItems();
 		}
 	});
-	
-	$('#cnt_list').on('click','.contact_inf', function(){
-		if($(this).hasClass('active_contact_inf')) { return };
-		getItemPosInfo();
-	});
-	
 	$('.catvwmode').click(function() {
 		$('.activevwmode').removeClass('activevwmode');
 		$(this).addClass('activevwmode');
@@ -82,7 +76,7 @@ $(document).ready(function()
 
 		item_nom = 1;
 		$('#item_li').html('');
-		showTelebotInfo('Формирую каталог товаров','',0);
+		showTelebotInfo('Просматриваю каталог','',0);
 		getSelectedContactItems(item_nom, items_filter);
 		
 	});
@@ -524,17 +518,6 @@ $(document).ready(function()
 			InitCatCopy(update_params.substr(0,update_params.length-1));
 		});
 	});
-	
-	$('#it_cart').on('click', '.show-docs', function(){
-		$(this).toggleClass('active fa-chevron-up fa-chevron-down');
-		$('#UserDocList').slideToggle(100);
-	});
-	
-	$('#items_header #it_rule_pan').on('click', '#UserDocList .UserDocItem', function(){
-		DocForView = $(this).attr('data-doc-id');
-		//console.log(DocForView);
-		window.location.href = window.location.protocol + '//' + window.location.host+'/my/index.php?mode=orders';	
-	});
 });
 
 function hideMenuItems(){
@@ -553,7 +536,7 @@ function CatCopy(update_params) {
 	/*
 	var contact	= getActiveContact();
 	var xhr = new XMLHttpRequest();
-	var body =	'action=documents_getList' +
+	var body =	'action=order_getList' +
 					'&rtype=json' +
 					'&adds=json_html'+
 					'&requestXML=' + encodeURIComponent(JSON.stringify(req_object)) +
@@ -712,27 +695,16 @@ function getSelectedContactItems(it_nom, it_filter) {
 			}
 			//console.log(xhr.responseText);
 			showItems(xhr.responseText);
-			if(contact == smuser) {
-				$('#item_li .cart').remove();
-				if(list_type == 'list') {
-					$('#item_list_header .col_5').remove();
-					$('#item_li .col_5').remove();
-				}	
-			
-			}
 		}		
 		xhr.send(body);
 	}	
 }
 function getMyCatalogItems() {
-	$('#it_cart .info').html('');
-	$('#it_cart .info').next('div').css('display','none');
-
 	removeCurrentContact();
 	$('#contact_filter').addClass('ext_selected');
 	$('#cur_contact').html('<div style="padding: 5px 10px;">\
 		<div style="font-weight: 800;"> МОЙ КАТАЛОГ</div>\
-		<div style="color: #444; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Для просмотра каталога другого контакта выберите его в списке ваших контактов</div>\
+		<div style="color: #444;">Для просмотра каталога другого контакта выберите его в списке ваших контактов</div>\
 	</div>');
 
 	hideExtPan();
@@ -765,8 +737,7 @@ function showItemsTotalQuantity(it_filter) {
 		if(!(it_filter == '')) {
 			body = body + '&filters=' + encodeURIComponent(JSON.stringify(it_filter));
 		}	
-		$('#ext_pan_content #it_counter').text('...');
-		$('#ext_pan_content #it_counter').addClass('fb_waiting');
+
 		xhr.open("POST", '/my/ajax/action.php', true);
 		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 		xhr.onreadystatechange = function() 
@@ -777,17 +748,7 @@ function showItemsTotalQuantity(it_filter) {
 				showError(xhr.responseText.replace('%err%',''));
 				return;
 			}
-			var cur_quantity = xhr.responseText;
-			if(cur_quantity == '' || cur_quantity == 0 || cur_quantity == '0') {
-				cur_quantity = 'Нет';
-				$('#ext_pan_content #it_counter').removeClass('fb_active').addClass('fb_inactive');
-				$('#ext_pan_content #cancel_filters').addClass('fb_active');
-			} else {
-				$('#ext_pan_content #it_counter').removeClass('fb_inactive').addClass('fb_active');
-				$('#ext_pan_content #cancel_filters').removeClass('fb_active');
-			}
-			$('#ext_pan_content #it_counter').removeClass('fb_waiting');
-			$('#ext_pan_content #it_counter').text(cur_quantity + ' товаров');
+			$('#ext_pan_content #it_counter').text('Найдено ' + xhr.responseText + ' товаров.');
 			$('#ext_pan_content #it_counter').show(100);
 		}		
 		xhr.send(body);
@@ -803,7 +764,7 @@ function showItems(responseText) {
 	$('#item_li').append(str);
 	$('.wait').remove();
 	if(str == '') {
-		showTelebotInfo('Вы просмотрели весь каталог.','',5000);
+		showTelebotInfo('Новых позиций нет. Вы просмотрели весь каталог.','',5000);
 		noItems = true;
 	}
 	else {
@@ -889,7 +850,7 @@ function getItemInfo(obj) {
 			
 			obj.after(modal_obj);
 			if(obj.hasClass('item_block')) {
-				obj.append('<div class="item_sign" style="top: '+(obj.height()-7)+'px;"></div>');
+				obj.append('<div class="item_sign"></div>');
 			}	
 			
 			var obj_height = obj.height();
@@ -921,15 +882,15 @@ function runFiltering() {
 
 	$('#item_li').html('');
 
-	compileFilter(true);
+	compileFilter();
 	last_filter_value = inp_value;
 	clearInterval(timer_ID);
 	timer_ID = "";
 }
-function compileFilter(getItems) {
-	clearTimeout(vi_timeout);
+function compileFilter() {
+	showTelebotInfo('Просматриваю каталог','',0);
+
 	items_filter = [];
-	var vi_flag = false;
 	var inp_value = $('#it_search_inp').val();
 	if(inp_value != '') {
 		items_filter = [{"mode": "item", "group": "OR", "name":"name", "operation":"LIKE", "value": inp_value},
@@ -939,7 +900,7 @@ function compileFilter(getItems) {
 	
 	if($('#it_extsearch').hasClass('ext_selected')) {
 		if($('#ext_pan_content #it_toplevel').hasClass('it_category_selected')) {
-			items_filter.push({"mode": "item", "group": "AND", "name":"category_id", "operation":"=", "value": $('#ext_pan_content #it_toplevel').attr('data-itc-id')});
+			items_filter.push({"mode": "item", "group": "AND", "name":"categoty_id", "operation":"=", "value": $('#ext_pan_content #it_toplevel').attr('data-itc-id')});
 		}
 	}
 	
@@ -947,16 +908,14 @@ function compileFilter(getItems) {
 	if(boolean_obj.length != 0) {
 		var parent_obj = boolean_obj.parent();
 		items_filter.push({"mode": "prop", "group": "AND", "name": parent_obj.attr('data-filter-name'), "operation":"NOT IN", "value": '"0","false","","Нет"'});
-		vi_flag = true;
 	}	
 	
 	var string_obj = $('#ext_pan_content #it_filters .it_filter[data-filter-type=string] .filter_string .filter_input');
 	if(string_obj.length != 0) {
 		if(string_obj.val() != '') {
-			var parent_obj = string_obj.parent().parent();
-			items_filter.push({"mode": "prop", "group": "AND", "name": parent_obj.attr('data-filter-name'), "operation":"LIKE", "value": string_obj.val()});
+		var parent_obj = string_obj.parent().parent();
+		items_filter.push({"mode": "prop", "group": "AND", "name": parent_obj.attr('data-filter-name'), "operation":"LIKE", "value": string_obj.val()});
 		}	
-		vi_flag = true;
 	}	
 	
 
@@ -973,7 +932,6 @@ function compileFilter(getItems) {
 				items_filter.push({"mode": "prop", "group": "AND", "name": parent_obj.attr('data-filter-name'), "operation":"<=", "value": float_obj_to.val()});
 			}	
 		}
-		vi_flag = true;
 	}	
 	
 	var enum_obj = $('#ext_pan_content #it_filters .it_filter[data-filter-type=enum]');
@@ -991,46 +949,11 @@ function compileFilter(getItems) {
 				items_filter.push({"mode": "prop", "group": "AND", "name": $(one_enum).attr('data-filter-name'), "operation":"IN", "value": enum_list});
 			}	
 		});
-		vi_flag = true;
 	}
 	showItemsTotalQuantity(items_filter);
 	item_nom = 1;
-	if(getItems) {
-		showTelebotInfo('Формирую каталог товаров','',0);
-		getSelectedContactItems(item_nom, items_filter);
-	} else if(vi_flag) {
-		vi_timeout = setTimeout(function viewItems() {
-			showTelebotInfo('Формирую каталог товаров','',0);
-			getSelectedContactItems(item_nom, items_filter);
-		},2000);
-	}
-}
-
-function changeSelectedText(enum_filter) {
-	var enumValue = enum_filter.find(".enum_name").text();
-	var filterObj = enum_filter.parent().prev('div');
-	var textObj = filterObj.find('.sel_enum');
-	var check = enum_filter.find('.checkbox').hasClass('checked');
-	if(check) {
-		var newText = (textObj.text() == '')?(''):', ';
-		newText = newText + enumValue;
-		textObj.text(textObj.text() + newText);
-		filterObj.addClass('it_filter_selected');
-		filterObj.append('<div class="fb_cancel"></div>');
-	} else {
-		var newText = textObj.text();
-		if(newText == enumValue) {
-			newText = '';
-		} else {
-			newText = newText.replace(', '+enumValue,'');
-			newText = newText.replace(enumValue+', ','');
-		}	
-		textObj.text(newText);
-		if(newText == '') {
-			filterObj.removeClass('it_filter_selected');
-			filterObj.find('.fb_cancel').remove();
-		}	
-	}
+	//console.log(items_filter);
+	getSelectedContactItems(item_nom, items_filter);
 }
 
 function requestExtendedSearch() {
@@ -1043,10 +966,16 @@ function requestExtendedSearch() {
 
 	if(!(contact.id == undefined))
 	{
+		var arr_fld = ['id','name','parent_id'];
+		gr_filter = [{"mode": "group", "compare": "*"}];
+		var req_object = {"filter": gr_filter, "fields": arr_fld};
 		var xhr = new XMLHttpRequest();
-		var body =	'action=Catalog_GetCategory' +
+		var body =	'action=catalog_GroupsGet' +
 				'&rtype=json' +
-				'&contact=' + encodeURIComponent(contact.name);
+				'&contact=' + encodeURIComponent(contact.name) +
+				'&requestXML=' + encodeURIComponent(JSON.stringify(req_object)) +
+				'&limit=999' + 
+				'&nom=1';
 
 		xhr.open("POST", '/my/ajax/action.php', true);
 		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -1058,13 +987,12 @@ function requestExtendedSearch() {
 				showError(xhr.responseText.replace('%err%',''));
 				return;
 			}
-			$('#ext_pan_content').off();
 			$('#ext_pan_content').html(xhr.responseText);
 			if(items_filter.length == 0) {
 				showItemsTotalQuantity(items_filter);
 			}
 			else {
-				compileFilter(false);
+				compileFilter();
 			}	
 
 			if($('#ext_pan_content .it_category').length == 0) {
@@ -1077,56 +1005,29 @@ function requestExtendedSearch() {
 				e.stopPropagation();
 				cancelFilters();
 			});
-			$('#ext_pan_content').on('click','#it_counter', function(e) {
-				e.stopPropagation();
-				compileFilter(true);
-			});
 			$('#ext_pan_content').on('click','.it_category', function(e) {
 				e.stopPropagation();
 				var cat_id = $(this).attr('data-itc-id');
-				showExtendedSearchLevel(cat_id, false);
+				showExtendedSearchLevel(cat_id);
 			});
 			$('#ext_pan_content').on('click','#it_toplevel', function(e) {
 				e.stopPropagation();
 				var cat_id = $(this).attr('data-itc-parentid');
-				showExtendedSearchLevel(cat_id, false);
+				showExtendedSearchLevel(cat_id);
 			});
-			$('#ext_pan_content').on('click','.it_filter_value', function(e) {
+			$('#ext_pan_content').on('click','.it_filter_value, .it_filter[data-filter-type=boolean]', function(e) {
 				e.stopPropagation();
 				$(this).find('.checkbox').toggleClass('checked');
-				changeSelectedText($(this));
-				compileFilter(false);	
-			});	
-			$('#ext_pan_content').on('click','.it_filter[data-filter-type=boolean]', function(e) {
-				e.stopPropagation();
-				$(this).find('.checkbox').toggleClass('checked');
-				compileFilter(false);	
+				compileFilter();	
 			});	
 			$('#ext_pan_content').on('click','#it_filters .it_filter[data-filter-type=enum]', function(e) {
 				e.stopPropagation();
-				if($(this).hasClass('it_filter_expanded')) {
-					$(this).next('div').toggle(200, function() {;});
-					$(this).toggleClass('it_filter_expanded');
-				} else {
-					$('#it_filters .it_filter[data-filter-type=enum]').removeClass('it_filter_expanded');
-					$('#it_filters .it_filter[data-filter-type=enum]').next('div').slideUp(200);
-					$(this).next('div').slideDown(200);
-					$(this).addClass('it_filter_expanded');				
-				}
-				$('#it_filters').scrollTop(0);
-			});	
-			$('#ext_pan_content').on('click','#it_filters .it_filter[data-filter-type=enum] .fb_cancel', function(e) {
-				e.stopPropagation();
-				var filterObj = $(this).parent();
-				filterObj.next('div').find('.checkbox').removeClass('checked');
-				filterObj.find('.sel_enum').text('');
-				filterObj.removeClass('it_filter_selected');
-				filterObj.find('.fb_cancel').remove();
-				compileFilter(false);	
+				$(this).next('div').toggle(200);
+				$(this).toggleClass('it_filter_expanded');
 			});	
 			$('#ext_pan_content').on('keyup','.float_input, .filter_input', function(e) {
 				e.stopPropagation();
-				compileFilter(false);	
+				compileFilter();	
 			});
 			$('#ext_pan_content').on('keypress','.float_input', function(e) {
 				e.stopPropagation();
@@ -1146,13 +1047,13 @@ function cancelFilters() {
 	if($('#ext_pan_content .it_category').length == 0) {
 		$('#ext_filters .checked').removeClass('checked');
 		$('#ext_filters .float_input, #ext_filters .filter_input').val('');
-		compileFilter(true);
+		compileFilter();
 	}
 	else {
-		showExtendedSearchLevel('_zero_', true);
+		showExtendedSearchLevel('_zero_');
 	}	
 }
-function showExtendedSearchLevel(parent_id, getItems) {
+function showExtendedSearchLevel(parent_id) {
 	if(parent_id == undefined || parent_id == '') {
 		return;
 	}	
@@ -1179,7 +1080,7 @@ function showExtendedSearchLevel(parent_id, getItems) {
 	else {
 		$('#it_filters').html('');
 	}
-	compileFilter(getItems);	
+	compileFilter();	
 }
 function showExtendedFilters(parent_id) {
 	if(parent_id == '') {
@@ -1202,8 +1103,7 @@ function showExtendedFilters(parent_id) {
 			var xhr = new XMLHttpRequest();
 			var body =	'action=catalog_FiltersGet' +
 					'&contact=' + encodeURIComponent(contact.name) +
-					'&category_id=' + encodeURIComponent(parent_id) + 
-					'&enum_values=true';
+					'&group_id=' + encodeURIComponent(parent_id);
 
 			xhr.open("POST", '/my/ajax/action.php', true);
 			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -1234,156 +1134,3 @@ function showExtendedFilters(parent_id) {
 function InitCatCopy(update_params) {
 	console.log(update_params);
 }
-
-
-
-
-
-function getItemInfoForDoc(obj) {
-	var contact = getActiveContact();
-	if(!(contact.id == undefined)){
-		var arr_fld = ['*'];
-		var arr_props = ['*'];
-		var arr_filter = [{"mode": "item", "name":"id", "operation":"=", "value": obj.attr('data-it-id')}];
-		var xhr = new XMLHttpRequest();
-		var body =	'action=catalog_get' +
-					'&adds=json' +
-					'&contact=' + encodeURIComponent(contact.name) +
-					'&fields=' + encodeURIComponent(JSON.stringify(arr_fld)) +
-					'&properties=' + encodeURIComponent(JSON.stringify(arr_props)) +
-					'&filters=' + encodeURIComponent(JSON.stringify(arr_filter)) +
-					'&limit=1' + 
-					'&nom=1';
-		xhr.open("POST", '/my/ajax/action.php', true);
-		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-		xhr.onreadystatechange = function() 
-		{ 
-			if (xhr.readyState != 4) return;
-			
-			if(!(xhr.responseText.indexOf('%err%') == -1)) {
-				showError(xhr.responseText.replace('%err%',''));
-				return;
-			}
-			var arResult = JSON.parse(xhr.responseText);
-			var arResult = arResult.catalog[0];
-
-			var id = arResult.id;
-			var article = arResult.article;
-			var name = arResult.name;
-			var quantity = parseInt($('.cart_input', obj).val());
-			var confirmed = 0;
-			var price = parseInt(arResult.price);
-				price = isNaN(price) ? 0.00 : (price).toFixed(2);
-			var sum = (price*quantity).toFixed(2);
-			var unit = 'шт';
-			var Item =
-			{
-				id:id, 
-				article:article, 
-				name:name, 
-				unit:unit, 
-				quantity:quantity, 
-				confirmed:confirmed, 
-				price:price, 
-				sum:sum, 
-				props:[]
-			};
-			$.post('/my/ajax/order.php', { action: 'Documents_GetLastId', receiver: contact.name }, function(data) {
-				(data) ? addItemToExistDoc(Item, contact.name) : addItemToNewDoc(Item, contact.name);
-			});	
-		}		
-		xhr.send(body);
-	};
-
-};
-
-
-function addItemToExistDoc(Item, contact) {
-	$.post('/my/ajax/order.php', { action: 'Documents_addItemToExistDoc', item: JSON.stringify(Item), receiver: contact }, function(data){
-		//console.log(data);
-	});
-};
-
-
-function addItemToNewDoc(Item, contact) {
-	$.post('/my/ajax/order.php', { action: 'Documents_GetLastId' }, function(docid) {
-		var curDate = new Date;
-		var message = {
-			"docHeader":{
-				"id":++docid,
-				"status":"new",
-				"sender":smuser.name,
-				"receiver":contact,
-				"type":"order",
-				"date":curDate,
-				"num":"",
-				"hash":"00001234",
-				"sum":Item.sum,
-				"currencyId":"RUR",
-				"comment":"",
-				"props":[]
-			},
-			"tabHeader":{
-				"article":"Артикул",
-				"name":"Товар/Услуга",
-				"unit":"Ед. изм.",
-				"quantity":"Кол-во",
-				"confirmed":"Подтверждено",
-				"price":"Цена",
-				"sum":"Всего",
-				"props":[]
-			},
-			"docTable":[Item]
-		};		
-		$.post('/my/ajax/order.php', { 
-			action: 'Documents_addNew',
-			message_id: docid, 
-			sender: smuser.name, 
-			receiver: contact, 
-			message: JSON.stringify(message),
-			type: message.docHeader.type, 
-			status: message.docHeader.status, 
-			date: curDate,
-			num: message.docHeader.num,
-			sum: message.docHeader.sum,
-			currencyId: message.docHeader.currencyId, 
-			hash: message.docHeader.hash
-			}, 
-			function(data) {
-				//console.log(data);
-			}
-		);
-	});	
-};
-
-function getOrderDate(date){
-	var year = date.getFullYear();
-	var month = (date.getMonth().toString().length>1) ? date.getMonth()+1 : '0'+(date.getMonth()+1);
-	var day = (date.getDate().toString().length>1) ? date.getDate() : '0'+date.getDate();
-	var hh = (date.getHours().toString().length>1) ? date.getHours() : '0'+date.getHours();
-	var mm = (date.getMinutes().toString().length>1) ? date.getMinutes() : '0'+date.getMinutes();
-	var ss = (date.getSeconds().toString().length>1) ? date.getSeconds() : '0'+date.getSeconds();
-	return {"year":year, "month":month, "day":day, "hh":hh, "mm":mm, "ss":ss};
-};
-
-function getItemPosInfo() {
-	$('#it_cart .info').html('');
-	$('#it_cart .info').next('div').css('display','none');
-	var contact = getActiveContact();
-	if (contact.id != undefined) {
-		$.post('/my/ajax/order.php', {action: 'Documents_getItemPosInfo', receiver: contact.name}, function(data){
-			var UserDocs = JSON.parse(data);
-			var UserDocsQty = UserDocs.length;
-			var UserItemsQty = 0;
-			var html_str = '';
-			$.each(UserDocs, function(key, val){
-				UserItemsQty = UserItemsQty*1 + val.docTable.length*1;
-				var DocDate = getOrderDate(new Date(val.docHeader.date));	 	
-				html_str = html_str + '<div class="UserDocItem" data-doc-id='+val.docHeader.id+'>Заказ №'+(++key)+' от '+DocDate.day+'-'+DocDate.month+'-'+DocDate.year+'</div>';		
-			}); 
-			$('#it_cart .info').html('Выбрано <span>'+UserItemsQty+'</span> позиций в <span>'+UserDocsQty+'</span> заказах <span class="show-docs fa fa-chevron-down"></span>');
-			$('#it_cart .info').next('div').css('display','inline-block');
-			$('#items_header #it_rule_pan').append('<div id="UserDocList">'+html_str+'</div>');
-		})	
-	}	
-};

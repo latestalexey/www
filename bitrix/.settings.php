@@ -45,7 +45,7 @@ return array (
       array (
         'className' => '\\Bitrix\\Main\\DB\\MysqlConnection',
         'host' => 'localhost:31006',
-        'database' => 'bitrix_80',
+        'database' => 'bitrix_49',
         'login' => 'root',
         'password' => '',
         'options' => 2,
