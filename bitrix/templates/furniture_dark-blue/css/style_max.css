@@ -235,7 +235,12 @@
     box-sizing: border-box;
 }
 
-#cnt_view .msg_file{ width: 99%; max-width: 99%; margin: 2px 0; padding: 0px 0 10px 0;}
+#cnt_view .msg_file { 
+	width: 99%; 
+	max-width: 99%; 
+	margin: 2px 0; 
+	padding-bottom: 10px;
+}
 
 #cnt_view #add_cntfile p{
 	margin-left:35px;
@@ -264,6 +269,11 @@
 	position: absolute;
     top: 30px;
     width: 100%;
+	z-index: 999;
+}
+
+#cnt_view #cnt-fileinfo .msg_file {
+	padding-bottom: 0;
 }
 
 #cnt_view #upload_cntfile:hover svg{
@@ -560,7 +570,7 @@
 }
 
 #order_view  .order_item_list_content input {
-	padding:3px 10px;
+	padding:3px 5px;
 	text-align:center;
 	box-sizing:border-box;
 	border:0;
@@ -916,4 +926,22 @@ div#UserDocList .UserDocItem:hover {
 	padding-left: 10px;
 	font-family: 'Open Sans';
 	font-size: 17px;
+}
+
+#del-user-file {
+	display: none;
+	position: absolute;
+	top: 15px;
+	right: 65px;
+	font-size: 24px;
+	cursor: pointer;
+	color: #888;
+}
+
+#del-user-file:hover {
+	color: #26A69A;
+}
+
+.msg_file:hover #del-user-file {
+	display: block;
 }

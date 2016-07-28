@@ -55,6 +55,11 @@ $(document).ready(function()
 	hideTelebotInfo();
 	initOrderList(true);
 	
+	if (localStorage.getItem("userDocId")) {
+		getTmpDocInfo(localStorage.getItem("userDocId"));
+		localStorage.removeItem("userDocId");
+	};
+	
 	$('#contact_filter').on('click', function(e) {
 		e.stopPropagation();
 		if(!$('#contact_filter').hasClass('ext_selected')) {

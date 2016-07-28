@@ -1,3 +1,30 @@
+function number_format(number, decimals, dec_point, thousands_sep) {
+  number = (number + '').replace(/[^0-9+\-Ee.]/g, '');
+  var n = !isFinite(+number) ? 0 : +number,
+    prec = !isFinite(+decimals) ? 0 : Math.abs(decimals),
+    sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep,
+    dec = (typeof dec_point === 'undefined') ? '.' : dec_point,
+    s = '',
+    toFixedFix = function(n, prec) {
+      var k = Math.pow(10, prec);
+      return '' + (Math.round(n * k) / k)
+        .toFixed(prec);
+    };
+  // Fix for IE parseFloat(0.55).toFixed(0) = 0;
+  s = (prec ? toFixedFix(n, prec) : '' + Math.round(n))
+    .split('.');
+  if (s[0].length > 3) {
+    s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep);
+  }
+  if ((s[1] || '')
+    .length < prec) {
+    s[1] = s[1] || '';
+    s[1] += new Array(prec - s[1].length + 1)
+      .join('0');
+  }
+  return s.join(dec);
+}
+
 function getDocInfo(id) {
 	var xhr = new XMLHttpRequest();
 	var body =	'action=Documents_GetById' +
@@ -200,13 +227,12 @@ function getTabHeader(arHeader) {
 };
 
 function getSearchStr(arHeader) {
-	console.log(arHeader.props.length);
 	var docsearchrow = 				
 		'<tr  class="item input_row">' +
 			'<td class="col_0"><i class="fa fa-keyboard-o" aria-hidden="true"></i></td>' +
 			'<td colspan="2" class="col_1_2"><input class="input_col" placeholder="Введите артикул или наименование товара"/></td>' +
 			'<td colspan="'+(5+arHeader.props.length)+'" class="col_3">' +
-				'<span class="totalsum-block">Общая сумма:<span class="total-sum">'+parseFloat(arHeader.sum).toFixed(2)+'</span><span class="currency"> '+arHeader.currencyId+'</span></span>' +
+				'<span class="totalsum-block">Общая сумма:<span class="total-sum">'+number_format(arHeader.sum, 2, '.', ' ')+'</span><span class="currency"> '+arHeader.currencyId+'</span></span>' +
 			'</td>' +
 		'</tr>';	
 	return docsearchrow;	
@@ -244,10 +270,10 @@ function getDocTable(docTable, tabHeaderProps){
 				'<td class="col_1">'+item.article+'</td>' +
 				'<td class="col_2"><span class="caption">'+item.name+'</span><i class="fa fa-chevron-up"></i></td>'+
 				'<td class="col_3">'+item.unit+'</td>' +	
-				'<td class="col_4 required"><i class="fa fa-minus" aria-hidden="true"></i><input class="quantity" value="'+item.quantity+'"><i class="fa fa-plus" aria-hidden="true"></i></td>' +						
-				'<td class="col_5"><i class="fa fa-minus" aria-hidden="true"></i><input class="confirmed" value="'+item.confirmed+'"><i class="fa fa-plus" aria-hidden="true"></i></td>'+
-				'<td class="col_6">'+parseFloat(item.price).toFixed(2)+'</td>'+
-				'<td class="col_7">'+parseFloat(item.sum).toFixed(2)+'</td>'+ html_str +			
+				'<td class="col_4 required"><i class="fa fa-minus" aria-hidden="true"></i><input class="quantity" value="'+number_format(item.quantity, 0, '', ' ')+'"><i class="fa fa-plus" aria-hidden="true"></i></td>' +						
+				'<td class="col_5"><i class="fa fa-minus" aria-hidden="true"></i><input class="confirmed" value="'+number_format(item.confirmed, 0, '', ' ')+'"><i class="fa fa-plus" aria-hidden="true"></i></td>'+
+				'<td class="col_6">'+number_format(item.price, 2, '.', '')+'</td>'+
+				'<td class="col_7">'+number_format(item.sum, 2, '.', ' ')+'</td>'+ html_str +			
 			'</tr>';	
 	});
 	return strorderlist;
@@ -344,6 +370,7 @@ function initDocView(arDoc) {
 	//Сохранение документа в локальную базу
 	$('#order_view').on('click', '#save-local', function(){
 		buildTmpDoc(arDoc);
+		console.log(arDoc);
 		$.post('/my/ajax/order.php', { 
 			action: 'Documents_saveDocToLocalBase',
 			message_id: docHeader.id, 
@@ -436,32 +463,43 @@ function initDocView(arDoc) {
 	
 	//Изменение количества позиций в строке заказа кнопками
 	$('#order_view').on('click', '.col_4 .fa, .col_5 .fa', function(){
-		var qty = $(this).siblings('input').val();
-		var price = parseFloat($(this).closest('.item').children('.col_6').text()).toFixed(2);
+		var qty = parseFloat($(this).siblings('input').val().replace(/ /g, ''));
+		var price = parseFloat($(this).closest('.item').children('.col_6').text().replace(/ /g, ''));
 		if ($(this).hasClass('fa-plus')) {
 			qty++;
 		}
 		else if ($(this).hasClass('fa-minus')) {
 			qty > 1 ? qty-- : qty;			
 		};	
-		$(this).siblings('input').val(qty);
-		$(this).closest('.item').children('.col_7').text(parseFloat(price*qty).toFixed(2));
+		$(this).siblings('input').val(number_format(qty, 0, '', ' '));
+		$(this).closest('.item').children('.col_7').text(number_format(price*qty, 2, '.', ' '));
 		getTotalSum();
 	});
 	//Изменение количества позиций в строке заказа вручную
 	$('#order_view').on('keydown keyup', '.col_4 input, .col_5 input', function(e){
+		var qty = parseFloat($(this).val().replace(/ /g, ''));
+		$(this).val(number_format(qty, 0, '', ' '));
 		var arKey = [8, 9, 37, 39, 46];
-		console.log($.inArray(e.which, arKey));
 		if ((e.which >= 48 && e.which <=57) || (e.which >= 96 && e.which <=105) || ($.inArray(e.which, arKey)>=0)) {
-			if (!$(this).val().length || ($(this).val() == 0)) {$(this).val(1)};
-			var price = parseFloat($(this).closest('.item').children('.col_6').text()).toFixed(2);
-			var qty = $(this).val();
-			$(this).closest('.item').children('.col_7').text(parseFloat(price*qty).toFixed(2));
+			//if (!$(this).val().length || ($(this).val() == 0)) {$(this).val(1)};
+			var price = parseFloat($(this).closest('.item').children('.col_6').text().replace(/ /g, ''));
+			$(this).closest('.item').children('.col_7').text(number_format(price*(qty || 0), 2, '.', ' '));
 			getTotalSum();
 		} 
 		else {
 			e.preventDefault();
 		}		
+	});	
+	
+	//Изменение количества позиций в строке заказа вручную
+	$('#order_view').on('blur', '.col_4 input, .col_5 input', function(e){
+		var qty = parseFloat($(this).val().replace(/ /g, ''));
+		if (!qty.length || (qty == 0)) {
+			$(this).val(1);
+			var price = parseFloat($(this).closest('.item').children('.col_6').text().replace(/ /g, ''));
+			$(this).closest('.item').children('.col_7').text(number_format(price, 2, '.', ' '));
+			getTotalSum();	
+		};	
 	});	
 
 	//Отметить позицию в заказе
@@ -619,7 +657,7 @@ function initDocView(arDoc) {
 	//Выбор позиции в выпадающем списке
 	$('#order_view').on('click', '.item_sel .item', function(e) {
 		var	exitem = $('.order_item_list_content .item[data-it-id='+$(this).attr('data-it-id')+']');		
-		if ( exitem.length && (parseFloat($(this).attr('data-price')).toFixed(2) == parseFloat($('.col_6', exitem).text()).toFixed(2)) ) {
+		if ( exitem.length && (parseFloat($(this).attr('data-price').replace(/ /g, '')) == parseFloat($('.col_6', exitem).text()).replace(/ /g, '')) ) {
 			mergeItems($(this), exitem);
 		}
 		else {
@@ -812,9 +850,10 @@ var delay = (function(){
 function getTotalSum() {
 	var totalSum = 0.00;
 	$('.order_item_list_content .col_7').each(function(){
-		totalSum = totalSum*1 + $(this).text()*1;
+		console.log($(this).text().replace(/ /g, ''));
+		totalSum = parseFloat(totalSum) + parseFloat($(this).text().replace(/ /g, ''));
 	});
-	$('.input_row .total-sum').text(totalSum.toFixed(2));
+	$('.input_row .total-sum').text(number_format(totalSum, 2, '.', ' '));
 };
 
 function mergeItems(newItem, exItem){
@@ -827,10 +866,7 @@ function mergeItems(newItem, exItem){
 
 function buildTmpDoc (tmpDoc){
 	var hash = '';
-	var sum = 0.00;
-	$('.order_item_list_content .col_7').each(function(){
-		sum = sum + parseFloat($(this).text());
-	});	
+	var sum = parseFloat($('.total-sum').text().replace(/ /g, ''));
 	tmpDoc.docHeader.hash = hash;
 	tmpDoc.docHeader.sum = sum;
 	tmpDoc.docHeader.comment = $('.sidebar .comment textarea').val();
@@ -876,10 +912,10 @@ function buildTmpDoc (tmpDoc){
 			"article":$('.col_1',this).text(),
 			"name":$('.col_2',this).text(),
 			"unit":$('.col_3',this).text(),
-			"quantity":$('.col_4 input',this).val(),
-			"confirmed":$('.col_5 input',this).val(),
-			"price":$('.col_6',this).text(),
-			"sum":$('.col_7',this).text(),
+			"quantity":parseFloat($('.col_4 input',this).val().replace(/ /g, '')),
+			"confirmed":parseFloat($('.col_5 input',this).val().replace(/ /g, '')),
+			"price":parseFloat($('.col_6',this).text().replace(/ /g, '')),
+			"sum":parseFloat($('.col_7',this).text().replace(/ /g, '')),
 			"props":arItemsProps
 		};
 		arItems.push(jsonstr);
@@ -895,19 +931,17 @@ function setNewDocPosition(obj, arHeader){
 		col++;
 	});	
 	var name = $('.col_2', obj).text();
-	var qty = 1;
-	var price = parseFloat(obj.attr('data-price')).toFixed(2);
-	var sum = (price*qty).toFixed(2);
+	var price = number_format(obj.attr('data-price'), 2, '.', ' ');
 	$('#order_view .order_item_list_content').prepend(
 		'<tr id="it_'+obj.attr('data-it-id')+'" class="item" data-it-id='+obj.attr('data-it-id')+'>' +
 			'<td class="col_0"><i class="fa"></i></td>' +
 			'<td class="col_1"></td>' +
 			'<td class="col_2"><span class="caption">'+name+'</span><i class="fa fa-chevron-up"></i></td>'+
 			'<td class="col_3">шт</td>'+
-			'<td class="col_4 required"><i class="fa fa-minus" aria-hidden="true"></i><input class="quantity" value="'+qty+'"><i class="fa fa-plus" aria-hidden="true"></i></td>'+
+			'<td class="col_4 required"><i class="fa fa-minus" aria-hidden="true"></i><input class="quantity" value="1"><i class="fa fa-plus" aria-hidden="true"></i></td>'+
 			'<td class="col_5"><i class="fa fa-minus" aria-hidden="true"></i><input class="confirmed" value="0"><i class="fa fa-plus" aria-hidden="true"></i></td>'+
 			'<td class="col_6">'+price+'</td>'+
-			'<td class="col_7">'+sum+'</td>'+	html_str +						
+			'<td class="col_7">'+price+'</td>'+	html_str +						
 		'</tr>'
 	);
 	setOrderItemListContentHeight();

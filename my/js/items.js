@@ -531,8 +531,8 @@ $(document).ready(function()
 	});
 	
 	$('#items_header #it_rule_pan').on('click', '#UserDocList .UserDocItem', function(){
-		DocForView = $(this).attr('data-doc-id');
-		//console.log(DocForView);
+		var userDocId = $(this).attr('data-doc-id');
+		localStorage.setItem("userDocId", userDocId);
 		window.location.href = window.location.protocol + '//' + window.location.host+'/my/index.php?mode=orders';	
 	});
 });
@@ -1381,9 +1381,9 @@ function getItemPosInfo() {
 				var DocDate = getOrderDate(new Date(val.docHeader.date));	 	
 				html_str = html_str + '<div class="UserDocItem" data-doc-id='+val.docHeader.id+'>Заказ №'+(++key)+' от '+DocDate.day+'-'+DocDate.month+'-'+DocDate.year+'</div>';		
 			}); 
-			$('#it_cart .info').html('Выбрано <span>'+UserItemsQty+'</span> позиций в <span>'+UserDocsQty+'</span> заказах <span class="show-docs fa fa-chevron-down"></span>');
-			$('#it_cart .info').next('div').css('display','inline-block');
 			$('#items_header #it_rule_pan').append('<div id="UserDocList">'+html_str+'</div>');
+			$('#it_cart .info').html('Выбрано <span>'+UserItemsQty+'</span> позиций в <span>'+UserDocsQty+'</span> заказах ' + (UserDocsQty ? '<span class="show-docs fa fa-chevron-down"></span>' : ''));
+			$('#it_cart .info').next('div').css('display','inline-block');
 		})	
 	}	
 };
