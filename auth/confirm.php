@@ -14,7 +14,6 @@ $check_res['return'] = true;
 $check_res['errMessage'] = '';
 
 if(!($usr == '' && $key == '')) {
-	//$client = new SoapClient("http://wbs.b-teleport.ru/msg_mher/ws/msg.1cws?wsdl");//, array('login'=>"teleport", 'password'=>"3tJxaZfpDLCk7Ddp"));
 	$res = post_req('Users_ConfirmRegistration',array('username'=>$usr, 'userkey'=>$key));
 	$err_code = $res['return'];
 	if($err_code == 0)
@@ -128,7 +127,7 @@ if($check_res['err_code'] == 0 || $check_res['err_code'] == 14) {
 				}
 			}
 			
-			LocalRedirect('/my/index.php?add=nps'.$str);
+			LocalRedirect('/my/index.php'.$str);
 		}	
 	}
 }
