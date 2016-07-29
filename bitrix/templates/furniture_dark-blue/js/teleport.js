@@ -767,7 +767,7 @@ function requestCntFileBrowser(arResult) {
 	} else if(files_html == '') {
 		files_html = '<div id="empty_files">\
 			Файлы в профиле контакта отсутствуют\
-			<p style="font-size: 14px;font-weight: 400;font-style: italic;color: rgba(255, 108, 0, 0.8);">\
+			<p style="font-size: 14px;font-weight: 400;font-style: italic;">\
 				Не теряйте время на отправку необходимых шаблонов и документов.<br>\
 				В файлах профиля можно выкладывать и безопасно хранить для своих контактов любые файлы. Бланки договоров, сертификаты, пресс-релизы, прайс-листы и многое другое, что необходимо для работы. <br>\
 				Файлы будут доступны только вашим контактам.\

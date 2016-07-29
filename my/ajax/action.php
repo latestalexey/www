@@ -1473,8 +1473,10 @@ elseif($action == 'changePassword')
 	{
 		if(!($key == 'action' || $key=='adds'))
 			{$arFnc[$key] = $value;}
+	}
+	if(!($_POST["adds"] == "cnf")) {
+		$pass_hash = $TLP_obj->telecall('MD5',array('input'=>$arFnc['pass_hash']));
 	}	
-	$pass_hash = $TLP_obj->telecall('MD5',array('input'=>$arFnc['pass_hash']));
 	$new_hash = $TLP_obj->telecall('MD5',array('input'=>$arFnc['new_hash']));
 	$arFnc['pass_hash'] = $pass_hash;
 	$arFnc['new_hash'] = $new_hash;

@@ -220,7 +220,7 @@
 
 /*===============================CntView_AddFile============================*/
 #cnt_view #cntfile_form { width: 99%; margin: 10px 0;}
-#cnt_view #empty_files {font-size: 24px; color: #DDD; font-style: italic; padding-top: 45px; text-align: center;}
+#cnt_view #empty_files {font-size: 24px; color: #999; font-style: italic; padding-top: 45px; text-align: center;}
 #cnt_view .border_block {border: 1px solid #CCC; border-radius: 5px;}
 
 #cnt_view #add_cntfile {

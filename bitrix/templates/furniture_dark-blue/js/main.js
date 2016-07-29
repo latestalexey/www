@@ -763,7 +763,7 @@ $(document).ready(function() {
 		//topMenu_action($(".topmenu li.active").attr('id'));
 	}
 	if($('#login_user').attr('data-nps') == 'y') {
-		var strHeader = 'Добро пожаловать в TELEPORT.<br><br>Вы не знаете свой пароль?<br>Тогда укажите свой новый пароль для входа в систему.'
+		var strHeader = 'Добро пожаловать в TELEPORT.<br><br>Вам необходимо сменить свой пароль<br>Придумайте новый пароль для входа в систему.'
 		ChangeUserPassword(strHeader);
 	}
 
