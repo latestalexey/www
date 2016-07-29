@@ -13,7 +13,12 @@ body
 	/*background-color: #B0BEC5; */
 	font: normal 14px Arial, Helvetica, sans-serif;
 }
-.empty_body  {background-image: url('/include/back.svg');}
+.empty_body  {
+	background-image: url(/include/teleport.jpg);
+	background-color: #AAC9D7;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
 .empty_wall {font-family: 'Open Sans', Arial, Helvetica, sans-serif; text-align: center;padding-top: 30px;font-size: 44px;color: #777777;}
 
 #content {margin-left: auto; margin-right: auto;	 width: 100%; position: relative; z-index: 10;
@@ -72,7 +77,7 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 	background-image: url(/include/checked.svg);
 }
 /*Confirmation*/
-#confirmation {text-align: center; color: #FFFFFF; padding-top: 50px; min-height: 650px;}
+#confirmation {text-align: center; color: #FFFFFF; padding-top: 70px; min-height: 650px;}
 #confirmation a {color: #FFFFFF; text-decoration: underline;}
 #confirmation a:hover, #confirmation_g a:hover {color: #FF6E53; text-decoration: underline;}
 
@@ -136,6 +141,9 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 	font-size: 1.8em;
 	line-height: 1.2em;
     font-weight: 300;
+	text-shadow: rgba(0,0,0,.65)0 1px 1px;
+    max-width: 930px;
+    margin: 72px auto 10px auto;	
 }
 .intro_text {
 	margin: 54px auto;
@@ -2107,10 +2115,10 @@ overflow: auto;
 }
 
 .item_line div .simple_button:hover, .simple_button:hover {
-    background-color: #26A69A;
+    background-color: #26A69A !important;
     cursor: pointer;
-    border-color: #26A69A;
-	color: #FFF;
+    border-color: #26A69A !important;
+	color: #FFF !important;
 }
 .item_line div .simple_button:hover svg, .simple_button:hover svg{
 	fill: #FFF;

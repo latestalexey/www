@@ -14,7 +14,6 @@ $check_res['return'] = true;
 $check_res['errMessage'] = '';
 
 if(!($usr == '' && $key == '')) {
-	//$client = new SoapClient("http://wbs.b-teleport.ru/msg_mher/ws/msg.1cws?wsdl");//, array('login'=>"teleport", 'password'=>"3tJxaZfpDLCk7Ddp"));
 	$res = post_req('Users_ConfirmRegistration',array('username'=>$usr, 'userkey'=>$key));
 	$err_code = $res['return'];
 	if($err_code == 0)
@@ -98,6 +97,7 @@ if($check_res['err_code'] == 0 || $check_res['err_code'] == 14) {
 		if(!is_array($login_res["ResponseStatus"]) || !is_array($login_res)) {
 			$USER->Logout();
 			echo 'Ошибка авторизации на сервере TELEPORT. Повторите позже';
+			LocalRedirect('/my/index.php'.$str);
 			die();
 		}
 		elseif(count($login_res["ResponseStatus"]) == 0)
@@ -108,6 +108,7 @@ if($check_res['err_code'] == 0 || $check_res['err_code'] == 14) {
 				if (!$arAuthResult) 
 				{
 					echo 'Ошибка авторизации на сайте';
+					LocalRedirect('/my/index.php'.$str);
 					die();
 				}
 			}
@@ -127,9 +128,74 @@ if($check_res['err_code'] == 0 || $check_res['err_code'] == 14) {
 					$str = '&cnt='.urlencode($cnt).'&mode=catalog';
 				}
 			}
-			
-			LocalRedirect('/my/index.php?add=nps'.$str);
-		}	
+			?>
+			<div id="confirmation">
+				<div class="resend-intro-cnt"> 
+					<div class="lined-text"> 
+						<div class="line left"></div>
+						<div class="text">Регистрация в системе</div>
+						<div class="line right"></div>
+					</div>
+					<h1 class="h1 text-shadow-fix">Вы успешно зарегистрированы в системе TELEPORT</h1>
+					<h2 class="h2">Для дальнейшей работы вам необходимо придумать и ввести пароль для входа в TELEPORT
+						 
+					</h2>
+					<form id="change_pass_form" method="post" action="#">
+						<div style="padding: 10px 0 20px 0;">
+							<input id="new_pass" style="height: 40px; width: 282px; border-radius: 5px; border: 1px solid #FFF; font-size: 20px; padding: 10px;11" type="password" placeholder="Введите новый пароль" name="new_pass" value="">
+						</div>
+						<div id="new_password_confirm" style="margin: auto;width: 200px;padding: 20px;font-size: 18px;color: #FFF;border-color: #FFF;background-color: rgba(96, 125, 139, 0.54);" class="simple_button">
+							Подтвердить
+						</div>
+						<div id="reg_error" style="margin: auto;width: 200px;font-size: 16px;color: #FF0000;"></div>
+						<input id="ui" type="hidden" name="ui" value="<?=$pas;?>"/>
+						<input style="display: none;" type="submit" value="OK"/>
+					</form>
+						
+				</div>	
+			</div>
+			<script id="auth_scr" type="text/javascript">
+				$('#new_password_confirm').click(function(e){
+					e.preventDefault();
+					$('#change_pass_form').submit();
+				});
+				$('#change_pass_form').submit(function(e){
+					e.preventDefault();
+					$('#reg_error').text('');
+
+					var inp_pass = $(this).find('#new_pass').val();
+					if(inp_pass.length < 5) {
+						$('#reg_error').text('Длина пароля должна быть не менее 5-ти символов');
+						return;
+					}
+					$('#new_password_confirm').html('<img src="/include/wait.gif"/>');
+					var xhr = new XMLHttpRequest();
+					var body =	'action=changePassword' +
+								'&adds=cnf' +
+								'&pass_hash=' + encodeURIComponent($(this).find('#ui').val()) +
+								'&new_hash=' + encodeURIComponent($(this).find('#new_pass').val());
+
+					xhr.open("POST", '/my/ajax/action.php', true);
+					xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+					xhr.onreadystatechange = function() 
+					{ 
+						if (xhr.readyState != 4) return;
+						console.log(xhr.responseText);
+						window.location.href = '/my/index.php';
+						
+					}
+					xhr.send(body);
+				});	
+			</script>
+			<?
+			//LocalRedirect('/my/index.php'.$str);
+		}
+		else {
+			$USER->Logout();
+			echo 'Ошибка авторизации на сервере TELEPORT. Повторите позже';
+			LocalRedirect('/my/index.php'.$str);
+			die();
+		}
 	}
 }
 else {?>
@@ -193,7 +259,43 @@ else {?>
 					}	
 				});
 	});
+	
+	$('#new_password_confirm').click(function(e){
+		e.preventDefault();
+		$('#change_pass_form').submit();
+	});
+	$('#change_pass_form').submit(function(e){
+		e.preventDefault();
+		$('#reg_error').text('');
+
+		var inp_pass = $(this).find('#new_pass').val();
+		if(inp_pass.length < 5) {
+			$('#reg_error').text('Длина пароля должна быть не менее 5-ти символов');
+			return;
+		}
+		$('#new_password_confirm').html('<img src="/include/wait.gif"/>');
+		var xhr = new XMLHttpRequest();
+		var body =	'action=changePassword' +
+					'&adds=html' +
+					'&pass_hash=' + encodeURIComponent($(this).find('#ui').val()) +
+					'&new_hash=' + encodeURIComponent($(this).find('#new_pass').val());
+
+		xhr.open("POST", '/my/ajax/action.php', true);
+		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+		xhr.onreadystatechange = function() 
+		{ 
+			if (xhr.readyState != 4) return;
+			
+			$('#new_password_confirm').html('Подтвердить');
+			window.location.href = '/my/index.php';
+			
+		}
+		xhr.send(body);
+	});	
+}	
 </script>
 <?}
 ?>
+
+
 
