@@ -28,16 +28,6 @@ var delType = { 'pickup': 'Самовывоз',
 
 var docs_filter = [];
 
-function getOrderDate(date){
-	var year = date.getFullYear();
-	var month = (date.getMonth().toString().length>1) ? date.getMonth()+1 : '0'+(date.getMonth()+1);
-	var day = (date.getDate().toString().length>1) ? date.getDate() : '0'+date.getDate();
-	var hh = (date.getHours().toString().length>1) ? date.getHours() : '0'+date.getHours();
-	var mm = (date.getMinutes().toString().length>1) ? date.getMinutes() : '0'+date.getMinutes();
-	var ss = (date.getSeconds().toString().length>1) ? date.getSeconds() : '0'+date.getSeconds();
-	return {"year":year, "month":month, "day":day, "hh":hh, "mm":mm, "ss":ss};
-};
-
 $(document).ready(function()
 {
 	$("#order_list").css("height", $(".main_pan").height() - $("#orders_header").height());
@@ -56,8 +46,10 @@ $(document).ready(function()
 	initOrderList(true);
 	
 	if (localStorage.getItem("userDocId")) {
-		getTmpDocInfo(localStorage.getItem("userDocId"));
+		getTmpDocInfo(localStorage.getItem("userDocId"), localStorage.getItem("sender"), localStorage.getItem("receiver"));
 		localStorage.removeItem("userDocId");
+		localStorage.removeItem("sender");
+		localStorage.removeItem("receiver");
 	};
 	
 	$('#contact_filter').on('click', function(e) {
@@ -85,7 +77,9 @@ $(document).ready(function()
 		e.stopPropagation();
 		var obj = $(this).closest('.order');
 		var id = obj.attr('data-order-id');
-		obj.hasClass('new') ? getTmpDocInfo(id) : getDocInfo(id);
+		var sender = obj.attr('data-order-sender');
+		var receiver = obj.attr('data-order-receiver');
+		obj.hasClass('new') ? getTmpDocInfo(id, sender, receiver) : getDocInfo(id, sender, receiver);
 	});
 
 	$("#order_list").scroll(function() 
@@ -161,6 +155,15 @@ $(document).ready(function()
 		};	
 		hideModalWindow($('#active_menu'));
 		$('.modal_back').remove();			
+	});
+	
+	$('.order_content_header').on('click', '.menu_col', function(){
+		if ($(this).attr('data-ltype') == 'sent') {
+			
+		}
+		else {
+			
+		}
 	});
 	
 });
@@ -395,7 +398,7 @@ function getTmpDocs(){
 								'<div class="col_1">'+val.num+'</div>' +
 								'<div class="col_2">'+docDate.day+'-'+docDate.month+'-'+docDate.year+'</div>' +
 								'<div class="col_3">'+contact.fullname+'</div>' +
-								'<div class="col_4">'+val.sum+'</div>' +
+								'<div class="col_4">'+number_format(val.sum, 2, '.', ' ')+'</div>' +
 								'<div class="col_5">'+docStatus[val.status]+'</div>' +
 							'</div>' +
 						'</div>' +
