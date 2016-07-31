@@ -531,8 +531,11 @@ $(document).ready(function()
 	});
 	
 	$('#items_header #it_rule_pan').on('click', '#UserDocList .UserDocItem', function(){
-		DocForView = $(this).attr('data-doc-id');
-		//console.log(DocForView);
+		var userDocId = $(this).attr('data-doc-id');
+		var receiver = $(this).attr('data-doc-owner');
+		localStorage.setItem("userDocId", userDocId);
+		localStorage.setItem("sender", smuser.name);
+		localStorage.setItem("receiver", receiver);
 		window.location.href = window.location.protocol + '//' + window.location.host+'/my/index.php?mode=orders';	
 	});
 });
@@ -1301,6 +1304,7 @@ function getItemInfoForDoc(obj) {
 function addItemToExistDoc(Item, contact) {
 	$.post('/my/ajax/order.php', { action: 'Documents_addItemToExistDoc', item: JSON.stringify(Item), receiver: contact }, function(data){
 		//console.log(data);
+		getItemPosInfo();
 	});
 };
 
@@ -1312,8 +1316,7 @@ function addItemToNewDoc(Item, contact) {
 			"docHeader":{
 				"id":++docid,
 				"status":"new",
-				"sender":smuser.name,
-				"receiver":contact,
+				"owner":contact,
 				"type":"order",
 				"date":curDate,
 				"num":"",
@@ -1351,24 +1354,13 @@ function addItemToNewDoc(Item, contact) {
 			}, 
 			function(data) {
 				//console.log(data);
+				getItemPosInfo();
 			}
 		);
 	});	
 };
 
-function getOrderDate(date){
-	var year = date.getFullYear();
-	var month = (date.getMonth().toString().length>1) ? date.getMonth()+1 : '0'+(date.getMonth()+1);
-	var day = (date.getDate().toString().length>1) ? date.getDate() : '0'+date.getDate();
-	var hh = (date.getHours().toString().length>1) ? date.getHours() : '0'+date.getHours();
-	var mm = (date.getMinutes().toString().length>1) ? date.getMinutes() : '0'+date.getMinutes();
-	var ss = (date.getSeconds().toString().length>1) ? date.getSeconds() : '0'+date.getSeconds();
-	return {"year":year, "month":month, "day":day, "hh":hh, "mm":mm, "ss":ss};
-};
-
 function getItemPosInfo() {
-	$('#it_cart .info').html('');
-	$('#it_cart .info').next('div').css('display','none');
 	var contact = getActiveContact();
 	if (contact.id != undefined) {
 		$.post('/my/ajax/order.php', {action: 'Documents_getItemPosInfo', receiver: contact.name}, function(data){
@@ -1379,11 +1371,11 @@ function getItemPosInfo() {
 			$.each(UserDocs, function(key, val){
 				UserItemsQty = UserItemsQty*1 + val.docTable.length*1;
 				var DocDate = getOrderDate(new Date(val.docHeader.date));	 	
-				html_str = html_str + '<div class="UserDocItem" data-doc-id='+val.docHeader.id+'>Заказ №'+(++key)+' от '+DocDate.day+'-'+DocDate.month+'-'+DocDate.year+'</div>';		
+				html_str = html_str + '<div class="UserDocItem" data-doc-id='+val.docHeader.id+' data-doc-owner='+val.docHeader.owner+'>Заказ №'+(++key)+' от '+DocDate.day+'-'+DocDate.month+'-'+DocDate.year+'</div>';		
 			}); 
-			$('#it_cart .info').html('Выбрано <span>'+UserItemsQty+'</span> позиций в <span>'+UserDocsQty+'</span> заказах <span class="show-docs fa fa-chevron-down"></span>');
-			$('#it_cart .info').next('div').css('display','inline-block');
 			$('#items_header #it_rule_pan').append('<div id="UserDocList">'+html_str+'</div>');
+			$('#it_cart .info').html('Выбрано <span>'+UserItemsQty+'</span> позиций в <span>'+UserDocsQty+'</span> заказах ' + (UserDocsQty ? '<span class="show-docs fa fa-chevron-down"></span>' : ''));
+			$('#it_cart .info').next('div').css('display','inline-block');
 		})	
 	}	
 };

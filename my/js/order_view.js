@@ -1,4 +1,4 @@
-function getDocInfo(id) {
+function getDocInfo(id, sender, receiver) {
 	var xhr = new XMLHttpRequest();
 	var body =	'action=Documents_GetById' +
 				'&message_id=' + id;
@@ -12,21 +12,22 @@ function getDocInfo(id) {
 			return;
 		}
 		var arResult = JSON.parse(xhr.responseText);
-		initDocView(arResult);
+		initDocView(arResult, sender, receiver);
 	};		
 	xhr.send(body);	
 };	
 
-function getTmpDocInfo(id) {
+function getTmpDocInfo(id, sender, receiver) {
 	$.post('/my/ajax/order.php', { action: 'Documents_GetById', message_id: id }, function(data) {
-		initDocView(JSON.parse(data));
+		var arResult = JSON.parse(data);
+		initDocView(arResult, sender, receiver);
 	});
 };
 
 function setEditPolicy (sender, docstatus) {
 	$("#upl_xls").addClass('hidden');
 	$('#del_item').addClass('hidden');
-	$('.order_item_input_row').addClass('hidden');
+	$('.input_row .col_1_2 input').addClass('hidden');
 	$(".order_item_list_content .col_0 .fa").addClass('hidden');
 	$(".order_item_list_content .col_4 .fa").addClass('hidden');
 	$(".order_item_list_content .col_5 .fa").addClass('hidden');
@@ -36,15 +37,15 @@ function setEditPolicy (sender, docstatus) {
 	if (sender == smuser.name) {
 		switch(docstatus) {
 			case 'new':
-				$("#upl_xls").removeClass('hidden');
+				$('#upl_xls').removeClass('hidden');
 				$('#del_item').removeClass('hidden');
-				$('.order_item_input_row').removeClass('hidden');
-				$(".order_item_list_content .col_0 .fa").removeClass('hidden');
-				$(".order_item_list_content .col_4 .fa").removeClass('hidden');
-				$(".order_item_list_content input").prop("disabled", false);
-				$(".order_item_list_content .col_5 input").prop("disabled", true);				
-				$(".order_item_list_content select").prop("disabled",false);
-				$(".order_item_list_content checkbox").prop("disabled", false);	
+				$('.input_row .col_1_2 input').removeClass('hidden');
+				$('.order_item_list_content .col_0 .fa').removeClass('hidden');
+				$('.order_item_list_content .col_4 .fa').removeClass('hidden');
+				$('.order_item_list_content input').prop("disabled", false);
+				$('.order_item_list_content .col_5 input').prop("disabled", true);				
+				$('.order_item_list_content select').prop("disabled",false);
+				$('.order_item_list_content checkbox').prop("disabled", false);	
 				$('#save-local').removeClass('hidden');
 				$('#transmit').removeClass('hidden')			
 				break;
@@ -57,7 +58,7 @@ function setEditPolicy (sender, docstatus) {
 			case 'agreement':
 				$("#upl_xls").removeClass('hidden');
 				$('#del_item').removeClass('hidden');
-				$('.order_item_input_row').removeClass('hidden');
+				$('.input_row .col_1_2 input').removeClass('hidden');
 				$(".order_item_list_content .col_0 .fa").removeClass('hidden');
 				$(".order_item_list_content .col_4 .fa").removeClass('hidden')
 				$(".order_item_list_content input").prop("disabled", false);
@@ -65,7 +66,8 @@ function setEditPolicy (sender, docstatus) {
 				$(".order_item_list_content select").prop("disabled",false);
 				$(".order_item_list_content checkbox").prop("disabled", false);	
 				$('#cancel').removeClass('hidden');
-				(isDocChanged()) ? $('#confirm').removeClass('hidden') : $('#transmit').removeClass('hidden');
+				$('#confirm').removeClass('hidden')
+				if (isDocChanged()) { $('#agree').removeClass('hidden') };
 				break;
 			case 'shipped':
 				break;
@@ -80,7 +82,7 @@ function setEditPolicy (sender, docstatus) {
 			case 'transmitted':
 				$("#upl_xls").removeClass('hidden');
 				$('#del_item').removeClass('hidden');
-				$('.order_item_input_row').removeClass('hidden');
+				$('.input_row .col_1_2 input').removeClass('hidden');
 				$(".order_item_list_content .col_0 .fa").removeClass('hidden');
 				$(".order_item_list_content .col_5 .fa").removeClass('hidden');
 				$(".order_item_list_content input").prop("disabled", false);
@@ -89,7 +91,7 @@ function setEditPolicy (sender, docstatus) {
 				$(".order_item_list_content checkbox").prop("disabled", false);	
 				$('#cancel').removeClass('hidden');
 				$('#process').removeClass('hidden');
-				if (isDocChanged()) { $('#transmit').removeClass('hidden') };
+				if (isDocChanged()) { $('#agree').removeClass('hidden') };
 				break;
 			case 'canceled':
 				break;
@@ -114,8 +116,8 @@ function getDocHeaderProps(arHeader) {
 
 	$('#order_view .sidebar-header').html('Свойства заказа');
 	$('#order_view .sidebar-content').html('<div class="doc-add-props"></div>');
-
-	var html_str = '';	
+	
+	var html_str = '';/*
 	$.each(arHeader.props, function(i, val){	
 		$('#order_view .sidebar-content .doc-add-props').append(
 			'<div id="'+val.name+'" class="sidebar-item-wrap">' +
@@ -160,7 +162,7 @@ function getDocHeaderProps(arHeader) {
 			);
 		};
 	});	
-	
+	*/
 	$('#order_view .sidebar-content .doc-add-props').append(
 		'<div class="sidebar-item-wrap comment">' +
 			'<div class="sidebar-item-header"><i class="fa fa-chevron-down"></i>Комментарии</div>' +
@@ -179,12 +181,11 @@ function getDocHeaderProps(arHeader) {
 
 function getTabHeader(arHeader) {
 	var html_str = ''; 	
-	var col = 8;	
+	var col = 8;	/*
 	$.each(arHeader.props, function(i, val){
 		html_str = html_str + '<td class="col_'+col+'" add-field-name='+val.name+'>'+val.header+'</td>';
 		col++;
-	});	
-	
+	});	*/
 	html_str = 
 		'<tr  class="item item_list_header">' +
 			'<td class="col_0">...</td>'+
@@ -200,13 +201,12 @@ function getTabHeader(arHeader) {
 };
 
 function getSearchStr(arHeader) {
-	console.log(arHeader.props.length);
 	var docsearchrow = 				
 		'<tr  class="item input_row">' +
 			'<td class="col_0"><i class="fa fa-keyboard-o" aria-hidden="true"></i></td>' +
 			'<td colspan="2" class="col_1_2"><input class="input_col" placeholder="Введите артикул или наименование товара"/></td>' +
-			'<td colspan="'+(5+arHeader.props.length)+'" class="col_3">' +
-				'<span class="totalsum-block">Общая сумма:<span class="total-sum">'+parseFloat(arHeader.sum).toFixed(2)+'</span><span class="currency"> '+arHeader.currencyId+'</span></span>' +
+			'<td colspan="'+(5/*+arHeader.props.length*/)+'" class="col_3">' +
+				'<span class="totalsum-block">Общая сумма:<span class="total-sum">'+number_format(arHeader.sum, 2, '.', ' ')+'</span><span class="currency"> '+arHeader.currencyId+'</span></span>' +
 			'</td>' +
 		'</tr>';	
 	return docsearchrow;	
@@ -217,7 +217,7 @@ function getDocTable(docTable, tabHeaderProps){
 	
 	$.each(docTable, function(key, item){	
 		var html_str = '';
-		var col = 8;	
+		var col = 8;	/*
 		$.each(tabHeaderProps, function(i, val){	
 			var	search = item.props.length ? JSON.search(item.props, '//*[name="'+val.name+'"]/value') : '';			
 			if (val.type === 'enum'){
@@ -237,30 +237,30 @@ function getDocTable(docTable, tabHeaderProps){
 				html_str = html_str + '<td class="col_'+col+' '+val.name+'"><input value='+search+'></td>';
 			};
 			col++;
-		});
+		});*/
 		strorderlist = strorderlist + 
 			'<tr id="it_'+item.id+'" class="item" data-it-id='+item.id+'>' +
 				'<td class="col_0"><i class="fa"></i></td>' +
 				'<td class="col_1">'+item.article+'</td>' +
 				'<td class="col_2"><span class="caption">'+item.name+'</span><i class="fa fa-chevron-up"></i></td>'+
 				'<td class="col_3">'+item.unit+'</td>' +	
-				'<td class="col_4 required"><i class="fa fa-minus" aria-hidden="true"></i><input class="quantity" value="'+item.quantity+'"><i class="fa fa-plus" aria-hidden="true"></i></td>' +						
-				'<td class="col_5"><i class="fa fa-minus" aria-hidden="true"></i><input class="confirmed" value="'+item.confirmed+'"><i class="fa fa-plus" aria-hidden="true"></i></td>'+
-				'<td class="col_6">'+parseFloat(item.price).toFixed(2)+'</td>'+
-				'<td class="col_7">'+parseFloat(item.sum).toFixed(2)+'</td>'+ html_str +			
+				'<td class="col_4 required"><i class="fa fa-minus" aria-hidden="true"></i><input class="quantity" value="'+number_format(item.quantity, 0, '', ' ')+'"><i class="fa fa-plus" aria-hidden="true"></i></td>' +						
+				'<td class="col_5"><i class="fa fa-minus" aria-hidden="true"></i><input class="confirmed" value="'+number_format(item.confirmed, 0, '', ' ')+'"><i class="fa fa-plus" aria-hidden="true"></i></td>'+
+				'<td class="col_6">'+number_format(item.price, 2, '.', '')+'</td>'+
+				'<td class="col_7">'+number_format(item.sum, 2, '.', ' ')+'</td>'+ html_str +			
 			'</tr>';	
 	});
 	return strorderlist;
 };
 
-function initDocView(arDoc) {
+function initDocView(arDoc, sender, receiver) {
 	console.log(arDoc);
 	var docHeader = arDoc.docHeader;
 	var tabHeader = arDoc.tabHeader;
 	var docTable = arDoc.docTable;
 	var docDate = getOrderDate(new Date(docHeader.date));
-	var sender = getContactInfo(docHeader.sender);	
-	var receiver = getContactInfo(docHeader.receiver); 
+	var sender = getContactInfo(sender);	
+	var receiver = getContactInfo(receiver); 
 	/*=====================================Формирование HTML=====================================================*/
 	$('#order_view').remove();
 	$('#main_content').append(
@@ -284,15 +284,7 @@ function initDocView(arDoc) {
 	var strorderinfo = 
 		'<div id="order_num">Заказ № '+docHeader.num+' от '+ docDate.day + '-' + docDate.month + '-' + docDate.year +' (' + docDate.hh + ':' + docDate.mm +':'+ docDate.ss + ')' + '</div>' +
 		'<div class="order_status"><div class="ord_hd_x1">Статус:</div><div class="ord_hd_x2">'+docStatus[docHeader.status]+'</div></div>' +
-		'<div class="order_headline"><div class="ord_hd_x1">Получатель:</div><div class="ord_hd_x2">';
-		
-	if (sender.id == smuser.id) {
-		strorderinfo = strorderinfo + '<input class="cnt_inp" type="text" name="receiver" value="'+receiver.fullname+'" data-owner="'+receiver.name+'" disabled></div></div>';
-	}
-	else {
-		strorderinfo = strorderinfo + '<input class="cnt_inp" type="text" name="sender" value="'+sender.fullname+'" data-owner="'+receiver.name+'" disabled></div></div>';
-	};
-		
+		'<div class="order_headline"><div class="ord_hd_x1">Получатель:</div><div class="ord_hd_x2"><input class="cnt_inp" type="text" name="owner" value="'+receiver.fullname+'" data-owner="'+receiver.name+'" disabled></div></div>';
 	
 	var strordercontrols = 
 		'<div class="func-buttons">' +	
@@ -306,6 +298,7 @@ function initDocView(arDoc) {
 			'<div id="transmit" class="button fa fa-exchange tooltip hidden" data-tooltip="Отправить заказ получателю"><span class="button-text">Отправить</span></div>' +
 			'<div id="cancel" class="button fa fa-reply tooltip hidden" data-tooltip="Отменить заказ"><span class="button-text">Отменить</span></div>' +
 			'<div id="process" class="button fa fa-share tooltip hidden" data-tooltip="Принять заказ в обработку"><span class="button-text">Принять в обработку</span></div>' +
+			'<div id="agree" class="button fa fa-share tooltip hidden" data-tooltip="Отправить заказ на согласование"><span class="button-text">На согласование</span></div>' +
 			'<div id="confirm" class="button fa fa-file-text-o tooltip hidden" data-tooltip="Подтвердить заказ"><span class="button-text">Подтвердить</span></div>' +
 			'<div id="ship" class="button fa fa-ship tooltip hidden" data-tooltip="Готов к отгрузке">Г<span class="button-text">отов к отгрузке</span></div>' +
 			'<div id="complete" class="button fa fa-thumbs-o-up tooltip hidden" data-tooltip="Выполнен"><span class="button-text">Выполнен</span></div>' +
@@ -347,8 +340,8 @@ function initDocView(arDoc) {
 		$.post('/my/ajax/order.php', { 
 			action: 'Documents_saveDocToLocalBase',
 			message_id: docHeader.id, 
-			sender: docHeader.sender, 
-			receiver: docHeader.receiver, 
+			sender: sender.name, 
+			receiver: receiver.name, 
 			message: JSON.stringify(arDoc),
 			type: docHeader.type, 
 			status: docHeader.status, 
@@ -358,69 +351,62 @@ function initDocView(arDoc) {
 			currencyId: docHeader.currencyId, 
 			hash: docHeader.hash
 		}, function(data) {
-			$('#order_li .order[data-order-id='+docHeader.id+'] .col_4').text(docHeader.sum.toFixed(2));
+			$('#order_li .order[data-order-id='+docHeader.id+'] .col_4').text(number_format(docHeader.sum, 2, '.', ' '));
 			hideModalWindow($('#order_view'));
 			$('.dark-tooltip').remove();
 		});
 	});			
 	
-	//Отправка документа на согласование
-	$('#order_view').on('click', '#transmit', function(){
-		var Doc = {
-			"errCode": 0,
-			"retval": arDoc
-		};
-		var xhr = new XMLHttpRequest();
-		var body =	'action=Messages_Send' +
-					'&message=' + encodeURIComponent(JSON.stringify(Doc)) +
-					'&message_type=document' +
-					'&contact=' + encodeURIComponent((sender.id==smuser.id) ? receiver.name : sender.name);					
-		xhr.open("POST", '/my/ajax/action.php', true);
-		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-		xhr.onreadystatechange = function() 
-		{ 
-			if (xhr.readyState != 4) return;
-			if(!(xhr.responseText.indexOf('%err%') == -1)) {
-				showError(xhr.responseText.replace('%err%',''));
-				return;
-			}
-			hideModalWindow($('#order_view'));
-			$('.dark-tooltip').remove();
-			
-		}				
-		xhr.send(body);	
+	//Отправка документа
+	$('#order_view').on('click', '#transmit', function(){		
+		buildTmpDoc (arDoc);
+		arDoc.docHeader.status = 'transmitted';
+		sendDoc(arDoc, (sender.id==smuser.id) ? receiver.name : sender.name);
 	});
 	
 	//Подтвердить заказ
 	$('#order_view').on('click', '#confirm', function(){
-		hideModalWindow($('#order_view'));
-		$('.dark-tooltip').remove();
+		buildTmpDoc (arDoc);
+		arDoc.docHeader.status = 'confirmed';
+		sendDoc(arDoc, (sender.id==smuser.id) ? receiver.name : sender.name);	
 	});	
 	
 	//Отменить заказ
 	$('#order_view').on('click', '#cancel', function(){
-		hideModalWindow($('#order_view'));
-		$('.dark-tooltip').remove();
+		buildTmpDoc (arDoc);
+		arDoc.docHeader.status = 'canceled';
+		sendDoc(arDoc, (sender.id==smuser.id) ? receiver.name : sender.name);
+	});	
+	
+	//Отправить заказ на согласование
+	$('#order_view').on('click', '#agree', function(){
+		buildTmpDoc (arDoc);
+		arDoc.docHeader.status = 'agreement';
+		sendDoc(arDoc, (sender.id==smuser.id) ? receiver.name : sender.name);
 	});	
 	
 	//Заказ готов к отгрузке
 	$('#order_view').on('click', '#ship', function(){
-		hideModalWindow($('#order_view'));
-		$('.dark-tooltip').remove();
-	});	
-	
-	//Заказ выполнен
-	$('#order_view').on('click', '#complete', function(){
-		hideModalWindow($('#order_view'));
-		$('.dark-tooltip').remove();
+		buildTmpDoc (arDoc);
+		arDoc.docHeader.status = 'shipped';
+		sendDoc(arDoc, (sender.id==smuser.id) ? receiver.name : sender.name);
 	});	
 	
 	//Принять заказ в обработку
 	$('#order_view').on('click', '#process', function(){
-		hideModalWindow($('#order_view'));
-		$('.dark-tooltip').remove();
+		buildTmpDoc (arDoc);
+		arDoc.docHeader.status = 'processed';
+		sendDoc(arDoc, (sender.id==smuser.id) ? receiver.name : sender.name);
 	});	
 	
+	//Заказ выполнен
+	$('#order_view').on('click', '#complete', function(){
+		buildTmpDoc (arDoc);
+		arDoc.docHeader.status = 'closed';
+		sendDoc(arDoc, (sender.id==smuser.id) ? receiver.name : sender.name);
+	});	
+	
+
 	//Закрытие окна заказа 
 	$('.close_line div').click(function() {
 		$('#order_view').hide(400);
@@ -436,32 +422,43 @@ function initDocView(arDoc) {
 	
 	//Изменение количества позиций в строке заказа кнопками
 	$('#order_view').on('click', '.col_4 .fa, .col_5 .fa', function(){
-		var qty = $(this).siblings('input').val();
-		var price = parseFloat($(this).closest('.item').children('.col_6').text()).toFixed(2);
+		var qty = parseFloat($(this).siblings('input').val().replace(/ /g, ''));
+		var price = parseFloat($(this).closest('.item').children('.col_6').text().replace(/ /g, ''));
 		if ($(this).hasClass('fa-plus')) {
 			qty++;
 		}
 		else if ($(this).hasClass('fa-minus')) {
 			qty > 1 ? qty-- : qty;			
 		};	
-		$(this).siblings('input').val(qty);
-		$(this).closest('.item').children('.col_7').text(parseFloat(price*qty).toFixed(2));
+		$(this).siblings('input').val(number_format(qty, 0, '', ' '));
+		$(this).closest('.item').children('.col_7').text(number_format(price*qty, 2, '.', ' '));
 		getTotalSum();
 	});
 	//Изменение количества позиций в строке заказа вручную
 	$('#order_view').on('keydown keyup', '.col_4 input, .col_5 input', function(e){
+		var qty = parseFloat($(this).val().replace(/ /g, ''));
+		$(this).val(number_format(qty, 0, '', ' '));
 		var arKey = [8, 9, 37, 39, 46];
-		console.log($.inArray(e.which, arKey));
 		if ((e.which >= 48 && e.which <=57) || (e.which >= 96 && e.which <=105) || ($.inArray(e.which, arKey)>=0)) {
-			if (!$(this).val().length || ($(this).val() == 0)) {$(this).val(1)};
-			var price = parseFloat($(this).closest('.item').children('.col_6').text()).toFixed(2);
-			var qty = $(this).val();
-			$(this).closest('.item').children('.col_7').text(parseFloat(price*qty).toFixed(2));
+			//if (!$(this).val().length || ($(this).val() == 0)) {$(this).val(1)};
+			var price = parseFloat($(this).closest('.item').children('.col_6').text().replace(/ /g, ''));
+			$(this).closest('.item').children('.col_7').text(number_format(price*(qty || 0), 2, '.', ' '));
 			getTotalSum();
 		} 
 		else {
 			e.preventDefault();
 		}		
+	});	
+	
+	//Изменение количества позиций в строке заказа вручную
+	$('#order_view').on('blur', '.col_4 input, .col_5 input', function(e){
+		var qty = parseFloat($(this).val().replace(/ /g, ''));
+		if (!qty.length || (qty == 0)) {
+			$(this).val(1);
+			var price = parseFloat($(this).closest('.item').children('.col_6').text().replace(/ /g, ''));
+			$(this).closest('.item').children('.col_7').text(number_format(price, 2, '.', ' '));
+			getTotalSum();	
+		};	
 	});	
 
 	//Отметить позицию в заказе
@@ -578,7 +575,6 @@ function initDocView(arDoc) {
 			$('.item:not(:first-child).selected', item_sel).removeClass('selected').prev().addClass('selected');
 			var position = $('.item.selected', item_sel).position().top;
 			var scrolltop = item_sel.scrollTop();
-			//item_sel.scrollTop(scrolltop+position);
 			$('#order_view .items_short').slimScroll({ scrollBy: scrolltop+position });
 		}
 		else if(e.which == 40 && item_sel.length) {
@@ -586,12 +582,10 @@ function initDocView(arDoc) {
 				$('.item:not(:last-child).selected', item_sel).removeClass('selected').next().addClass('selected');
 				var position = $('.item.selected', item_sel).position().top;
 				var scrolltop = item_sel.scrollTop();
-				//item_sel.scrollTop(scrolltop+position);
 				$('#order_view .items_short').slimScroll({ scrollBy: scrolltop+position });
 			}
 			else {
 				$('.item:first-child', item_sel).addClass('selected');
-				//item_sel.scrollTop(0);
 				$('#order_view .items_short').slimScroll({ scrollBy: 0 });
 			};	
 		}
@@ -619,7 +613,7 @@ function initDocView(arDoc) {
 	//Выбор позиции в выпадающем списке
 	$('#order_view').on('click', '.item_sel .item', function(e) {
 		var	exitem = $('.order_item_list_content .item[data-it-id='+$(this).attr('data-it-id')+']');		
-		if ( exitem.length && (parseFloat($(this).attr('data-price')).toFixed(2) == parseFloat($('.col_6', exitem).text()).toFixed(2)) ) {
+		if ( exitem.length && (parseFloat($(this).attr('data-price').replace(/ /g, '')) == parseFloat($('.col_6', exitem).text()).replace(/ /g, '')) ) {
 			mergeItems($(this), exitem);
 		}
 		else {
@@ -800,7 +794,6 @@ function initDocView(arDoc) {
 	});
 };
 
-
 var delay = (function(){
   var timer = 0;
   return function(callback, ms){
@@ -809,12 +802,43 @@ var delay = (function(){
   };
 })();
 
+function sendDoc (message, receiver) {
+	var Doc = {
+			"errCode": 0,
+			"retval": message
+		};
+	var xhr = new XMLHttpRequest();
+	var body =	'action=Messages_Send' +
+				'&message=' + encodeURIComponent(JSON.stringify(Doc)) +
+				'&message_type=document' +
+				'&contact=' + encodeURIComponent(receiver);					
+	xhr.open("POST", '/my/ajax/action.php', true);
+	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+	xhr.onreadystatechange = function() 
+	{ 
+		if (xhr.readyState != 4) return;
+		if(!(xhr.responseText.indexOf('%err%') == -1)) {
+			showError(xhr.responseText.replace('%err%',''));
+			return;
+		};
+		//if (xhr.responseText == 'transmitted') {
+			//$.post('/my/ajax/order.php', {action: 'Documents_delSentDoc', message_id: message.docHeader.id}, function(data) {
+			//	console.log(data);
+			//});
+		//};	
+		$('#order_li .order[data-order-id='+message.docHeader.id+'] .col_4').text(number_format(message.docHeader.sum, 2, '.', ' '));	
+		hideModalWindow($('#order_view'));
+		$('.dark-tooltip').remove();			
+	}				
+	xhr.send(body);
+};
+
 function getTotalSum() {
 	var totalSum = 0.00;
 	$('.order_item_list_content .col_7').each(function(){
-		totalSum = totalSum*1 + $(this).text()*1;
+		totalSum = parseFloat(totalSum) + parseFloat($(this).text().replace(/ /g, ''));
 	});
-	$('.input_row .total-sum').text(totalSum.toFixed(2));
+	$('.input_row .total-sum').text(number_format(totalSum, 2, '.', ' '));
 };
 
 function mergeItems(newItem, exItem){
@@ -827,10 +851,7 @@ function mergeItems(newItem, exItem){
 
 function buildTmpDoc (tmpDoc){
 	var hash = '';
-	var sum = 0.00;
-	$('.order_item_list_content .col_7').each(function(){
-		sum = sum + parseFloat($(this).text());
-	});	
+	var sum = parseFloat($('.total-sum').text().replace(/ /g, ''));
 	tmpDoc.docHeader.hash = hash;
 	tmpDoc.docHeader.sum = sum;
 	tmpDoc.docHeader.comment = $('.sidebar .comment textarea').val();
@@ -876,10 +897,10 @@ function buildTmpDoc (tmpDoc){
 			"article":$('.col_1',this).text(),
 			"name":$('.col_2',this).text(),
 			"unit":$('.col_3',this).text(),
-			"quantity":$('.col_4 input',this).val(),
-			"confirmed":$('.col_5 input',this).val(),
-			"price":$('.col_6',this).text(),
-			"sum":$('.col_7',this).text(),
+			"quantity":parseFloat($('.col_4 input',this).val().replace(/ /g, '')),
+			"confirmed":parseFloat($('.col_5 input',this).val().replace(/ /g, '')),
+			"price":parseFloat($('.col_6',this).text().replace(/ /g, '')),
+			"sum":parseFloat($('.col_7',this).text().replace(/ /g, '')),
 			"props":arItemsProps
 		};
 		arItems.push(jsonstr);
@@ -895,19 +916,17 @@ function setNewDocPosition(obj, arHeader){
 		col++;
 	});	
 	var name = $('.col_2', obj).text();
-	var qty = 1;
-	var price = parseFloat(obj.attr('data-price')).toFixed(2);
-	var sum = (price*qty).toFixed(2);
+	var price = number_format(obj.attr('data-price'), 2, '.', ' ');
 	$('#order_view .order_item_list_content').prepend(
 		'<tr id="it_'+obj.attr('data-it-id')+'" class="item" data-it-id='+obj.attr('data-it-id')+'>' +
 			'<td class="col_0"><i class="fa"></i></td>' +
 			'<td class="col_1"></td>' +
 			'<td class="col_2"><span class="caption">'+name+'</span><i class="fa fa-chevron-up"></i></td>'+
 			'<td class="col_3">шт</td>'+
-			'<td class="col_4 required"><i class="fa fa-minus" aria-hidden="true"></i><input class="quantity" value="'+qty+'"><i class="fa fa-plus" aria-hidden="true"></i></td>'+
+			'<td class="col_4 required"><i class="fa fa-minus" aria-hidden="true"></i><input class="quantity" value="1"><i class="fa fa-plus" aria-hidden="true"></i></td>'+
 			'<td class="col_5"><i class="fa fa-minus" aria-hidden="true"></i><input class="confirmed" value="0"><i class="fa fa-plus" aria-hidden="true"></i></td>'+
 			'<td class="col_6">'+price+'</td>'+
-			'<td class="col_7">'+sum+'</td>'+	html_str +						
+			'<td class="col_7">'+price+'</td>'+	html_str +						
 		'</tr>'
 	);
 	setOrderItemListContentHeight();
@@ -1008,7 +1027,6 @@ function showPosList(obj, contact){
 					var item_sel_height = (item.catalog.length*43>300) ? 300 :  item.catalog.length*43;
 					$('.modal_window.item_sel').height(item_sel_height);
 					var h = $('.modal_window.item_sel').height();
-					console.log(h);
 					$('.modal_window.item_sel .items_short').slimScroll({height: h, size: '7px', disableFadeOut: false});				
 				},150);
 			}
@@ -1047,6 +1065,7 @@ function getItemInfo(obj, contact) {
 			}
 			var CountTd = $('.order_item_list_content td').length
 			xhr.responseText.length ? obj.after('<tr id="order-item-info"><td colspan="'+CountTd+'"><div  class="detailed-info-block">'+xhr.responseText+'</div></td></tr>') : obj.after('<tr id="order-item-info" style="text-align:center;"><td colspan="'+CountTd+'"><div class="detailed-info-block">Информация отсутствует<div></td></tr>');
+			$('#order_view .order_positions .order_item_list_content').slimScroll({ scrollBy: obj.position().top });
 		}		
 		xhr.send(body);
 	};
@@ -1462,7 +1481,6 @@ function addSentMessages(msg_arResult) {
 	if(!(msg_arResult == undefined)) {
 		addMessageToList(msg_arResult, 'end')
 	};	
-	console.log($('.mess-list').height());
 	$('#msg_li').scrollTop($('.mess-list').height());
 }
 

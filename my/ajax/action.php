@@ -851,8 +851,10 @@ elseif($action == 'Documents_GetById')
 	
 	if($res['errCode'] == 0)
 	{
-		$retVal = json_decode($res["return"], true);
-		echo var_dump($retVal);
+		//$retVal = json_decode($res["return"], true);
+		//echo var_dump($retVal);
+		$retVal = $res["return"];
+		echo $retVal;
 		//
 	}
 	else
