@@ -24,6 +24,7 @@ if($mode=='')
 <title>TELEPORT. Личный портал</title>
 <link href="<?=SITE_TEMPLATE_PATH?>/css/slider.css" rel="stylesheet" type="text/css">
 <link href="<?=SITE_TEMPLATE_PATH?>/css/style_max.css" rel="stylesheet" type="text/css">
+<link href="<?=SITE_TEMPLATE_PATH?>/css/style_rbak.css" rel="stylesheet" type="text/css">
 <link href="<?=SITE_TEMPLATE_PATH?>/css/cnt_mngr.css" rel="stylesheet" type="text/css">
 <link href="<?=SITE_TEMPLATE_PATH?>/css/darktooltip.css" rel="stylesheet" type="text/css">
 <!--<link href="<?=SITE_TEMPLATE_PATH?>/css/font-awesome.min.css" rel="stylesheet" type="text/css">-->
