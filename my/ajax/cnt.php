@@ -116,6 +116,11 @@ uasort($arGroups, 'arSortByNum');
 	echo $TLP_obj->mistakes[$res["errCode"]];
 }*/
 ?>
+					<h3 id="invitings" style="z-index: 10;" class="close_list">Приглашения
+						<br><span class="cnt_add" style="font-weight: normal;">Запросы на приглашения</span>
+					</h3>
+					<div id="cnt_short_invite" class="contact_short" style="display: none;">
+					</div>
 					<h3 id="last_cnt" style="z-index: 10;">Контакты
 						<br><span class="cnt_add" style="font-weight: normal;">Recent</span>
 					</h3>
