@@ -108,9 +108,9 @@ $(document).ready(function()
 		else {
 			$('#orders_header').find('[data-contractor]').text('Получатель');
 		}
-		
-		initOrderList(false);
-	
+		var contact = getActiveContact();
+		var allContacts = (contact.id == undefined);
+		initOrderList(allContacts);
 	});
 	
 	$('.my_body').on('click','#download_doclist', function(e) {
@@ -138,9 +138,8 @@ $(document).ready(function()
 					return;
 				}
 				var itemsQty = xhr.responseText || 0;
-				//console.log(itemsQty);
 				if (xhr.responseText>0) {
-					$.post('/my/ajax/order.php', { action: 'Documents_GetLastId' }, function(docid) {
+					$.post('/my/ajax/order.php', { action: 'Documents_GetLastId'}, function(docid) {
 						addNewDoc(++docid, contact);				
 					});
 				}
@@ -155,17 +154,7 @@ $(document).ready(function()
 		};	
 		hideModalWindow($('#active_menu'));
 		$('.modal_back').remove();			
-	});
-	
-	$('.order_content_header').on('click', '.menu_col', function(){
-		if ($(this).attr('data-ltype') == 'sent') {
-			
-		}
-		else {
-			
-		}
-	});
-	
+	});	
 });
 
 function addNewDoc(docid, contact){
@@ -386,7 +375,8 @@ function getOrderList() {
 function getTmpDocs(){
 	var docDate = getOrderDate(new Date());
 	var contact = getActiveContact();
-	$.post('/my/ajax/order.php', {"action": "Documents_GetList", "receiver": contact.name}, function(data){
+	var doctype = $('.order_content_header .selected_col').attr('data-ltype');
+	$.post('/my/ajax/order.php', {"action": "Documents_GetList", "receiver": contact.name, "doctype": doctype}, function(data){
 		if (data.length) {
 			$.each(data, function(i, val){
 				var contact = getContactInfo(val.receiver);

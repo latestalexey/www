@@ -26,7 +26,6 @@ if($mode=='')
 <link href="<?=SITE_TEMPLATE_PATH?>/css/style_max.css" rel="stylesheet" type="text/css">
 <link href="<?=SITE_TEMPLATE_PATH?>/css/cnt_mngr.css" rel="stylesheet" type="text/css">
 <link href="<?=SITE_TEMPLATE_PATH?>/css/darktooltip.css" rel="stylesheet" type="text/css">
-<!--<link href="<?=SITE_TEMPLATE_PATH?>/css/font-awesome.min.css" rel="stylesheet" type="text/css">-->
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
 
 <script type="text/javascript" src="<?=SITE_TEMPLATE_PATH?>/js/teleport.js"></script>

@@ -1310,7 +1310,7 @@ function addItemToExistDoc(Item, contact) {
 
 
 function addItemToNewDoc(Item, contact) {
-	$.post('/my/ajax/order.php', { action: 'Documents_GetLastId' }, function(docid) {
+	$.post('/my/ajax/order.php', { action: 'Documents_GetLastId'}, function(docid) {
 		var curDate = new Date;
 		var message = {
 			"docHeader":{
