@@ -138,9 +138,9 @@ progress::-moz-progress-bar { background: #659cef; -moz-border-radius: 3px; }
 	border-right: solid 1px #DEEBF7;
 }
 
-::-webkit-scrollbar {
+/*::-webkit-scrollbar {
   width: 0;
-}
+}*/
 
 .cnt-channel td{
 	/*padding-top: 11px;
