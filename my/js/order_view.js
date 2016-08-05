@@ -6,16 +6,16 @@ function getDocInfo(id, sender, receiver) {
 	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 	xhr.onreadystatechange = function() { 
 		if (xhr.readyState != 4) return;
-			
+
 		if(!(xhr.responseText.indexOf('%err%') == -1)) {
-			showError(xhr.responseText.replace('%err%',''));	
+			showError(xhr.responseText.replace('%err%',''));
 			return;
 		}
 		var arResult = JSON.parse(xhr.responseText);
 		initDocView(arResult, sender, receiver);
-	};		
+	};
 	xhr.send(body);	
-};	
+};
 
 function getTmpDocInfo(id, sender, receiver) {
 	$.post('/my/ajax/order.php', { action: 'Documents_GetById', message_id: id }, function(data) {
@@ -32,7 +32,7 @@ function setEditPolicy (sender, docstatus) {
 	$(".order_item_list_content .col_4 .fa").addClass('hidden');
 	$(".order_item_list_content .col_5 .fa").addClass('hidden');
 	$(".order_item_list_content input").prop("disabled", true);
-	$(".order_item_list_content checkbox").prop("disabled", true);	
+	$(".order_item_list_content checkbox").prop("disabled", true);
 	$(".order_item_list_content select").prop("disabled",true);
 	if (sender == smuser.name) {
 		switch(docstatus) {
@@ -43,11 +43,11 @@ function setEditPolicy (sender, docstatus) {
 				$('.order_item_list_content .col_0 .fa').removeClass('hidden');
 				$('.order_item_list_content .col_4 .fa').removeClass('hidden');
 				$('.order_item_list_content input').prop("disabled", false);
-				$('.order_item_list_content .col_5 input').prop("disabled", true);				
+				$('.order_item_list_content .col_5 input').prop("disabled", true);
 				$('.order_item_list_content select').prop("disabled",false);
 				$('.order_item_list_content checkbox').prop("disabled", false);	
 				$('#save-local').removeClass('hidden');
-				$('#transmit').removeClass('hidden')			
+				$('#transmit').removeClass('hidden')
 				break;
 			case 'transmitted':
 				break;
@@ -62,7 +62,7 @@ function setEditPolicy (sender, docstatus) {
 				$(".order_item_list_content .col_0 .fa").removeClass('hidden');
 				$(".order_item_list_content .col_4 .fa").removeClass('hidden')
 				$(".order_item_list_content input").prop("disabled", false);
-				$(".order_item_list_content .col_5 input").prop("disabled", true);			
+				$(".order_item_list_content .col_5 input").prop("disabled", true);
 				$(".order_item_list_content select").prop("disabled",false);
 				$(".order_item_list_content checkbox").prop("disabled", false);	
 				$('#cancel').removeClass('hidden');
@@ -86,7 +86,7 @@ function setEditPolicy (sender, docstatus) {
 				$(".order_item_list_content .col_0 .fa").removeClass('hidden');
 				$(".order_item_list_content .col_5 .fa").removeClass('hidden');
 				$(".order_item_list_content input").prop("disabled", false);
-				$(".order_item_list_content .col_4 input").prop("disabled", true);	
+				$(".order_item_list_content .col_4 input").prop("disabled", true);
 				$(".order_item_list_content select").prop("disabled",false);
 				$(".order_item_list_content checkbox").prop("disabled", false);	
 				$('#cancel').removeClass('hidden');
@@ -111,7 +111,7 @@ function setEditPolicy (sender, docstatus) {
 
 function getDocHeaderProps(arHeader) {
 	$('#order_view #show_msg').removeClass('active');
-	$('#order_view #show_addinfo').addClass('active');	
+	$('#order_view #show_addinfo').addClass('active');
 	$('#order_view .pan_bar').removeClass('opened').siblings().hide(0).parent('.sidebar').removeClass('opened');
 
 	$('#order_view .sidebar-header').html('Свойства заказа');
@@ -180,8 +180,8 @@ function getDocHeaderProps(arHeader) {
 
 
 function getTabHeader(arHeader) {
-	var html_str = ''; 	
-	var col = 8;	/*
+	var html_str = ''; 
+	var col = 8;/*
 	$.each(arHeader.props, function(i, val){
 		html_str = html_str + '<td class="col_'+col+'" add-field-name='+val.name+'>'+val.header+'</td>';
 		col++;
@@ -197,19 +197,19 @@ function getTabHeader(arHeader) {
 			'<td class="col_6">'+arHeader.price+'</td>'+
 			'<td class="col_7">'+arHeader.sum+'</td>' + html_str +
 		'</tr>';
-	return html_str;	
+	return html_str;
 };
 
 function getSearchStr(arHeader) {
-	var docsearchrow = 				
+	var docsearchrow = 
 		'<tr  class="item input_row">' +
 			'<td class="col_0"><i class="fa fa-keyboard-o" aria-hidden="true"></i></td>' +
 			'<td colspan="2" class="col_1_2"><input class="input_col" placeholder="Введите артикул или наименование товара"/></td>' +
 			'<td colspan="'+(5/*+arHeader.props.length*/)+'" class="col_3">' +
 				'<span class="totalsum-block">Общая сумма:<span class="total-sum">'+number_format(arHeader.sum, 2, '.', ' ')+'</span><span class="currency"> '+arHeader.currencyId+'</span></span>' +
 			'</td>' +
-		'</tr>';	
-	return docsearchrow;	
+		'</tr>';
+	return docsearchrow;
 };
 
 function getDocTable(docTable, tabHeaderProps){
@@ -217,9 +217,9 @@ function getDocTable(docTable, tabHeaderProps){
 	
 	$.each(docTable, function(key, item){	
 		var html_str = '';
-		var col = 8;	/*
+		var col = 8;/*
 		$.each(tabHeaderProps, function(i, val){	
-			var	search = item.props.length ? JSON.search(item.props, '//*[name="'+val.name+'"]/value') : '';			
+			var	search = item.props.length ? JSON.search(item.props, '//*[name="'+val.name+'"]/value') : '';
 			if (val.type === 'enum'){
 				html_str = html_str + '<td class="col_'+col+' '+val.name+' required"><select>';
 				if (!val.required) { html_str = html_str + '<option></option>'};
@@ -243,12 +243,12 @@ function getDocTable(docTable, tabHeaderProps){
 				'<td class="col_0"><i class="fa"></i></td>' +
 				'<td class="col_1">'+item.article+'</td>' +
 				'<td class="col_2"><span class="caption">'+item.name+'</span><i class="fa fa-chevron-up"></i></td>'+
-				'<td class="col_3">'+item.unit+'</td>' +	
-				'<td class="col_4 required"><i class="fa fa-minus" aria-hidden="true"></i><input class="quantity" value="'+number_format(item.quantity, 0, '', ' ')+'"><i class="fa fa-plus" aria-hidden="true"></i></td>' +						
+				'<td class="col_3">'+item.unit+'</td>' +
+				'<td class="col_4 required"><i class="fa fa-minus" aria-hidden="true"></i><input class="quantity" value="'+number_format(item.quantity, 0, '', ' ')+'"><i class="fa fa-plus" aria-hidden="true"></i></td>' +
 				'<td class="col_5"><i class="fa fa-minus" aria-hidden="true"></i><input class="confirmed" value="'+number_format(item.confirmed, 0, '', ' ')+'"><i class="fa fa-plus" aria-hidden="true"></i></td>'+
 				'<td class="col_6">'+number_format(item.price, 2, '.', '')+'</td>'+
-				'<td class="col_7">'+number_format(item.sum, 2, '.', ' ')+'</td>'+ html_str +			
-			'</tr>';	
+				'<td class="col_7">'+number_format(item.sum, 2, '.', ' ')+'</td>'+ html_str +
+			'</tr>';
 	});
 	return strorderlist;
 };
@@ -259,9 +259,9 @@ function initDocView(arDoc, sender, receiver) {
 	var tabHeader = arDoc.tabHeader;
 	var docTable = arDoc.docTable;
 	var docDate = getOrderDate(new Date(docHeader.date));
-	var sender = getContactInfo(sender);	
+	var sender = getContactInfo(sender);
 	var receiver = getContactInfo(receiver); 
-	/*=====================================Формирование HTML=====================================================*/
+/*=====================================Формирование HTML=====================================================*/
 	$('#order_view').remove();
 	$('#main_content').append(
 			'<div id="order_view" class="modal_window">' +
@@ -272,27 +272,27 @@ function initDocView(arDoc, sender, receiver) {
 					'<div class="order_positions">' +
 						'<table class="order_item_list_head"></table>' +
 						'<table class="order_item_list_content"></table>' +
-					'</div>' +			
-					'<div class="sidebar">' +	
+					'</div>' +
+					'<div class="sidebar">' +
 						'<div class="pan_bar"></div>' +	
 						'<div class="sidebar-header"></div>' +
 						'<div class="sidebar-content"></div>' +
-					'</div>' +	
-				'</div>' +	
-			'</div>'	
+					'</div>' +
+				'</div>' +
+			'</div>'
 	);
 	var strorderinfo = 
 		'<div id="order_num">Заказ № '+docHeader.num+' от '+ docDate.day + '-' + docDate.month + '-' + docDate.year +' (' + docDate.hh + ':' + docDate.mm +':'+ docDate.ss + ')' + '</div>' +
 		'<div class="order_status"><div class="ord_hd_x1">Статус:</div><div class="ord_hd_x2">'+docStatus[docHeader.status]+'</div></div>' +
 		'<div class="order_headline"><div class="ord_hd_x1">Получатель:</div><div class="ord_hd_x2"><input class="cnt_inp" type="text" name="owner" value="'+receiver.fullname+'" data-owner="'+receiver.name+'" disabled></div></div>';
-	
+
 	var strordercontrols = 
 		'<div class="func-buttons">' +	
 			'<div id="show_addinfo" class="button fa fa-info-circle tooltip" data-tooltip="Показать дополнительные сведения о заказе"></div>' +
 			'<div id="show_msg" class="button fa fa-commenting-o tooltip" data-tooltip="Открыть панель сообщений"></div>' +
 			'<div id="upl_xls" class="button fa fa-file-excel-o tooltip"  data-tooltip="Загрузить xls-файл"></div>' +
-			'<div id="del_item" class="button disabled fa fa-trash tooltip"  data-tooltip="Удалить выбранные элементы"></div>' +	
-		'</div>' +	
+			'<div id="del_item" class="button disabled fa fa-trash tooltip"  data-tooltip="Удалить выбранные элементы"></div>' +
+		'</div>' +
 		'<div class="confirm-buttons">' +
 			'<div id="save-local" class="button fa fa-floppy-o tooltip hidden" data-tooltip="Сохранить заказ, не отправляя получателю"><span class="button-text">Сохранить</span></div>' +
 			'<div id="transmit" class="button fa fa-exchange tooltip hidden" data-tooltip="Отправить заказ получателю"><span class="button-text">Отправить</span></div>' +

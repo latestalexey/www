@@ -101,8 +101,8 @@ elseif($action == 'Documents_addNew')
 elseif($action == 'Documents_GetLastId')
 {
 	$receiver = $_POST["receiver"];
-	$query = "SELECT message_id FROM t_documents WHERE sender='$user'";
-	if (strlen($receiver)) $query = $query . " and receiver = '$receiver'";
+	$query = "SELECT message_id FROM t_documents";
+	if (strlen($receiver)) $query = $query . " WHERE receiver = '$receiver'";
 	$query = $query . " order by message_id desc limit 1";
 	$result = mysql_query ($query) or die (mysql_error());
 	$docid = mysql_result ($result,0);

@@ -203,7 +203,7 @@ function addNewDoc(docid, contact){
 			if (data == 1) {
 				var docDate = getOrderDate(curDate);
 				$('#order_li').prepend(
-					'<div id='+docid+' class="order new" data-order-id='+docid+' data-order-sender='+contact.name+' data-order-receiver="">' +
+					'<div id='+docid+' class="order new" data-order-id='+docid+' data-order-sender='+smuser.name+' data-order-receiver='+contact.name+'>' +
 						'<div class="order_content">' +
 							'<div class="order_line">' +
 								'<div class="col_0">'+docType[message.docHeader.type]+'</div>' +
@@ -217,7 +217,7 @@ function addNewDoc(docid, contact){
 						'<p class="sub_info"><img src="/include/stdown.png"></p>' +
 					'</div>'
 				);	
-				getTmpDocInfo(docid);	
+				getTmpDocInfo(docid, smuser.name, contact.name);	
 			}		
 		}
 	);
