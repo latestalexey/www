@@ -367,7 +367,9 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 	top: 4px;
 	left: 253px;
 }
-
+#invitings {
+	display: none;
+}
 .contact_list {border-bottom: solid 1px #CCCCCC;}
 .contact_list h3, .cnt_abutton {
 	background-image: url(/my/data/svg/expand_less.svg); background-repeat: no-repeat; background-position: 265px center; 

@@ -321,7 +321,7 @@ function messagesRequest() {
 				return;
 			}
 			try {
-				if(xhr.responseText.indexOf('%%auth_failed%%') != -1) {
+				if(!(xhr.responseText.indexOf('%%auth_failed%%') == -1)) {
 					window.location.href = window.location.href;
 				}
 				else {
@@ -1033,7 +1033,30 @@ function showContactRequests(name, msg) {
 	if($('#rqst_window').find('[data-contact-name='+encodeString(name)+']').length != 0) {
 		return;
 	}
-	var str_block = '<div class="rqst_block" data-contact-name="'+name+'">'+
+	req_name = encodeString(name);
+	if($('#cnt_short_invite [data-usr-name='+req_name+']').length == 0) {
+		var str = '<div class="contact_inf" data-usr-name="'+name+'">\
+						<table style="border-spacing: 0;">\
+							<tbody><tr>\
+								<td>\
+									<div>\
+										<div class="cnt_avatar cnt_avatar_small" style="background-image: url(/my/ajax/files.php?a=prev&amp;i=tlpav_2);"></div>\
+									</div>\
+								</td>\
+								<td>\
+									<div class="cnt_text">' + name + '</div>\
+									<p class="cnt_add">Канал общих контактов</p>\
+								</td>\
+								</tr>\
+							</tbody>\
+						</table>\
+					</div>';
+		$('#cnt_short_invite').append(str);
+		$('#invitings').show(0);
+		$('#invitings').removeClass('close_list');
+		$('#cnt_short_invite').show(0);
+	}			
+	/*var str_block = '<div class="rqst_block" data-contact-name="'+name+'">'+
 			'<div style="text-align: center; color: #444;"><b>'+name+'</b> хочет пригласить Вас в список своих контактов</div>' + 
 			'<div class="msg_header">Сообщение от '+name+'</div>' + 
 			'<div class="msg">'+msg+'</div>' + 
@@ -1062,6 +1085,7 @@ function showContactRequests(name, msg) {
 	}	
 	$('#rqst_window').append(str_block);
 	$($('#rqst_window .rqst_block')[0]).show();
+	*/
 }
 function droppableCreate(obj) {
    obj.droppable({

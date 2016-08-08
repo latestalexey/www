@@ -567,7 +567,10 @@ $(document).ready(function() {
 					$(".search_result").html("").fadeOut(); 
 				}
 			});
-				
+			$('.cnt_inp').on('blur',function() {
+				$(".search_result").fadeOut();
+			});
+			
 			$(".search_result").on("click", ".contact_inf", function(){
 				$(".cnt_inp").val($(this).attr('data-usr-name'));
 				$(".search_result").fadeOut();
