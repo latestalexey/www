@@ -155,7 +155,7 @@
 	</tr>
 </table>
 
-<table class="cnt-channel-list" style = "display: block; table-layout: fixed; max-height: 495px; overflow-y: scroll">
+<table class="cnt-channel-list" style = "display: block; table-layout: fixed; max-height: 495px; max-width: 300px; overflow-y: scroll">
 	<tr class="cnt-channel selected" data-channel-name="Все контакты" data-channel-status="system" data-sort-num="-30">
 		<td height="45" width="240">
 			<div style="display: inline-block; vertical-align: middle;">Все контакты</div>
