@@ -140,8 +140,13 @@ progress::-moz-progress-bar { background: #659cef; -moz-border-radius: 3px; }
 
 /*::-webkit-scrollbar {
   width: 0;
+<<<<<<< HEAD
 }
 */
+=======
+}*/
+
+>>>>>>> 1be8d4970ce79fe9136edb950914181e39580da0
 .cnt-channel td{
 	/*padding-top: 11px;
 	padding-bottom: 11px;*/
@@ -278,7 +283,7 @@ progress::-moz-progress-bar { background: #659cef; -moz-border-radius: 3px; }
 
 #cnt-contact-move{
 	position: absolute;
-	z-index: 10300;
+	z-index: 10200;
 }
 
 #cnt-contact-move ul{

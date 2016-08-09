@@ -321,7 +321,7 @@ function messagesRequest() {
 				return;
 			}
 			try {
-				if(xhr.responseText.indexOf('%%auth_failed%%') != -1) {
+				if(!(xhr.responseText.indexOf('%%auth_failed%%') == -1)) {
 					window.location.href = window.location.href;
 				}
 				else {
@@ -425,8 +425,9 @@ function ContactInfoView(name) {
 				showError(xhr.responseText.replace('%err%',''));
 				return;
 			}
+			hideModalWindow($('.modal_window'));
 			$('#main_content #cnt_view').remove();
-			$('#main_content').append('<div id="cnt_view" class="modal_window"></div>');
+			$('#main_content').append('<div id="cnt_view" class="modal_window"></div>');		
 			var strwindow = '<div class="close_line"><div class="clw"><img src="/include/close_window.svg"/></div></div>';
 
 			//var arInfo = jQuery.parseJSON(xhr.responseText);
@@ -726,12 +727,12 @@ function requestCntFileBrowser(arResult) {
 		'<div class="file_block"><p class="filename"></p>'+
 		'<p class="file_info"></p></div>'+
 		'<a class="del_file close"><div class="cloud">'+delete_svg+'</div></a>'+
-		'<div class="fileinfo">Готов к отправке</div>'+
+		//'<div class="fileinfo">Готов к отправке</div>'+
 		'<div class="progress"><div class="progress-bar"></div></div>'+
 		'</div>';
 		
-	$(arResult).each(function(){
-		files_html = files_html + '<div class="msg_file">' + addCntFileToList($(this), true) + '</div>';
+	$(arResult).each(function(key, val){
+		files_html = files_html + '<div class="msg_file">' + addCntFileToList(val, true) + '</div>';
 	});	
 	
 	if (contact == smuser.name) {
@@ -747,12 +748,6 @@ function requestCntFileBrowser(arResult) {
 							Ваши бланки договоров, сертификаты, пресс-релизы и прайс-листы все ваши контакты смогут свободно скачивать здесь и не отвлекать вас. (Макс. 60Мб каждый файл)\
 						</p>'+
 					'</div>' +
-					'<div id="send_cntfile" style="display:none;">' +
-						'<svg fill="#777" height="36" viewBox="0 0 24 24" width="36" xmlns="http://www.w3.org/2000/svg">' +
-							'<path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>' +
-							'<path d="M0 0h24v24H0z" fill="none"/>' +
-						'</svg>' +
-					'</div>' +
 					'<div id="upload_cntfile" style="display:none">' +
 						'<svg fill="#777" height="36" viewBox="0 0 24 24" width="36" xmlns="http://www.w3.org/2000/svg">' +
 							'<path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>' +
@@ -763,11 +758,11 @@ function requestCntFileBrowser(arResult) {
 					'<input type="file" name="cntfile_upl" id="cntfile_upl" style="display: none;">' +
 					'<input type="hidden" name="action" value="upload_cntfile">' +	
 				'</form>';		
-		$('#cnt_filelist_content').append(html_str);
+		$('#cnt_filelist .cnt_headline').append(html_str);
 	} else if(files_html == '') {
 		files_html = '<div id="empty_files">\
 			Файлы в профиле контакта отсутствуют\
-			<p style="font-size: 14px;font-weight: 400;font-style: italic;color: rgba(255, 108, 0, 0.8);">\
+			<p style="font-size: 14px;font-weight: 400;font-style: italic;">\
 				Не теряйте время на отправку необходимых шаблонов и документов.<br>\
 				В файлах профиля можно выкладывать и безопасно хранить для своих контактов любые файлы. Бланки договоров, сертификаты, пресс-релизы, прайс-листы и многое другое, что необходимо для работы. <br>\
 				Файлы будут доступны только вашим контактам.\
@@ -783,7 +778,7 @@ function requestCntFileBrowser(arResult) {
 	$('#cnt_view #cnt_info_body').hide(0);
 	$('#cnt_filelist').show(0);
 	
-	$('#cnt_filelist_content').height($('#cnt_filelist').height() - $('#cnt_filelist .cnt_headline').height());
+	$('#cnt_filelist_content').height($('#cnt_filelist').height() - $('#cnt_filelist .cnt_headline').height()-10);
 	$('#cnt_filelist_content .scrolllist').slimScroll({height: 'auto', size: '7px', disableFadeOut: false});
 
 	$('#cnt_filelist_content').on('click','.image_file .close_line svg',function(e) {	
@@ -805,8 +800,8 @@ function requestCntFileBrowser(arResult) {
 	});
 	
 	$(function() {	
-	$("#cnt_filelist_content #cntfile_upl").uploadifive({
-		'auto' : false,
+	$("#cnt_filelist #cntfile_upl").uploadifive({
+		'auto' : true,
 		'uploadScript' : '/my/ajax/action.php',
 		'buttonText' : '',
 		'buttonClass' : 'filename_button',
@@ -819,6 +814,7 @@ function requestCntFileBrowser(arResult) {
 		'itemTemplate' : file_html,
 		'formData': {'action': 'send_cnt_file'},
 		'onAddQueueItem': function(file_obj) {
+			console.log(file_obj);
 			var file_name = file_obj.name;
 			var fileUrl = file_name, parts, ext = ( parts = file_name.split("/").pop().split(".") ).length > 1 ? parts.pop() : "";
 			var file_size = Math.round(file_obj.size/1024);
@@ -834,10 +830,24 @@ function requestCntFileBrowser(arResult) {
 				$(value).parent().parent().find('.file_icon').html(att_svg);
 				$(value).next('p').html(file_size+file_met+' '+file_type);
 			});
-			$('#send_cntfile').show(200);
 		},
 		'onUploadComplete' : function(file, data) {
-			
+			$('#cnt-fileinfo').hide(100);
+			var ext = ( parts = file.name.split("/").pop().split(".") ).length > 1 ? parts.pop() : "";
+			var obj = {
+				add_date: new Date(), 
+				file_category: 'userFiles', 
+				file_extention: ext, 
+				file_id: '', 
+				file_name: file.name, 
+				file_size: file.size, 
+				has_preview: false, 
+				message_id: '', 
+				public_access: false, 
+				receiver: '',
+				user_name: smuser.name
+			};
+			$('#cnt_filelist_content .scrolllist').prepend('<div class="msg_file">' + addCntFileToList(obj, true) + '</div>');
 		},
 		'onQueueComplete' : function() {
 			
@@ -850,12 +860,12 @@ function addCntFileToList(obj, hide_image) {
 		'<path d="M0 0h24v24H0z" fill="none"/>'+
 		'<path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/>'+
 		'</svg>	';
-	var file_size = Math.round(obj.attr('file_size')/1024);
-	var file_idat = getFileType(obj.attr('file_extention'));
+	var file_size = Math.round(obj.file_size/1024);
+	var file_idat = getFileType(obj.file_extention);
 	var file_type = file_idat.type;
 	var att_svg = file_idat.svg;
-	var file_url = '/my/ajax/files.php?a=detail&i='+obj.attr('file_id');//$(this).attr('furl');
-	var pvfile_url = '/my/ajax/files.php?a=prev&i='+obj.attr('file_id');//$(this).attr('furl');
+	var file_url = '/my/ajax/files.php?a=detail&i='+obj.file_id;//$(this).attr('furl');
+	var pvfile_url = '/my/ajax/files.php?a=prev&i='+obj.file_id;//$(this).attr('furl');
 	var file_met = "KB";
 	if(file_size > 1024) { 
 		file_size = Math.round(file_size/1024);
@@ -873,9 +883,10 @@ function addCntFileToList(obj, hide_image) {
 		'<img src="'+pvfile_url+'"/>'+
 		'</div>';
 	}
-	var str_html = 	'<div class="upfile" id="fn_'+obj.attr('file_id') + '" data-furl="'+file_url+'"><a target="_blank" href="'+file_url+'"><div class="file_icon">'+att_svg+'</div></a>'+
-					'<div class="file_block"><a target="_blank" href="'+file_url+'"><p class="filename">' + obj.attr('file_name') + '</p></a>'+
+	var str_html = 	'<div class="upfile" id="fn_'+ obj.file_id + '" data-furl="'+file_url+'"><a target="_blank" href="'+file_url+'"><div class="file_icon">'+att_svg+'</div></a>'+
+					'<div class="file_block"><a target="_blank" href="'+file_url+'"><p class="filename">' + obj.file_name + '</p></a>'+
 					'<p class="file_info">'+file_size+file_met+' '+file_type+'</p></div>'+
+					'<div id="del-user-file" class="fa fa-trash-o help_icon"><div class="help_info">Удалить файл</div></div>' +
 					'<a target="_blank" href="'+file_url+'"><div class="cloud help_icon"><div class="help_info">Скачать файл</div>'+cloud_svg+'</div></a>'+ img_str +
 					'</div>';
 
@@ -1022,7 +1033,30 @@ function showContactRequests(name, msg) {
 	if($('#rqst_window').find('[data-contact-name='+encodeString(name)+']').length != 0) {
 		return;
 	}
-	var str_block = '<div class="rqst_block" data-contact-name="'+name+'">'+
+	req_name = encodeString(name);
+	if($('#cnt_short_invite [data-usr-name='+req_name+']').length == 0) {
+		var str = '<div class="contact_inf" data-usr-name="'+name+'">\
+						<table style="border-spacing: 0;">\
+							<tbody><tr>\
+								<td>\
+									<div>\
+										<div class="cnt_avatar cnt_avatar_small" style="background-image: url(/my/ajax/files.php?a=prev&amp;i=tlpav_2);"></div>\
+									</div>\
+								</td>\
+								<td>\
+									<div class="cnt_text">' + name + '</div>\
+									<p class="cnt_add">Канал общих контактов</p>\
+								</td>\
+								</tr>\
+							</tbody>\
+						</table>\
+					</div>';
+		$('#cnt_short_invite').append(str);
+		$('#invitings').show(0);
+		$('#invitings').removeClass('close_list');
+		$('#cnt_short_invite').show(0);
+	}			
+	/*var str_block = '<div class="rqst_block" data-contact-name="'+name+'">'+
 			'<div style="text-align: center; color: #444;"><b>'+name+'</b> хочет пригласить Вас в список своих контактов</div>' + 
 			'<div class="msg_header">Сообщение от '+name+'</div>' + 
 			'<div class="msg">'+msg+'</div>' + 
@@ -1051,6 +1085,7 @@ function showContactRequests(name, msg) {
 	}	
 	$('#rqst_window').append(str_block);
 	$($('#rqst_window .rqst_block')[0]).show();
+	*/
 }
 function droppableCreate(obj) {
    obj.droppable({

@@ -567,7 +567,10 @@ $(document).ready(function() {
 					$(".search_result").html("").fadeOut(); 
 				}
 			});
-				
+			$('.cnt_inp').on('blur',function() {
+				$(".search_result").fadeOut();
+			});
+			
 			$(".search_result").on("click", ".contact_inf", function(){
 				$(".cnt_inp").val($(this).attr('data-usr-name'));
 				$(".search_result").fadeOut();
@@ -763,7 +766,7 @@ $(document).ready(function() {
 		//topMenu_action($(".topmenu li.active").attr('id'));
 	}
 	if($('#login_user').attr('data-nps') == 'y') {
-		var strHeader = 'Добро пожаловать в TELEPORT.<br><br>Вы не знаете свой пароль?<br>Тогда укажите свой новый пароль для входа в систему.'
+		var strHeader = 'Добро пожаловать в TELEPORT.<br><br>Вам необходимо сменить свой пароль<br>Придумайте новый пароль для входа в систему.'
 		ChangeUserPassword(strHeader);
 	}
 
@@ -772,9 +775,9 @@ $(document).ready(function() {
 	setInterval(messagesRequest, 5000);
 	
 	showGreeting();
-	if ($('#m_cnt_list .contact_inf').length < 5) {
+	/*if ($('#m_cnt_list .contact_inf').length < 5) {
 		setTimeout(function() {showTelebotInfo('Нажмите на значок "+" над списком контактов, чтобы пригласить в TELEPORT, своих партнеров и друзей для работы и общения.','',15000)}, 30000);
-	}	
+	}*/	
 });
 
 function parseURL(url_string) {
@@ -962,3 +965,40 @@ function showGreeting() {
 
 	});
 }
+
+function number_format(number, decimals, dec_point, thousands_sep) {
+  number = (number + '').replace(/[^0-9+\-Ee.]/g, '');
+  var n = !isFinite(+number) ? 0 : +number,
+    prec = !isFinite(+decimals) ? 0 : Math.abs(decimals),
+    sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep,
+    dec = (typeof dec_point === 'undefined') ? '.' : dec_point,
+    s = '',
+    toFixedFix = function(n, prec) {
+      var k = Math.pow(10, prec);
+      return '' + (Math.round(n * k) / k)
+        .toFixed(prec);
+    };
+  // Fix for IE parseFloat(0.55).toFixed(0) = 0;
+  s = (prec ? toFixedFix(n, prec) : '' + Math.round(n))
+    .split('.');
+  if (s[0].length > 3) {
+    s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep);
+  }
+  if ((s[1] || '')
+    .length < prec) {
+    s[1] = s[1] || '';
+    s[1] += new Array(prec - s[1].length + 1)
+      .join('0');
+  }
+  return s.join(dec);
+}
+
+function getOrderDate(date){
+	var year = date.getFullYear();
+	var month = (date.getMonth().toString().length>1) ? date.getMonth()+1 : '0'+(date.getMonth()+1);
+	var day = (date.getDate().toString().length>1) ? date.getDate() : '0'+date.getDate();
+	var hh = (date.getHours().toString().length>1) ? date.getHours() : '0'+date.getHours();
+	var mm = (date.getMinutes().toString().length>1) ? date.getMinutes() : '0'+date.getMinutes();
+	var ss = (date.getSeconds().toString().length>1) ? date.getSeconds() : '0'+date.getSeconds();
+	return {"year":year, "month":month, "day":day, "hh":hh, "mm":mm, "ss":ss};
+};

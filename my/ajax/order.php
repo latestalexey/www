@@ -53,12 +53,13 @@ if($action == 'Documents_saveDocToLocalBase')
 }
 elseif($action == 'Documents_addItemToExistDoc')
 {
+	$sender = $_POST["sender"];
 	$receiver = $_POST["receiver"];
 	$item = json_decode($_POST["item"], true);
 	$itemid = $item[id];
 	$itemsum = $item[sum];
 	$itemqty = $item[quantity];
-	$result = mysql_query ("SELECT message_id, message, sum FROM t_documents WHERE receiver = '$receiver' order by message_id desc limit 1") or die (mysql_error());
+	$result = mysql_query ("SELECT message_id, message, sum FROM t_documents WHERE sender='$user' and receiver = '$receiver' order by message_id desc limit 1") or die (mysql_error());
 	$id = json_decode(mysql_result ($result,0,0));
 	$message = json_decode(mysql_result ($result,0,1));
 	$docsum = json_decode(mysql_result ($result,0,2));
@@ -110,8 +111,11 @@ elseif($action == 'Documents_GetLastId')
 elseif($action == 'Documents_GetList')
 {
 	$receiver = $_POST["receiver"];
-	$query = "SELECT message_id, sender, receiver, type, status, date, num, sum, currencyId, hash FROM t_documents";
-	if (strlen($receiver)) $query = $query . " WHERE receiver = '$receiver'";
+	$doctype = $_POST["doctype"];
+	$query = "SELECT message_id, sender, receiver, type, status, date, num, sum, currencyId, hash FROM t_documents WHERE sender='$user'";
+	if (strlen($receiver)) $query = $query . " and receiver = '$receiver'";
+	if (strlen($doctype) && ($doctype == 'sent')) $query = $query . " and sender = '$user'";
+	if (strlen($doctype) && ($doctype == 'recieved')) $query = $query . " and sender != '$user'";
 	$result = mysql_query ($query) or die (mysql_error());
 	$data = array();
 	while($row=mysql_fetch_assoc($result)) {
@@ -139,7 +143,7 @@ elseif($action == 'Documents_GetById')
 elseif($action == 'Documents_getItemPosInfo')
 {	
 	$receiver = $_POST["receiver"];
-	$query = "SELECT message  FROM t_documents WHERE receiver = '$receiver'";
+	$query = "SELECT message  FROM t_documents WHERE sender='$user' and receiver = '$receiver'";
 	$result = mysql_query ($query) or die (mysql_error());
 	$data = array();
 	while($row=mysql_fetch_assoc($result)) {

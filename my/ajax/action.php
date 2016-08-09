@@ -851,8 +851,10 @@ elseif($action == 'Documents_GetById')
 	
 	if($res['errCode'] == 0)
 	{
-		$retVal = json_decode($res["return"], true);
-		echo var_dump($retVal);
+		//$retVal = json_decode($res["return"], true);
+		//echo var_dump($retVal);
+		$retVal = $res["return"];
+		echo $retVal;
 		//
 	}
 	else
@@ -1473,8 +1475,10 @@ elseif($action == 'changePassword')
 	{
 		if(!($key == 'action' || $key=='adds'))
 			{$arFnc[$key] = $value;}
+	}
+	if(!($_POST["adds"] == "cnf")) {
+		$pass_hash = $TLP_obj->telecall('MD5',array('input'=>$arFnc['pass_hash']));
 	}	
-	$pass_hash = $TLP_obj->telecall('MD5',array('input'=>$arFnc['pass_hash']));
 	$new_hash = $TLP_obj->telecall('MD5',array('input'=>$arFnc['new_hash']));
 	$arFnc['pass_hash'] = $pass_hash;
 	$arFnc['new_hash'] = $new_hash;
