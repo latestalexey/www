@@ -26,7 +26,7 @@ $(document).ready(function() {
 			if($(e.target).is('ymaps')) {return;}
 
 			$('.modal_window').hide();
-			$('.modal_window').remove();
+			$('.modal_window').not('#cnt-manager').remove();
 			$('.modal_back').remove();
 			$('.cnt_info').not($(e.target).children()).hide();
 			$('.msg_selected').removeClass('msg_selected');
@@ -705,8 +705,6 @@ $(document).ready(function() {
 			resetMouseEventListener();
 			addCntManagerEvents();
 			//RB
-
-
 		}	
 		xhr.send(body);
 	});
