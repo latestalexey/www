@@ -109,7 +109,6 @@ if($mode=='')
 		</div>
 		<div id="ext_pan">
 			<div id="ext_bar" class="pan_bar" style="right: 303px;">
-				>
 			</div>
 			<div id="ext_pan_header" class="up_pan" style="position: relative; float: none;">
 				<div class="clw" style="position: absolute; right: 0px;">

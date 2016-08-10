@@ -664,10 +664,11 @@ elseif($action == 'documents_getList')
 	$arFnc = array();
 	foreach ($_POST as $key => $value) 
 	{
-		if(!($key == 'action' || $key=='adds'))
+		if($key == 'filters')
+			{$arFnc[$key] = json_decode($value);}
+		elseif(!($key == 'action' || $key=='adds'))
 			{$arFnc[$key] = $value;}
 	}	
-		
 	$res = $TLP_obj->telecall('Documents_GetList', $arFnc);
 	if($res['errCode'] == 0)
 	{
