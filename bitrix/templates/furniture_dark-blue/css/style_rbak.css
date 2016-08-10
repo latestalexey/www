@@ -463,3 +463,14 @@ progress::-moz-progress-bar { background: #659cef; -moz-border-radius: 3px; }
 }
 
 /* End of Contact Manager */
+
+/* Begin of Squad manager */
+#squad-manager{
+	height: 600px;
+	left: 50%;
+	position: absolute;
+	top: 100;
+	transform: translate(-50%);
+	width: 1420px;
+}
+/* End of Contact Manager */

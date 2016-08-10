@@ -675,6 +675,7 @@ $(document).ready(function() {
 		}
 		obj.find('.new_cnt').slideToggle(200);
 	});
+	
 	$('.my_body').on('click','#manage_cnt', function(e) {
 		e.stopPropagation();
 		$('.modal_back').remove();
@@ -704,6 +705,39 @@ $(document).ready(function() {
 			//RB
 			resetMouseEventListener();
 			addCntManagerEvents();
+			//RB
+		}	
+		xhr.send(body);
+	});
+
+	$('.my_body').on('click','#manage_squad', function(e) {
+		e.stopPropagation();
+		$('.modal_back').remove();
+		$('#active_menu').remove();
+		
+		var xhr = new XMLHttpRequest();
+		var body =	'';
+
+		xhr.open("POST", '/my/ajax/squad_mngr.php', true);
+		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+		xhr.onreadystatechange = function() 
+		{ 
+			if (xhr.readyState != 4) return;
+			
+			if(!(xhr.responseText.indexOf('%err%') == -1)) {
+				showError(xhr.responseText.replace('%err%',''));
+				return;
+			}
+			
+			$('#main_content #squad-manager').remove();
+			$('#main_content').append('<div id="squad-manager" class="modal_window"></div>');
+
+			var htmlSquadWindow = '<div class="close_line"><div class="clw"><img src="/include/close_window.svg"/></div></div>' + xhr.responseText;
+			$('#squad-manager').append(htmlSquadWindow);
+			showModalWindow($('#squad-manager'));
+			//RB
+			//resetMouseEventListener();
+			//addCntManagerEvents();
 			//RB
 		}	
 		xhr.send(body);
