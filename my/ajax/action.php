@@ -221,7 +221,7 @@ elseif($action == 'send_msg')
 	}	
 	$arParam['files'] = $files;
 	$res = $TLP_obj->datapost('Messages_Send', $arParam);
-	//echo var_dump($res);
+
 	$res = json_decode($res, true);
 	if($res['errCode'] == 0)
 	{

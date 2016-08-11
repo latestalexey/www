@@ -13,6 +13,7 @@ class CTSession
 	public $mistakes = array();
 	public $TLP_HOST = '';
 	public $TLP_PORT = '';
+	public $TLP_PREFIX = '';
 	
 	function datapost($func, $arParameters) {
 		$postData = $arParameters['post'];
@@ -48,7 +49,7 @@ class CTSession
 	}
 	
 	function post($str_data, $func) {
-		$sock = fsockopen("ssl://".$this->TLP_HOST, $this->TLP_PORT, $errno, $errstr, 30);
+		$sock = fsockopen("".$this->TLP_PREFIX."".$this->TLP_HOST, $this->TLP_PORT, $errno, $errstr, 30);
 		if (!$sock) die("$errstr ($errno)\n");
 		
 		fwrite($sock, "POST /".$func."?format=json HTTP/1.0\r\n");
@@ -74,7 +75,7 @@ class CTSession
 	
 	function filepost($func) {
 		$str_data = '';
-		$sock = fsockopen("ssl://".$this->TLP_HOST, $this->TLP_PORT, $errno, $errstr, 30);
+		$sock = fsockopen("".$this->TLP_PREFIX."".$this->TLP_HOST, $this->TLP_PORT, $errno, $errstr, 30);
 		if (!$sock) die("$errstr ($errno)\n");
 		
 		fwrite($sock, "GET /".$func." HTTP/1.0\r\n");
@@ -147,6 +148,7 @@ class CTSession
 		
 		$this->TLP_HOST = $GLOBALS['TLP_HOST'];
 		$this->TLP_PORT = $GLOBALS['TLP_PORT'];
+		$this->TLP_PREFIX = $GLOBALS['TLP_PREFIX'];
 		return true;
 	}
 	/*function InitNewPass($pass)//, $client)
