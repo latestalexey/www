@@ -1,2 +1,4 @@
 bitrix/cache/*
 bitrix/managed_cache/*
+bitrix/.settings.php
+bitrix/php_interface/dbconn.php
