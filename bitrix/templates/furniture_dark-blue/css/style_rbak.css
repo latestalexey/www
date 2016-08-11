@@ -140,8 +140,13 @@ progress::-moz-progress-bar { background: #659cef; -moz-border-radius: 3px; }
 
 /*::-webkit-scrollbar {
   width: 0;
+<<<<<<< HEAD
+}
+*/
+=======
 }*/
 
+>>>>>>> 1be8d4970ce79fe9136edb950914181e39580da0
 .cnt-channel td{
 	/*padding-top: 11px;
 	padding-bottom: 11px;*/
@@ -457,4 +462,15 @@ progress::-moz-progress-bar { background: #659cef; -moz-border-radius: 3px; }
 	width: 1420px;
 }
 
+/* End of Contact Manager */
+
+/* Begin of Squad manager */
+#squad-manager{
+	height: 600px;
+	left: 50%;
+	position: absolute;
+	top: 100;
+	transform: translate(-50%);
+	width: 1420px;
+}
 /* End of Contact Manager */

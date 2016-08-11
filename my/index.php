@@ -93,6 +93,7 @@ if($mode=='')
 							<p id="add_channel">Создать новый канал</p>
 							<p id="add_cnt">Пригласить новый контакт</p>
 							<p id="manage_cnt">Управление контактами</p>
+							<p id="manage_squad">Управление командами</p>
 						</div>
 					</div>
 				</div>

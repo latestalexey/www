@@ -70,6 +70,7 @@ class CTSession
 			$body .= fread($sock, 4096);
 		}
 		fclose($sock);
+
 		return $body;
 	}
 	
@@ -103,13 +104,16 @@ class CTSession
 	function telecall($name, $arParameters)
 	{
 		$soap_array = $this->arDefault;
+
 		foreach($arParameters as $key => $value)
 		{
 			$soap_array[$key] = $value;
 		}
 		
 		$str_data = json_encode($soap_array);
+
 		$res = $this->post($str_data, $name);
+
 		if($name == 'MD5') {
 			return $res;
 		}

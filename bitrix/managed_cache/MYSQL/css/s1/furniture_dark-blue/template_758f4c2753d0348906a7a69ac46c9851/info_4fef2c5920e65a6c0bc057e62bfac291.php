@@ -1,1 +1,0 @@
-<? $arFilesInfo = array( 'FILES' => array("/bitrix/templates/furniture_dark-blue/template_styles.css" => "146717937855341","/bitrix/js/fileman/sticker.css" => "144840182926807",), 'CUR_SEL_CNT' => '807', 'CUR_IE_CNT' => '0'); ?>
