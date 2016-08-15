@@ -4,10 +4,13 @@ require_once($_SERVER["DOCUMENT_ROOT"]."/my/admin/before.php");
 
 $msgStatus = array(); 
 $msgStatus['new'] = 'Новый';
-$msgStatus['sent'] = 'Отправлен';
-$msgStatus['delivered'] = 'Доставлен';
-$msgStatus['viewed'] = 'Просмотрен';
-
+$msgStatus['transmitted'] = 'Отправлен';
+$msgStatus['agreement'] = 'На согласовании';
+$msgStatus['confirmed'] = 'Подтвержден';
+$msgStatus['processed'] = 'Принят в обработку';
+$msgStatus['shipped'] = 'Готов к отгрузке';
+$msgStatus['closed'] = 'Выполнен';
+$msgStatus['canceled'] = 'Отменен';
 
 	$TLP_obj = unserialize($_SESSION["TLP_obj"]);
 	$user =  $TLP_obj->user_info['name'];
@@ -15,12 +18,12 @@ $msgStatus['viewed'] = 'Просмотрен';
 	$arFnc = array();
 	foreach ($_GET as $key => $value) 
 	{
-		if(!($key == 'action' || $key=='header' || $key=='adds'))
+		if($key == 'filters')
+			{$arFnc[$key] = json_decode($value);}
+		elseif(!($key=='header'))
 			{$arFnc[$key] = $value;}
-	}	
-	$adds = $_GET['adds'];
+	};	
 	$res = $TLP_obj->telecall('Documents_GetList', $arFnc);
-
 	if($res['errCode'] == 0)
 	{
 		$arResult = json_decode($_GET['header']);
@@ -49,28 +52,50 @@ $msgStatus['viewed'] = 'Просмотрен';
 		
 		$page->setTitle("Лист1"); 
 
-		$arOrders = json_decode($res["return"], true);
+		$arOrders = $res["return"];
+		
+		$filters = $arFnc['filters'];
+		$query = "SELECT message_id, sender, receiver, type, status, date, num, sum, currencyId, hash FROM t_documents WHERE sender = '$user'";
+		foreach($filters as $key=>$filter) {
+			$query = $query . " AND ".$filter->name." ".$filter->operation." '".$filter->value."'";
+		};
+		$result = mysql_query ($query) or die (mysql_error());
+		$data = array();
+		while($row=mysql_fetch_assoc($result)) {
+			$arr['message_id'] = $row['message_id'];
+			$arr['sender'] = $row['sender'];
+			$arr['receiver'] = $row['receiver'];
+			$arr['type'] = $row['type'];
+			$arr['status'] = $row['status'];
+			$arr['date'] = $row['date'];
+			$arr['num'] = $row['num'];
+			$arr['sum'] = $row['sum'];
+			$arr['currencyId'] = $row['currencyId'];
+			$arr['hash'] = $row['hash'];
+			$arr['addProps'] = $row['addProps'];
+			array_push($arOrders, $arr);
+		};
 		
 		$i = 3;
 		$cnt = count($arOrders) + $i;
 		foreach($arOrders as $key=>$order)
 		{
+			
 			$doc_type = "Заказ";
-			$doc_num = $order['order']["message_N"];
-			$msg_date = DateTime::createFromFormat('Y-m-d H:i:s', str_replace("T"," ",$order['order']["message_date"]));
+			$doc_num = strval($order["num"]);
+			$msg_date = DateTime::createFromFormat('Y-m-d H:i:s', str_replace("T"," ",$order["date"]));
 			$str_date = ($msg_date === false)?(""):($msg_date->format('d-m-Y'));
-			$contact = ($order["sender"] == $TLP_obj->user_info['name'])?($order["receiverFullname"]):($order["senderFullname"]);
-			$doc_sum = number_format($order["order"]["docsum"], 2, '.', ' ');
+			$contact = ($order["sender"] == $TLP_obj->user_info['name'])?($order["receiver"]):($order["sender"]);
+			$doc_sum = number_format($order["sum"]*1, 2, '.', ' ');
 			$doc_status = $msgStatus[$order["status"]];
 			
 			$page->setCellValue('A'.$i, $doc_type);
-			$page->setCellValue('B'.$i, $doc_num);
+			$page->setCellValueExplicit('B'.$i, $doc_num, PHPExcel_Cell_DataType::TYPE_STRING);
 			$page->setCellValue('C'.$i, $str_date);
 			$page->setCellValue('D'.$i, $contact);
-			$page->setCellValue('E'.$i, $doc_sum);
+			$page->setCellValueExplicit('E'.$i, $doc_sum, PHPExcel_Cell_DataType::TYPE_STRING);
 			$page->setCellValue('F'.$i, $doc_status);
-			
-			
+
 			$i++;
 		}
 		$page->getStyle('A1:F'.$cnt)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
@@ -82,7 +107,6 @@ $msgStatus['viewed'] = 'Просмотрен';
 	else {
 		echo '%err%'.$TLP_obj->mistakes[$res['errCode']];
 	};
-	
 
 	if (file_exists($user.'_'.$filename)) {
 		
@@ -100,5 +124,5 @@ $msgStatus['viewed'] = 'Просмотрен';
 		readfile($user.'_'.$filename);
 		unlink($user.'_'.$filename);
 		exit;
-	};	
+	};
 ?>

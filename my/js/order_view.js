@@ -117,7 +117,7 @@ function getDocHeaderProps(arHeader) {
 	$('#order_view .sidebar-header').html('Свойства заказа');
 	$('#order_view .sidebar-content').html('<div class="doc-add-props"></div>');
 	
-	var html_str = '';/*
+	var html_str = '';
 	$.each(arHeader.props, function(i, val){	
 		$('#order_view .sidebar-content .doc-add-props').append(
 			'<div id="'+val.name+'" class="sidebar-item-wrap">' +
@@ -162,7 +162,7 @@ function getDocHeaderProps(arHeader) {
 			);
 		};
 	});	
-	*/
+	
 	$('#order_view .sidebar-content .doc-add-props').append(
 		'<div class="sidebar-item-wrap comment">' +
 			'<div class="sidebar-item-header"><i class="fa fa-chevron-down"></i>Комментарии</div>' +
@@ -181,11 +181,11 @@ function getDocHeaderProps(arHeader) {
 
 function getTabHeader(arHeader) {
 	var html_str = ''; 
-	var col = 8;/*
+	var col = 8;
 	$.each(arHeader.props, function(i, val){
 		html_str = html_str + '<td class="col_'+col+'" add-field-name='+val.name+'>'+val.header+'</td>';
 		col++;
-	});	*/
+	});	
 	html_str = 
 		'<tr  class="item item_list_header">' +
 			'<td class="col_0">...</td>'+
@@ -205,7 +205,7 @@ function getSearchStr(arHeader) {
 		'<tr  class="item input_row">' +
 			'<td class="col_0"><i class="fa fa-keyboard-o" aria-hidden="true"></i></td>' +
 			'<td colspan="2" class="col_1_2"><input class="input_col" placeholder="Введите артикул или наименование товара"/></td>' +
-			'<td colspan="'+(5/*+arHeader.props.length*/)+'" class="col_3">' +
+			'<td colspan="'+(5+arHeader.props.length)+'" class="col_3">' +
 				'<span class="totalsum-block">Общая сумма:<span class="total-sum">'+number_format(arHeader.sum, 2, '.', ' ')+'</span><span class="currency"> '+arHeader.currencyId+'</span></span>' +
 			'</td>' +
 		'</tr>';
@@ -217,7 +217,7 @@ function getDocTable(docTable, tabHeaderProps){
 	
 	$.each(docTable, function(key, item){	
 		var html_str = '';
-		var col = 8;/*
+		var col = 8;
 		$.each(tabHeaderProps, function(i, val){	
 			var	search = item.props.length ? JSON.search(item.props, '//*[name="'+val.name+'"]/value') : '';
 			if (val.type === 'enum'){
@@ -237,7 +237,7 @@ function getDocTable(docTable, tabHeaderProps){
 				html_str = html_str + '<td class="col_'+col+' '+val.name+'"><input value='+search+'></td>';
 			};
 			col++;
-		});*/
+		});
 		strorderlist = strorderlist + 
 			'<tr id="it_'+item.id+'" class="item" data-it-id='+item.id+'>' +
 				'<td class="col_0"><i class="fa"></i></td>' +
@@ -246,7 +246,7 @@ function getDocTable(docTable, tabHeaderProps){
 				'<td class="col_3">'+item.unit+'</td>' +
 				'<td class="col_4 required"><i class="fa fa-minus" aria-hidden="true"></i><input class="quantity" value="'+number_format(item.quantity, 0, '', ' ')+'"><i class="fa fa-plus" aria-hidden="true"></i></td>' +
 				'<td class="col_5"><i class="fa fa-minus" aria-hidden="true"></i><input class="confirmed" value="'+number_format(item.confirmed, 0, '', ' ')+'"><i class="fa fa-plus" aria-hidden="true"></i></td>'+
-				'<td class="col_6">'+number_format(item.price, 2, '.', '')+'</td>'+
+				'<td class="col_6">'+number_format(item.price, 2, '.', ' ')+'</td>'+
 				'<td class="col_7">'+number_format(item.sum, 2, '.', ' ')+'</td>'+ html_str +
 			'</tr>';
 	});
@@ -260,7 +260,8 @@ function initDocView(arDoc, sender, receiver) {
 	var docTable = arDoc.docTable;
 	var docDate = getOrderDate(new Date(docHeader.date));
 	var sender = getContactInfo(sender);
-	var receiver = getContactInfo(receiver); 
+	var receiver = getContactInfo(receiver);
+	var contact = (sender.id==smuser.id) ? receiver : sender;	
 /*=====================================Формирование HTML=====================================================*/
 	$('#order_view').remove();
 	$('#main_content').append(
@@ -284,13 +285,19 @@ function initDocView(arDoc, sender, receiver) {
 	var strorderinfo = 
 		'<div id="order_num">Заказ № '+docHeader.num+' от '+ docDate.day + '-' + docDate.month + '-' + docDate.year +' (' + docDate.hh + ':' + docDate.mm +':'+ docDate.ss + ')' + '</div>' +
 		'<div class="order_status"><div class="ord_hd_x1">Статус:</div><div class="ord_hd_x2">'+docStatus[docHeader.status]+'</div></div>' +
-		'<div class="order_headline"><div class="ord_hd_x1">Получатель:</div><div class="ord_hd_x2"><input class="cnt_inp" type="text" name="owner" value="'+receiver.fullname+'" data-owner="'+receiver.name+'" disabled></div></div>';
+		'<div class="order_headline"><div class="ord_hd_x1">Получатель:</div><div class="ord_hd_x2"><input class="cnt_inp" type="text" name="receiver" value="'+contact.fullname+'" data-receiver="'+contact.name+'" disabled></div></div>';
 
+	var upl_xls = 	'<form id="upl_xls_form" name="upl_xls_form">' +	
+						'<div id="upl_xls" class="button fa fa-file-excel-o tooltip"  data-tooltip="Загрузить позиции из xls-файла"></div>' +
+						'<input type="file" name="xls_upl" id="xls_upl" style="display: none;">' +
+						'<input type="hidden" name="action" value="upload_xls">' +	
+					'</form>';		
 	var strordercontrols = 
 		'<div class="func-buttons">' +	
 			'<div id="show_addinfo" class="button fa fa-info-circle tooltip" data-tooltip="Показать дополнительные сведения о заказе"></div>' +
 			'<div id="show_msg" class="button fa fa-commenting-o tooltip" data-tooltip="Открыть панель сообщений"></div>' +
-			'<div id="upl_xls" class="button fa fa-file-excel-o tooltip"  data-tooltip="Загрузить xls-файл"></div>' +
+			//'<div id="upl_xls" class="button fa fa-file-excel-o tooltip"  data-tooltip="Загрузить позиции из xls-файла"></div>' +
+			upl_xls +
 			'<div id="del_item" class="button disabled fa fa-trash tooltip"  data-tooltip="Удалить выбранные элементы"></div>' +
 		'</div>' +
 		'<div class="confirm-buttons">' +
@@ -336,7 +343,7 @@ function initDocView(arDoc, sender, receiver) {
 	
 	//Сохранение документа в локальную базу
 	$('#order_view').on('click', '#save-local', function(){
-		buildTmpDoc(arDoc);
+		buildTmpDoc(arDoc, receiver);
 		$.post('/my/ajax/order.php', { 
 			action: 'Documents_saveDocToLocalBase',
 			message_id: docHeader.id, 
@@ -359,49 +366,49 @@ function initDocView(arDoc, sender, receiver) {
 	
 	//Отправка документа
 	$('#order_view').on('click', '#transmit', function(){		
-		buildTmpDoc (arDoc);
+		buildTmpDoc (arDoc, receiver);
 		arDoc.docHeader.status = 'transmitted';
 		sendDoc(arDoc, (sender.id==smuser.id) ? receiver.name : sender.name);
 	});
 	
 	//Подтвердить заказ
 	$('#order_view').on('click', '#confirm', function(){
-		buildTmpDoc (arDoc);
+		buildTmpDoc (arDoc, receiver);
 		arDoc.docHeader.status = 'confirmed';
 		sendDoc(arDoc, (sender.id==smuser.id) ? receiver.name : sender.name);	
 	});	
 	
 	//Отменить заказ
 	$('#order_view').on('click', '#cancel', function(){
-		buildTmpDoc (arDoc);
+		buildTmpDoc (arDoc, receiver);
 		arDoc.docHeader.status = 'canceled';
 		sendDoc(arDoc, (sender.id==smuser.id) ? receiver.name : sender.name);
 	});	
 	
 	//Отправить заказ на согласование
 	$('#order_view').on('click', '#agree', function(){
-		buildTmpDoc (arDoc);
+		buildTmpDoc (arDoc, receiver);
 		arDoc.docHeader.status = 'agreement';
 		sendDoc(arDoc, (sender.id==smuser.id) ? receiver.name : sender.name);
 	});	
 	
 	//Заказ готов к отгрузке
 	$('#order_view').on('click', '#ship', function(){
-		buildTmpDoc (arDoc);
+		buildTmpDoc (arDoc, receiver);
 		arDoc.docHeader.status = 'shipped';
 		sendDoc(arDoc, (sender.id==smuser.id) ? receiver.name : sender.name);
 	});	
 	
 	//Принять заказ в обработку
 	$('#order_view').on('click', '#process', function(){
-		buildTmpDoc (arDoc);
+		buildTmpDoc (arDoc, receiver);
 		arDoc.docHeader.status = 'processed';
 		sendDoc(arDoc, (sender.id==smuser.id) ? receiver.name : sender.name);
 	});	
 	
 	//Заказ выполнен
 	$('#order_view').on('click', '#complete', function(){
-		buildTmpDoc (arDoc);
+		buildTmpDoc (arDoc, receiver);
 		arDoc.docHeader.status = 'closed';
 		sendDoc(arDoc, (sender.id==smuser.id) ? receiver.name : sender.name);
 	});	
@@ -792,6 +799,133 @@ function initDocView(arDoc, sender, receiver) {
 		}
 		$(this).replaceWith($(im_svg));
 	});
+	
+	//Загрузка позиций каталога из xls-файла
+	$('#order_view').on('click', '#upl_xls' ,function() {
+		$(this).siblings('#uploadifive-xls_upl').children().last().click();
+	});	
+	$(function() {	
+		$("#order_view #xls_upl").uploadifive({
+			'auto' : true,
+			'multi' : false,
+			'uploadScript' : '/my/ajax/order.php',
+			'buttonText' : '',
+			'dnd' : false,
+			'fileSizeLimit' : '2MB',
+			'uploadLimit' : 0,
+			'queueSizeLimit' : 1,
+			'simUploadLimit' : 1,
+			'removeCompleted' : true,
+			'formData': {'action': 'upl_pos_from_xls'},
+			'onAddQueueItem': function() {	
+				$('#upl_xls').removeClass('success danger error');
+				var html_text = 'Пожалуйста, подождите.<br> Идет обработка документа.';
+				showTelebotInfo(html_text,"", 0);	
+				$('#main_content').append('<div class="modal_bg"></div>');
+				$('.dark-tooltip').hide();
+			},
+			'onUploadComplete' : function(file, data) {
+				var arPos = JSON.parse(data);
+				var arErr = [];
+				$.each(arPos, function(key, val){
+					var arr_fld = ['*'];
+					it_filter = [{"mode": "item", "name":"name", "operation":"LIKE", "value": '%'+val[0]+'%'}];
+					var xhr = new XMLHttpRequest();
+					var body =	'action=catalog_get' +
+								'&adds=json' +
+								'&contact=' + encodeURIComponent(receiver.name) +
+								'&filters=' + encodeURIComponent(JSON.stringify(it_filter)) +
+								'&fields=' + encodeURIComponent(JSON.stringify(arr_fld)) +
+								'&limit=1' + 
+								'&nom=1';
+
+					xhr.open("POST", '/my/ajax/action.php', false);
+					xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+					xhr.onreadystatechange = function() { 
+						if (xhr.readyState != 4) return;	
+						if(!(xhr.responseText.indexOf('%err%') == -1)) {
+							showError(xhr.responseText.replace('%err%',''));
+							return;
+						};
+						var item = JSON.parse(xhr.responseText);	
+						if (item.catalog.length) {	
+							var	exItem = $('.order_item_list_content .item[data-it-id='+item.catalog[0].id+']');		
+							if ( exItem.length && (parseFloat(item.catalog[0].price) == parseFloat($('.col_6', exItem).text().replace(/ /g, ''))) ) {
+								var old_qty = $('.quantity', exItem).val() || 0;
+								var new_qty = val[2] || 0;
+								var qty = old_qty*1 + new_qty*1;
+								var price = parseFloat(item.catalog[0].price).toFixed(2) || 0.00;
+								var total = number_format(qty*price, 2, '.', ' ');
+								$('.quantity', exItem).val(qty);
+								$('.col_7', exItem).text(total);
+							}
+							else {
+								var col = 8;	
+								var html_str = '';
+								$.each(tabHeader.props, function(i, column){
+									html_str = html_str + '<td class="col_'+col+' '+column.name+'"></td>';
+									col++;
+								});	
+								var name = item.catalog[0].name;
+								var price = number_format(item.catalog[0].price, 2, '.', ' ');
+								$('#order_view .order_item_list_content').prepend(
+									'<tr id="it_'+item.catalog[0].id+'" class="item" data-it-id='+item.catalog[0].id+'>' +
+										'<td class="col_0"><i class="fa"></i></td>' +
+										'<td class="col_1">'+item.catalog[0].article+'</td>' +
+										'<td class="col_2"><span class="caption">'+name+'</span><i class="fa fa-chevron-up"></i></td>'+
+										'<td class="col_3">шт</td>'+
+										'<td class="col_4 required"><i class="fa fa-minus" aria-hidden="true"></i><input class="quantity" value="'+number_format(val[2], 0, '', ' ')+'"><i class="fa fa-plus" aria-hidden="true"></i></td>'+
+										'<td class="col_5"><i class="fa fa-minus" aria-hidden="true"></i><input class="confirmed" value="0"><i class="fa fa-plus" aria-hidden="true"></i></td>'+
+										'<td class="col_6">'+price+'</td>'+
+										'<td class="col_7">'+number_format(price*val[2], 2, '.', ' ')+'</td>'+	html_str +						
+									'</tr>'
+								);
+								setOrderItemListContentHeight();
+								setEditPolicy (smuser.name, docHeader.status);
+							};	
+							getTotalSum();
+						}
+						else {
+							arErr.push(val);
+						};
+					}		
+					xhr.send(body);	
+				});
+				if (arErr.length && (arPos.length>arErr.length)) {
+					$('#upl_xls').addClass('danger');
+					if (!$('#order_view #dialog').length) {
+						var html_text = 'Часть позиций, указанных в файле, не была обработана.</br> Выгрузить список необработанных позиций в отдельный файл?';
+						var html_str = '<div id="dialog"><div class="text-box">'+html_text+'</div><div class="button-box"><div class="yes button">Да</div><div class="no button">Нет</div></div>';
+						$('#order_view').append(html_str);
+					};
+					$('#order_view #dialog').fadeIn(300);
+					$('#order_view').on('click', '#dialog .button', function(e){
+						$('#order_view #dialog').fadeOut(300);
+						if ($(this).hasClass('yes')) {
+							$.post('/my/ajax/order.php', { action: 'Positions_SaveErrors', arError: JSON.stringify(arErr), filename: file.name}, function(){
+								$('#order_view #dialog').remove();
+							});
+						};
+						setTimeout(function(){$('#upl_xls').removeClass('danger')}, 5000);
+					});
+				}
+				else if (arErr.length && (arPos.length==arErr.length)) {
+					$('#upl_xls').addClass('error');
+					var html_text = 'В выгружаемом файле нет позиций, доступных для загрузки. <br> Пожалуйста, проверьте корректность загружаемых данных';
+					showTelebotInfo(html_text,"", 5000);
+					setTimeout(function(){$('#upl_xls').removeClass('error')}, 5000);
+				}
+				else {
+					$('#upl_xls').addClass('success');
+					setTimeout(function(){$('#upl_xls').removeClass('success')}, 5000);
+				};
+			},
+			'onQueueComplete' : function() {
+				hideTelebotInfo();
+				$('#main_content .modal_bg').remove();
+			}
+		});
+	});		
 };
 
 var delay = (function(){
@@ -802,14 +936,30 @@ var delay = (function(){
   };
 })();
 
-function sendDoc (message, receiver) {
-	var Doc = {
-			"errCode": 0,
-			"retval": message
-		};
+function isDocChanged() {
 	var xhr = new XMLHttpRequest();
-	var body =	'action=Messages_Send' +
-				'&message=' + encodeURIComponent(JSON.stringify(Doc)) +
+	var body =	'action=MD5_Get' +
+				'&input="aaaaa"';	
+	xhr.open("POST", '/my/ajax/action.php', true);
+	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+	xhr.onreadystatechange = function() 
+	{ 
+		if (xhr.readyState != 4) return;
+		if(!(xhr.responseText.indexOf('%err%') == -1)) {
+			showError(xhr.responseText.replace('%err%',''));
+			return;
+		};
+		console.log(xhr.responseText);
+	}				
+	xhr.send(body);
+};
+
+function sendDoc (message, receiver) {
+	docid = message.docHeader.id;
+	message.docHeader.id='';
+	var xhr = new XMLHttpRequest();
+	var body =	'action=send_msg' +
+				'&message=' + encodeURIComponent(JSON.stringify(message)) +
 				'&message_type=document' +
 				'&contact=' + encodeURIComponent(receiver);					
 	xhr.open("POST", '/my/ajax/action.php', true);
@@ -820,15 +970,17 @@ function sendDoc (message, receiver) {
 		if(!(xhr.responseText.indexOf('%err%') == -1)) {
 			showError(xhr.responseText.replace('%err%',''));
 			return;
-		};
-		//if (xhr.responseText == 'transmitted') {
-			//$.post('/my/ajax/order.php', {action: 'Documents_delSentDoc', message_id: message.docHeader.id}, function(data) {
-			//	console.log(data);
-			//});
-		//};	
-		$('#order_li .order[data-order-id='+message.docHeader.id+'] .col_4').text(number_format(message.docHeader.sum, 2, '.', ' '));	
-		hideModalWindow($('#order_view'));
-		$('.dark-tooltip').remove();			
+		};	
+		var new_Doc = JSON.parse(xhr.responseText);
+		if (new_Doc.length) {
+			var obj = $('#order_li .order[data-order-id='+docid+']');
+			$('.col_4', obj).text(number_format(message.docHeader.sum, 2, '.', ' '));	
+			$('.col_5', obj).text(docStatus[message.docHeader.status]);		
+			obj.attr('id', new_Doc[0].ID).attr('data-order-id', new_Doc[0].ID).removeClass('new');
+			$.post('/my/ajax/order.php', {action: 'Documents_delSentDoc', message_id: docid, receiver: receiver});
+			hideModalWindow($('#order_view'));
+			$('.dark-tooltip').remove();
+		};				
 	}				
 	xhr.send(body);
 };
@@ -849,7 +1001,7 @@ function mergeItems(newItem, exItem){
 	$('.col_7', exItem).text(total);
 };
 
-function buildTmpDoc (tmpDoc){
+function buildTmpDoc (tmpDoc, receiver){
 	var hash = '';
 	var sum = parseFloat($('.total-sum').text().replace(/ /g, ''));
 	tmpDoc.docHeader.hash = hash;
@@ -893,6 +1045,7 @@ function buildTmpDoc (tmpDoc){
 		};
 		
 		var jsonstr = {
+			"owner":receiver.name,
 			"id":$(this).attr('data-it-id'),
 			"article":$('.col_1',this).text(),
 			"name":$('.col_2',this).text(),
@@ -901,7 +1054,7 @@ function buildTmpDoc (tmpDoc){
 			"confirmed":parseFloat($('.col_5 input',this).val().replace(/ /g, '')),
 			"price":parseFloat($('.col_6',this).text().replace(/ /g, '')),
 			"sum":parseFloat($('.col_7',this).text().replace(/ /g, '')),
-			"props":arItemsProps
+			"props":arItemsProps || []
 		};
 		arItems.push(jsonstr);
 	});
@@ -1483,15 +1636,3 @@ function addSentMessages(msg_arResult) {
 	};	
 	$('#msg_li').scrollTop($('.mess-list').height());
 }
-
-			
-			
-			
-			
-			
-			
-			
-			
-			
-		
-			
