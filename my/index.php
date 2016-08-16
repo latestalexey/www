@@ -19,7 +19,7 @@ if($_GET["add"]=='nps')
 
 $mode = $_GET["mode"];
 if($mode=='')
-	$mode = 'catalog';
+	$mode = 'messages';
 ?>
 <title>TELEPORT. Личный портал</title>
 <link href="<?=SITE_TEMPLATE_PATH?>/css/slider.css" rel="stylesheet" type="text/css">

@@ -685,7 +685,7 @@ elseif($action == 'documents_getList')
 			foreach($arMessages as $key=>$order)
 			{
 				$col_3 = ($order["sender"] == $TLP_obj->user_info['name'])?($order["receiver"]):($order["sender"]);
-				$msg_date = DateTime::createFromFormat('Y-m-d H:i:s', str_replace("T"," ",$order["date"]));
+				$msg_date = DateTime::createFromFormat('Y-m-d H:i:s', str_replace("T"," ",substr($order["date"],0,19)));
 				$str_date = ($msg_date === false)?(""):($msg_date->format('d-m-Y'));
 				$str = '<div id="or_'.$order["message_id"].'" class="order" data-order-id="'.$order["message_id"].'" data-order-sender="'.$order["sender"].'" data-order-receiver="'.$order["receiver"].'">
 					<div class="order_content">
@@ -1603,38 +1603,42 @@ elseif($action == 'FindPersons')
 			"limit" => 20
 		);
 		$res = $TLP_obj->telecall("Contacts_FindPersons", $arFnc);
-		$strPersons = "";
-		foreach ($res['return'] as $key => $value) {
-			$strPersons = $strPersons.'<div class="contact_inf" data-usr-name="'.$value['name'].'" style="display: block;">
-				<table style="border-spacing: 0;">
-					<tbody>
-					<tr>
-						<td>
-							<div>
-								<div class="cnt_avatar cnt_avatar_small" style="background-image: url(/my/ajax/files.php?a=prev&i='.$value['photo_id'].');"></div>
-							</div>
-						</td>
-						<td>
-							<div class="cnt_text">
-								'.$value['fullname'].'											
-							</div>
-							<p class="cnt_add cnt_mail" style="display: block;">
-								'.$value['name'].'											
-							</p>
-						</td>	
-					</tr>	
-					</tbody>
-				</table>
-			</div>';	
+		if($adds == 'json') {
+			echo json_encode($res['return']);
+		} else {
+			$strPersons = "";
+			foreach ($res['return'] as $key => $value) {
+				$strPersons = $strPersons.'<div class="contact_inf" data-usr-name="'.$value['name'].'" style="display: block;">
+					<table style="border-spacing: 0;">
+						<tbody>
+						<tr>
+							<td>
+								<div>
+									<div class="cnt_avatar cnt_avatar_small" style="background-image: url(/my/ajax/files.php?a=prev&i='.$value['photo_id'].');"></div>
+								</div>
+							</td>
+							<td>
+								<div class="cnt_text">
+									'.$value['fullname'].'											
+								</div>
+								<p class="cnt_add cnt_mail" style="display: block;">
+									'.$value['name'].'											
+								</p>
+							</td>	
+						</tr>	
+						</tbody>
+					</table>
+				</div>';	
+			}	
+			if($strPersons == "") {
+				if(preg_match("/.+@.+\..+/i", $_POST['new_cntname'])) {
+					$strPersons = '<div class="contact_inf" style="text-align: center;"><span style="color: #FF0000;">Контакт не найден в системе.</span><br>Приглашение будет отправлено на адрес электронной почты.</div>';
+				} else {
+					$strPersons = '<div class="contact_inf" style="text-align: center;"><span style="color: #FF0000;">Контакт не найден в системе.</span><br>Введите корректный e-mail, чтобы отправить приглашение на почту.</div>';
+				}			
+			}
+			echo $strPersons;
 		}	
-		if($strPersons == "") {
-			if(preg_match("/.+@.+\..+/i", $_POST['new_cntname'])) {
-				$strPersons = '<div class="contact_inf" style="text-align: center;"><span style="color: #FF0000;">Контакт не найден в системе.</span><br>Приглашение будет отправлено на адрес электронной почты.</div>';
-			} else {
-				$strPersons = '<div class="contact_inf" style="text-align: center;"><span style="color: #FF0000;">Контакт не найден в системе.</span><br>Введите корректный e-mail, чтобы отправить приглашение на почту.</div>';
-			}			
-		}
-		echo $strPersons;
 	}
 
 

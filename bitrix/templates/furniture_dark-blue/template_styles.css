@@ -383,7 +383,7 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 }
 .contact_list h3.close_list {background-image: url(/my/data/svg/expand_more.svg);}
 .contact_short {border-left: solid 1px #CCCCCC;	border-right: solid 1px #CCCCCC; position: relative;}
-.contact_inf 
+.contact_inf, .contact_invite 
 {
 	padding: 10px 10px 2px 10px;
 	color: #252525;
@@ -477,6 +477,8 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 	padding-left: 9px;
 	max-height: 30px;
 	overflow: hidden;
+    text-overflow: ellipsis;
+    word-wrap: break-word;	
 }
 .cnt_avatar {
 	background-size: cover; 
@@ -923,7 +925,7 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 .message_line a:hover{text-decoration: underline;}
 
 .image_file {height: 250px; text-align: center;}
-.image_file img{max-height: 226px;}
+.image_file img{height: 226px;}
 
 .close_image {height: 24px;}
 .close_image img{display: none;}
@@ -1012,9 +1014,7 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 	z-index: 10;
 	left: 0px;
 }
-
-.new_msg
-{
+.new_invites {
 	height: 26px;
 	width: 26px;
 	text-align: center;
@@ -1022,21 +1022,40 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 	font-size: 14px;
 	color: #FFF;
 	position: absolute; 
-	top: 25px;
-	right: 5px;
+	top: 7px;
+	right: 30px;
+	/*background-image: url(/my/data/svg/chat_bubble.svg);*/
+	background-color: #ff6600;
+    border-radius: 15px;
+	display: none;
+
+}
+.new_invites span {position: relative; top: 5px;}
+
+.new_msg
+{
+	height: 20px;
+	width: 20px;
+	text-align: center;
+	/*font-weight: 600;*/
+	font-size: 14px;
+	color: #FFF;
+	position: absolute; 
+	top: 30px;
+	right: 10px;
 	/*background-image: url(/my/data/svg/chat_bubble.svg);*/
 	background-color: #26A69A;
     border-radius: 15px;
 	display: none;
 }
-.new_msg span {position: relative; top: 5px;}
+.new_msg span {position: relative; top: 2px;}
 
 .new_ord
 {
 	height: 29px;
 	width: 32px;
 	text-align: center;
-	font-weight: 600;
+	/*font-weight: 600;*/
 	font-size: 14px;
 	color: #26A69A;
 	position: absolute; 
@@ -2105,6 +2124,12 @@ overflow: auto;
 	-moz-box-shadow: 2px 2px 9px #444;
 	-webkit-box-shadow: 2px 2px 9px #444;
 	cursor: pointer;
+}
+
+.accept_button {
+	background-color: #26a69a !important;
+	color: #FFF !important;
+	border-color: #26a69a !important;
 }
 
 .item_line div .simple_button, .simple_button {
