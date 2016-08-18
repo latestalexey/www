@@ -870,7 +870,7 @@ function addMessageToList(arResult, mode) {
 		} else {
 			var myAvatar = '<div class="cnt_image cnt_avatar" style="background-image: '+myAvatarURL+'"></div>';
 		}
-		var myheader = (smuser.fullname == smuser.name)?smuser.fullname:smuser.fullname +"  '" + smuser.name + "'";
+		var myheader = smuser.fullname;
 		var rcvAvatarURL = $('#cnt_'+ rcv_from_obj.id).find('.cnt_avatar').css('background-image') || $('#login_image').find('.cnt_avatar').css('background-image') || 'url(/include/no_avatar.svg)';
 		rcvAvatarURL = rcvAvatarURL.replace(new RegExp('"','g'),"");
 		if(rcvAvatarURL == 'none') {
@@ -878,7 +878,7 @@ function addMessageToList(arResult, mode) {
 		} else {
 			var rcvAvatar = '<div class="cnt_image cnt_avatar" style="background-image: '+rcvAvatarURL+'"></div>';
 		}
-		var rcvheader = (rcv_from_obj.fullname == rcv_from_obj.name)?rcv_from_obj.fullname:rcv_from_obj.fullname +"  '" + rcv_from_obj.name + "'";
+		var rcvheader = rcv_from_obj.fullname;
 		$('#msg_li').attr('data-cnt-id',rcv_from_obj.name);
 		
 		var last_msg = $('#msg_li .message_line').last();

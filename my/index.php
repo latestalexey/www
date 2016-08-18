@@ -19,7 +19,7 @@ if($_GET["add"]=='nps')
 
 $mode = $_GET["mode"];
 if($mode=='')
-	$mode = 'catalog';
+	$mode = 'messages';
 ?>
 <title>TELEPORT. Личный портал</title>
 <link href="<?=SITE_TEMPLATE_PATH?>/css/slider.css" rel="stylesheet" type="text/css">
@@ -110,7 +110,6 @@ if($mode=='')
 		</div>
 		<div id="ext_pan">
 			<div id="ext_bar" class="pan_bar" style="right: 303px;">
-				>
 			</div>
 			<div id="ext_pan_header" class="up_pan" style="position: relative; float: none;">
 				<div class="clw" style="position: absolute; right: 0px;">

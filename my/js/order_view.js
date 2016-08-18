@@ -803,13 +803,9 @@ var delay = (function(){
 })();
 
 function sendDoc (message, receiver) {
-	var Doc = {
-			"errCode": 0,
-			"retval": message
-		};
 	var xhr = new XMLHttpRequest();
-	var body =	'action=Messages_Send' +
-				'&message=' + encodeURIComponent(JSON.stringify(Doc)) +
+	var body =	'action=send_msg' +
+				'&message=' + encodeURIComponent(JSON.stringify(message)) +
 				'&message_type=document' +
 				'&contact=' + encodeURIComponent(receiver);					
 	xhr.open("POST", '/my/ajax/action.php', true);
@@ -817,10 +813,11 @@ function sendDoc (message, receiver) {
 	xhr.onreadystatechange = function() 
 	{ 
 		if (xhr.readyState != 4) return;
-		if(!(xhr.responseText.indexOf('%err%') == -1)) {
-			showError(xhr.responseText.replace('%err%',''));
-			return;
-		};
+			if(!(xhr.responseText.indexOf('%err%') == -1)) {
+				showError(xhr.responseText.replace('%err%',''));
+				return;
+			};
+			console.log(xhr.responseText);
 		//if (xhr.responseText == 'transmitted') {
 			//$.post('/my/ajax/order.php', {action: 'Documents_delSentDoc', message_id: message.docHeader.id}, function(data) {
 			//	console.log(data);
@@ -1282,7 +1279,7 @@ function addMessageToList(arResult, mode) {
 		} else {
 			var myAvatar = '<div class="cnt_image cnt_avatar" style="background-image: '+myAvatarURL+'"></div>';
 		}
-		var myheader = (smuser.fullname == smuser.name)?smuser.fullname:smuser.fullname +"  '" + smuser.name + "'";
+		var myheader = smuser.fullname;
 		var rcvAvatarURL = $('#cnt_'+ rcv_from_obj.id).find('.cnt_avatar').css('background-image') || $('#login_image').find('.cnt_avatar').css('background-image') || 'url(/include/no_avatar.svg)';
 		rcvAvatarURL = rcvAvatarURL.replace(new RegExp('"','g'),"");
 		if(rcvAvatarURL == 'none') {
@@ -1290,7 +1287,7 @@ function addMessageToList(arResult, mode) {
 		} else {
 			var rcvAvatar = '<div class="cnt_image cnt_avatar" style="background-image: '+rcvAvatarURL+'"></div>';
 		}
-		var rcvheader = (rcv_from_obj.fullname == rcv_from_obj.name)?rcv_from_obj.fullname:rcv_from_obj.fullname +"  '" + rcv_from_obj.name + "'";
+		var rcvheader = rcv_from_obj.fullname;
 		$('#msg_li').attr('data-cnt-id',rcv_from_obj.name);
 		
 		var last_msg = $('#msg_li .message_line').last();

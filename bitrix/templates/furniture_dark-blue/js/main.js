@@ -522,6 +522,19 @@ $(document).ready(function() {
 		
 		
 	});
+	$('#cnt_short_invite').on('click','.contact_invite .simple_button', function(e) {
+		e.stopPropagation();
+		invitaionAnswer($(this).parent().parent(), $(this).attr('id'));
+	});
+	$('#cnt_short_invite').on('mouseenter','#cancel',function(){
+		$(this).addClass("accept_button");
+		$('#cnt_short_invite #confirm').removeClass('accept_button');
+    });
+	$('#cnt_short_invite').on('mouseleave','#cancel',function(){
+		$(this).removeClass("accept_button");
+		$('#cnt_short_invite #confirm').addClass('accept_button');
+    });
+
 	//menu
 	 $(".topmenu li").click(function(){
 		if(!$(this).hasClass('active')) {
@@ -557,7 +570,7 @@ $(document).ready(function() {
 			obj.append(str);
 			$('.cnt_inp').bind("change keyup click", function() {
 				if(this.value.length >= 3 && $('.search_result').attr("data-last-value") != this.value){
-					$.ajax({type: 'post', url: "/my/ajax/action.php",  data: {'action': 'FindPersons', 'new_cntname':this.value},  response: 'text',
+					$.ajax({type: 'post', url: "/my/ajax/action.php",  data: {'action': 'FindPersons', 'new_cntname':this.value, 'adds':'html'},  response: 'text',
 						success: function(data){
 							$('.search_result').attr("data-last-value", $('.cnt_inp').val());
 							$(".search_result").html(data).fadeIn(); 

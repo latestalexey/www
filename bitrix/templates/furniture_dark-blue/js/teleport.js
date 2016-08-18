@@ -346,9 +346,9 @@ function messagesRequest() {
 					req_quantity	= rqobject.quantity;
 					req_prefix 		= (req_type == 'message')?('msg'):('ord');
 					var new_msg_obj = $('[data-usr-name='+req_sender+']').find(".new_" + req_prefix);
-					if(req_quantity > 0) {
+					if(req_quantity > 0 && new_msg_obj.length != 0) {
 						new_msg_obj.css("display", "block");
-						if(new_msg_obj.first().find('span').text() != req_quantity) {
+						if(!(new_msg_obj.first().find('span').text() == req_quantity)) {
 							new_msg_obj.html("<span>" + req_quantity + "</span>");
 
 							moveContactRecentTop($('[data-usr-name='+req_sender+']').attr('data-usr-id'));
@@ -397,8 +397,8 @@ function sendCntRequest(name, msg_text, obj) {
 				showError(xhr.responseText.replace('%err%',''));
 				return;
 			}
+			updateContactList('');
 			if(!(obj == undefined)) {
-				updateContactList('');
 				
 				obj.find('.cnt_inp').val('');
 				obj.slideUp(100);
@@ -680,7 +680,7 @@ function ContactInfoView(name) {
 		}		
 		xhr.send(body);
 }
-	
+
 function SearchCntFiles() {
 	var contact = $('#main_content #cnt_view #cnt_info_main').attr('data-usr-name');
 	var xhr = new XMLHttpRequest();
@@ -915,6 +915,17 @@ function ContactDeleteBlocking(name, block) {
 			if(obj.length != 0) {
 				var obj = $('#cnt_'+obj.eq(0).attr('data-usr-id'));
 				var lst_obj = $('#lst_'+obj.eq(0).attr('data-usr-id'));
+				var contact_obj = $('#cnt_short_invite .contact_invite[data-usr-name='+fname+']');
+				if(contact_obj.length != 0) {
+					var inv_num = $('#cnt_short_invite .contact_invite').length;
+					$('#invitings').find('.new_invites span').html(inv_num);
+					if(inv_num == 0) {
+						$('#cnt_short_invite').hide();
+						$('#cnt_short_invite').html('');
+						$('#invitings').find('.new_invites').hide(0);
+						$('#invitings').hide(0);
+					}
+				}	
 			}
 			if(block == 'true') {
 				var group = $("#m_cnt_list .group_block").find('h3[data-srtnum=999]');
@@ -937,6 +948,9 @@ function ContactDeleteBlocking(name, block) {
 					
 				}	
 			}
+			
+			updateContactList('');
+			
 		}
 		xhr.send(body);
 
@@ -1004,7 +1018,8 @@ function moveContactRecentTop(cnt_id) {
 		});
 	
 }
-function invitaionAnswer(contact, mode) {
+function invitaionAnswer(contact_obj, mode) {
+	var contact = contact_obj.attr('data-usr-name')
 	if(mode == 'cancel') {
 		ContactDeleteBlocking(contact, 'false');
 	}
@@ -1024,9 +1039,58 @@ function invitaionAnswer(contact, mode) {
 				showError(xhr.responseText.replace('%err%',''));
 				return;
 			}
+			contact_obj.remove();
+			var inv_num = $('#cnt_short_invite .contact_invite').length;
+			$('#invitings').find('.new_invites span').html(inv_num);
+			if(inv_num == 0) {
+				$('#cnt_short_invite').hide();
+				$('#cnt_short_invite').html('');
+				$('#invitings').find('.new_invites').hide(0);
+				$('#invitings').hide(0);
+			}	
+			
 			updateContactList('');
 		}	
 		xhr.send(body);
+	}
+}
+
+function addContactRequests(name, msg, result) {
+	var fullname = (result == undefined)?(name):(result.fullname);
+	var avatar = (result == undefined)?('/include/no_avatar.svg'):('/my/ajax/files.php?a=prev&amp;i='+result.photo_id);
+	var str = '<div class="contact_invite" data-usr-name="'+name+'">\
+				<table style="border-spacing: 0;">\
+					<tbody><tr>\
+						<td>\
+							<div>\
+								<div class="cnt_avatar cnt_avatar_small" style="background-image: url('+avatar+');"></div>\
+							</div>\
+						</td>\
+						<td>\
+							<div class="cnt_text">'+fullname+'</div>\
+							<div class="cnt_add">'+msg.replace(name,'')+msg+'</div>\
+						</td>\
+						</tr>\
+					</tbody>\
+				</table>\
+				<div style="text-align: center;">\
+					<div id="confirm" class="simple_button accept_button" style="margin: 5px; min-width: 115px; padding: 5px;">Принять</div>\
+					<div id="cancel" class="simple_button" style="margin: 5px; min-width: 115px; padding: 5px; ">Отказать</div>\
+				</div>\
+			</div>';
+
+	$('#cnt_short_invite').append(str);
+	$('#invitings').show(0);
+	$('#invitings').removeClass('close_list');
+	$('#cnt_short_invite').show(0);
+
+	var inv_num = $('#cnt_short_invite .contact_invite').length;
+	if(inv_num == 0) {
+		$('#invitings').find('.new_invites span').html('0');
+		$('#invitings').find('.new_invites').hide(0);
+	} else {
+		$('#invitings').find('.new_invites span').html(inv_num);
+		$('#invitings').find('.new_invites').show(0);
 	}
 }
 function showContactRequests(name, msg) {
@@ -1035,57 +1099,55 @@ function showContactRequests(name, msg) {
 	}
 	req_name = encodeString(name);
 	if($('#cnt_short_invite [data-usr-name='+req_name+']').length == 0) {
-		var str = '<div class="contact_inf" data-usr-name="'+name+'">\
-						<table style="border-spacing: 0;">\
-							<tbody><tr>\
-								<td>\
-									<div>\
-										<div class="cnt_avatar cnt_avatar_small" style="background-image: url(/my/ajax/files.php?a=prev&amp;i=tlpav_2);"></div>\
-									</div>\
-								</td>\
-								<td>\
-									<div class="cnt_text">' + name + '</div>\
-									<p class="cnt_add">Канал общих контактов</p>\
-								</td>\
-								</tr>\
-							</tbody>\
-						</table>\
-					</div>';
-		$('#cnt_short_invite').append(str);
-		$('#invitings').show(0);
-		$('#invitings').removeClass('close_list');
-		$('#cnt_short_invite').show(0);
-	}			
-	/*var str_block = '<div class="rqst_block" data-contact-name="'+name+'">'+
-			'<div style="text-align: center; color: #444;"><b>'+name+'</b> хочет пригласить Вас в список своих контактов</div>' + 
-			'<div class="msg_header">Сообщение от '+name+'</div>' + 
-			'<div class="msg">'+msg+'</div>' + 
-			'<div style="padding: 15px 0 0 0;"><div id="confirm" class="menu_button">Принять</div></div>' + 
-			'<div style="padding: 15px 0 0 0;"><div id="cancel" class="menu_button">Отказать</div></div>' + 
-		'</div>';
-	if($('#rqst_window').length == 0) {
-		var str_window = '<div id="rqst_window" class="modal_window">'+
-		'<div class="inv_header">Приглашение</div>'+
-		'</div>';
-		$('#content').append(str_window);
-		$('#rqst_window').show(10);
-		$('#rqst_window').on('click','.rqst_block .menu_button', function(e) {
-			e.stopPropagation();
-			invitaionAnswer($(this).parent().parent().attr('data-contact-name'), $(this).attr('id'));
-			
-			$(this).parent().parent().remove();
-			if($('#rqst_window .rqst_block').length == 0) {
-				$('#rqst_window').remove();
+
+		var hasInfo = false;
+		var key = 'pinf_'+req_name;
+		if(storu) {
+			try {
+				var personInfo = sessionStorage.getItem(key);
+				if(!(personInfo == undefined)) {
+					personInfo = LZString.decompress(personInfo);
+					var result = $.parseJSON(personInfo)[0];
+					hasInfo = true;
+				}	
+			} catch (e) {
+				sessionStorage.removeItem(key);
 			}
-			else {
-				$($('#rqst_window .rqst_block')[0]).show();
-			}	
-		});
+		}
 		
-	}	
-	$('#rqst_window').append(str_block);
-	$($('#rqst_window .rqst_block')[0]).show();
-	*/
+		if(!hasInfo) {
+			var xhr = new XMLHttpRequest();
+			var body =	'action=FindPersons' +
+						'&adds=json' +
+						'&new_cntname=' + encodeURIComponent(name);
+
+			xhr.open("POST", '/my/ajax/action.php', true);
+			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+			xhr.onreadystatechange = function() 
+			{ 
+				if (xhr.readyState != 4) return;
+				
+				if(!(xhr.responseText.indexOf('%err%') == -1)) {
+					showError(xhr.responseText.replace('%err%',''));
+					return;
+				}
+				try {
+					result = $.parseJSON(xhr.responseText)[0];
+					if(storu) {
+						var zipResult = LZString.compress(xhr.responseText);
+						sessionStorage.setItem(key, zipResult);
+					}
+					hasInfo = true;				
+					addContactRequests(name, msg, result);
+				} catch (e) {
+					addContactRequests(name, msg, undefined);
+				}			
+			}
+			xhr.send(body);
+		} else {
+			addContactRequests(name, msg, result);
+		}	
+	}			
 }
 function droppableCreate(obj) {
    obj.droppable({

@@ -117,7 +117,8 @@ uasort($arGroups, 'arSortByNum');
 }*/
 ?>
 					<h3 id="invitings" style="z-index: 10;" class="close_list">Приглашения
-						<br><span class="cnt_add" style="font-weight: normal;">Запросы на приглашения</span>
+						<br><span class="cnt_add" style="font-weight: normal;">Вас приглашают в свои контакты</span>
+						<div class="new_invites" style="display: none;"><span>99</span></div>
 					</h3>
 					<div id="cnt_short_invite" class="contact_short" style="display: none;">
 					</div>

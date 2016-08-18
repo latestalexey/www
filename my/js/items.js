@@ -221,7 +221,7 @@ $(document).ready(function()
 		var item_id = $(this).parent().attr('data-cart-id');
 		$('#item_li #it_'+encodeString(item_id) + ' div:first').addClass('item_content_selected');
 		$('#content').append(cart_clone);
-		cart_clone.animate({top: cart_cor.top, left: cart_cor.left+30}, 400, function() {
+		cart_clone.animate({top: cart_cor.top, left: cart_cor.left}, 400, function() {
 			$('#content #animated_cart').remove(); 
 			$('#it_cart').addClass('not_empty');
 		});
