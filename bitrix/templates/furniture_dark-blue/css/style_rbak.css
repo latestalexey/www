@@ -177,7 +177,7 @@ progress::-moz-progress-bar { background: #659cef; -moz-border-radius: 3px; }
 }
 
 .cnt-checked-label{
-	border: 1px solid #777;
+	border: 3px solid #157EFB;
 	border-radius: 5px;
 	cursor: pointer;
 	width: 20px; 
@@ -198,12 +198,12 @@ progress::-moz-progress-bar { background: #659cef; -moz-border-radius: 3px; }
 	left: 0; top: 0;
 	width: 100%; height: 100%;
 	margin-left: 0px;
-	color: #777;
+	color: #157EFB;
 	vertical-align: 0px;
 }
 
 .cnt-checked:checked + span, #cnt-select-all:checked + span{
-	background: url('/include/checked.svg') no-repeat; 
+	background: url('/include/checked-2.svg') no-repeat; 
 }
 
 #cnt-search-box {
@@ -473,4 +473,450 @@ progress::-moz-progress-bar { background: #659cef; -moz-border-radius: 3px; }
 	transform: translate(-50%);
 	width: 1420px;
 }
-/* End of Contact Manager */
+
+#letters-window{
+	background-color: rgba(255,255,255,0.6);
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 18px;
+	left: 10px;
+	position: absolute;	
+	text-align: center;
+	-webkit-transform: translate(50%);
+	-ms-transform: translate(50%);
+	-o-transform: translate(50%);
+	transform: translate(50%);
+	top: 10px;
+	width: 600px;
+	z-index: 10300;
+}
+
+#letters-window div{
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: -ms-flex;
+	display: -o-flex;
+	display: flex;
+	width: 600px;
+}
+
+#letters-window div p{
+	color: grey;
+	cursor: pointer;
+	padding: 5px;
+	width: 50px;
+}
+
+#squad-statusbar{
+	border-bottom: 1px solid #157EFB;
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: -ms-flex;
+	display: -o-flex;
+	display: flex;
+	height: 50px;
+}
+
+#squad-statusbar-userinfo{
+	-ms-align-items: center;
+	align-items: center;
+	border-right: 1px solid #157EFB;
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: -ms-flex;
+	display: -o-flex;
+	display: flex;
+	height: 50px; 
+	justify-content: flex-start; 
+	width: 376px; 
+}
+
+#squad-statusbar-userinfo>div{
+	-ms-align-items: center;
+	align-items: center;
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: -ms-flex;
+	display: -o-flex;
+	display: flex; 
+	height: 50px;
+	width: 338px; 
+}
+
+#squad-statusbar-userinfo>div>p{
+	margin-left: 10px;
+}
+
+#squad-statusbar-settings{
+	-ms-align-items: center;
+	align-items: center;
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: -ms-flex;
+	display: -o-flex;
+	display: flex;
+	height: 50px;
+	width: 1044px;  
+}
+
+#squad-statusbar-settings-current{
+	-ms-align-items: center;
+	align-items: center;
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: -ms-flex;
+	display: -o-flex;
+	display: flex; 
+	height: 50px;
+	justify-content: flex-end; 
+	margin-left: 10px;
+	width: 150px;  
+}
+
+#squad-statusbar-status-buttons{
+	-ms-align-items: center;
+	align-items: center;
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: -ms-flex;
+	display: -o-flex;
+	display: flex; 
+	height: 50px;
+	justify-content: flex-end;
+	padding-right: 10px;
+	width: 894px;  
+}
+
+#squad-statusbar-status-buttons>div{
+	/*border: 3px solid #157EFB;
+	border-radius: 50%;*/
+	height: 15px;
+	margin-left: 10px;
+	padding: 3px; 
+	width: 15px;    
+}
+
+#squad-statusbar-status-buttons>div>img{
+	width:100%;
+}
+
+#squad-toolbar{
+	-ms-align-items: center;
+	align-items: center;
+	border-bottom: 1px solid #157EFB;
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: -ms-flex;
+	display: -o-flex;
+	display: flex; 
+	height: 50px;  
+}
+
+#squad-toolbar-header{
+	-ms-align-items: center;
+	align-items: center;
+	border-right: 1px solid #157EFB;
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: -ms-flex;
+	display: -o-flex;
+	display: flex; 
+	height: 50px;
+	justify-content: flex-start;
+	padding-left: 10px;
+	width: 366px;     
+}
+
+#squad-toolbar-tools{
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: -ms-flex;
+	display: -o-flex;
+	display: flex; 
+	height: 50px;
+	width: 1044px; 
+}
+
+#squad-toolbar-tools-selectall{
+	-ms-align-items: center;
+	align-items: center;
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: -ms-flex;
+	display: -o-flex;
+	display: flex; 
+	height: 50px; 
+	justify-content: flex-start;
+	margin-left: 10px;
+	width: 30px;  
+}
+
+#squad-toolbar-tools-buttons{
+	-ms-align-items: center;
+	align-items: center;
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: -ms-flex;
+	display: -o-flex;
+	display: flex;
+	height: 50px; 
+	justify-content: space-between;
+	margin: 0 10px 0 10px;
+	width: 230px;   
+}
+
+#squad-toolbar-tools-buttons>div{
+	/*border: 3px solid #157EFB;
+	border-radius: 50%;*/
+	cursor: pointer;
+	height: 20px;
+	margin: auto;
+	padding: 3px;
+	width: 20px;    
+}
+
+#squad-toolbar-tools-buttons>div>img{
+	width: 100%;
+}
+
+#squad-toolbar-tools-selected, #squad-toolbar-tools-sort, #squad-toolbar-tools-filter{
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: -ms-flex;
+	display: -o-flex;
+	display: flex;
+	height: 50px;
+	width: 150px; 
+}
+
+#squad-toolbar-tools-selected>p, #squad-toolbar-tools-sort>p, #squad-toolbar-tools-filter>p{
+	border-bottom: 1px dashed #157EFB; 
+	color: #157EFB;
+	cursor: pointer;
+	margin: auto;
+}
+
+#squad-toolbar-tools-search{
+	-ms-align-items: center;
+	align-items: center;
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: -ms-flex;
+	display: -o-flex;
+	display: flex; 
+	height: 50px;
+	justify-content: flex-end;
+	padding-right: 10px;
+	width: 290px;    
+}
+
+#squad-content{
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: -ms-flex;
+	display: -o-flex;
+	display: flex;
+}
+
+#list-of-squads{
+	border-right: 1px solid #157EFB;
+	width: 376px;
+}
+
+#squad-add-new{
+	-ms-align-items: center;
+	align-items: center;
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: -ms-flex;
+	display: -o-flex;
+	display: flex;
+	height: 50px; 
+	justify-content: space-between;
+	width: 376px; 
+}
+
+#squad-add-new>div{
+	height: 35px; 
+	margin: auto;
+	width: 35px; 
+}
+
+#squad-add-new>div>img{
+	width:100%;
+}
+
+.squad{
+	-ms-align-items: center;
+	align-items: center;
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: -ms-flex;
+	display: -o-flex;
+	display: flex;
+	height: 50px; 
+	justify-content: flex-start;
+	width: 376px;
+}
+
+.squad:nth-child(even){
+	background-color: #DEEBF7;
+}
+
+.squad-avatar{
+	-ms-align-items: center;
+	align-items: center;
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: -ms-flex;
+	display: -o-flex;
+	display: flex;
+	height: 50px; 
+	justify-content: flex-start; 
+	padding-left: 10px;
+	width: 30px; 
+}
+
+.squad-avatar>div{
+	/*border: 3px solid #157EFB;
+	border-radius: 50%;*/
+	height: 15px;  
+	margin: auto; 
+	padding: 3px; 
+	width: 15px; 
+}
+
+.squad-avatar>div>img{
+	width: 100%;
+}
+
+.squad-name{
+	-ms-align-items: center;
+	align-items: center;
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: -ms-flex;
+	display: -o-flex;
+	display: flex;
+	height: 50px; 
+	justify-content: flex-start; 
+	margin-left: 10px;
+	width: 290px; 
+}
+
+.squad-member:nth-child(even){
+	background-color: #DEEBF7;
+}
+
+#squad-roster{
+	width: 1044px;
+}
+
+.squad-member{
+	-ms-align-items: center;
+	align-items: center;
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: -ms-flex;
+	display: -o-flex;
+	display: flex;
+	justify-content: flex-start;
+	height: 50px;
+	width: 1044px;
+}
+
+.squad-member-check{
+	-ms-align-items: center;
+	align-items: center;
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: -ms-flex;
+	display: -o-flex;
+	display: flex; 
+	height: 30px; 
+	justify-content: flex-start; 
+	margin-left: 10px;
+	width: 30px; 
+}
+
+.squad-member-name{
+	-ms-align-items: center;
+	align-items: center;
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: -ms-flex;
+	display: -o-flex;
+	display: flex;
+	height: 50px; 
+	justify-content: flex-start;
+	width: 300px; 
+}
+
+.squad-member-squad{
+	-ms-align-items: center;
+	align-items: center;
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: -ms-flex;
+	display: -o-flex;
+	display: flex;
+	height: 50px; 
+	justify-content: flex-start;
+	width: 300px; 
+}
+	
+.squad-member-buttons{
+	-ms-align-items: center;
+	align-items: center;
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: -ms-flex;
+	display: -o-flex;
+	display: flex;
+	height: 50px; 
+	justify-content: flex-end; 
+	padding-right: 10px;
+ 	width: 350px; 
+ }
+
+.squad-member-buttons>div{
+	/*border: 3px solid #157EFB;
+	border-radius: 50%;*/
+	cursor: pointer; 
+	display: none;
+	height: 20px;
+	margin-left: 10px;
+	padding: 3px;
+	width: 20px; 
+}
+
+.squad-member-buttons>div>img{
+	width: 100%;
+}
+
+#squad-member-search {
+	height: 34px;
+	border: 1px solid #CCC;
+	border-radius: 5px 0px 0px 5px;
+	width: 300px;
+	padding: 5px;
+	font-size: 14px;
+	vertical-align: middle;
+}
+
+#squad-search-button {
+	display: inline-block;
+	border-radius: 5px; 
+	border: 1px solid #777;
+	vertical-align: middle;
+}
+
+#squad-search-button:hover {
+	background-color: #26A69A;
+  border-color: #26A69A;
+	cursor: pointer;
+}
+
+#squad-search-button:hover svg{
+	fill: #FFF;
+}
+/* End of Squad Manager */	
