@@ -14,9 +14,9 @@
 	$squads = $TLP_obj->telecall('Users_ContactGroups', $params);
 ?>
 
-<div id='squad-statusbar'>
-	<div id='squad-statusbar-userinfo'>
-		<div class="cnt_avatar cnt_avatar_small" style="background-image: none; width: 36px; height: 36px; margin-left: 10px;">
+<div id='cnt-statusbar'>
+	<div id='cnt-userinfo'>
+		<div class="cnt-avatar cnt-avatar-small" style="background-image: none; width: 36px; height: 36px; margin-left: 10px;">
 			<svg fill="#BBB" height="36" viewBox="0 0 24 24" width="36" xmlns="http://www.w3.org/2000/svg">
 				<path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
 				<path d="M0 0h24v24H0z" fill="none"/>
@@ -26,16 +26,17 @@
 			<p>Роман БАКЛАНОВ</p>
 		</div>
 	</div>
-	<div id='squad-statusbar-settings'>
-		<div id='squad-statusbar-settings-current'>
+	<div id='cnt-settings'>
+		<div id='cnt-group-selector'>
 			<p>Все контакты (52)</p>
-		</div>
-		<div style='display: flex;'>
-			<div style="width: 25px; height: 25px;">
-				<img src='/my/data/svg/expand_more.svg' style='width:100%; '>
+			<div style='display: flex;'>
+				<div style="width: 25px; height: 25px;">
+					<img src='/my/data/svg/expand_more.svg' style='width:100%; '>
+				</div>
 			</div>
 		</div>
-		<div id='squad-statusbar-settings-buttons'>
+
+		<div id='cnt-settings-menu'>
 			<div>
 				<img src='/include/cnt-gear.png'>
 			</div>
@@ -49,15 +50,15 @@
 	</div>
 </div>
 
-<div id='squad-toolbar'>
-	<div id='squad-toolbar-header'>
+<div id='cnt-toolbar'>
+	<div id='cnt-header'>
 		<p>Список каналов (4)</p>
 	</div>
-	<div id='squad-toolbar-tools'>
-		<div id='squad-toolbar-tools-selectall'>
-			<label class="cnt-checked-label"><input type='checkbox' id='cnt-select-all'><span></span></label>
+	<div id='cnt-tools'>
+		<div>
+			<label class="cnt-check-label"><input type='checkbox' id='cnt-select-all'><span></span></label>
 		</div>
-		<div id='squad-toolbar-tools-buttons'>
+		<div id='cnt-menu'>
 			<div>
 				<img src='/include/cnt-move.png'>
 			</div>
@@ -71,19 +72,19 @@
 				<img src='/include/cnt-unlock-2.png'>
 			</div>
 		</div>
-		<div id='squad-toolbar-tools-selected'>
+		<div id='cnt-selected-num'>
 			<p>Выбрано: 0</p>
 		</div>
 		
-		<div id='squad-toolbar-tools-sort'>
+		<div id='cnt-sort'>
 			<p>Сортировка: А-я</p>
 		</div>
-		<div id='squad-toolbar-tools-filter'>
+		<div id='cnt-filter'>
 			<p>Фильтр: нет</p>
 		</div>
-		<div id='squad-toolbar-tools-search'>
-			<input type="text" id="squad-member-search" placeholder="Введите имя или e-mail контакта..." style="display: none">
-			<div id="squad-search-button">
+		<div id='cnt-search-box'>
+			<input type="text" id="cnt-search-input" placeholder="Введите имя или e-mail контакта..." style="display: none">
+			<div id="cnt-search-button">
 				<svg fill="#777" height="32px" version="1.1" viewBox="0 0 32 32" width="32px" xmlns="http://www.w3.org/2000/svg" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns" xmlns:xlink="http://www.w3.org/1999/xlink">
 					<g fill="none" fill-rule="evenodd" id="Page-1" stroke="none" stroke-width="1"></g>
 					<path d="M19.4271164,21.4271164 C18.0372495,22.4174803 16.3366522,23 14.5,23 C9.80557939,23 6,19.1944206 6,14.5 C6,9.80557939 9.80557939,6 14.5,6 C19.1944206,6 23,9.80557939 23,14.5 C23,16.3366522 22.4174803,18.0372495 21.4271164,19.4271164 L27.0119176,25.0119176 C27.5621186,25.5621186 27.5575313,26.4424687 27.0117185,26.9882815 L26.9882815,27.0117185 C26.4438648,27.5561352 25.5576204,27.5576204 25.0119176,27.0119176 L19.4271164,21.4271164 L19.4271164,21.4271164 Z M14.5,21 C18.0898511,21 21,18.0898511 21,14.5 C21,10.9101489 18.0898511,8 14.5,8 C10.9101489,8 8,10.9101489 8,14.5 C8,18.0898511 10.9101489,21 14.5,21 L14.5,21 Z" id="search"></path>
@@ -93,21 +94,21 @@
 	</div>
 </div>
 
-<div id='squad-content'>
-	<div id='list-of-squads'>
-		<div id='squad-add-new'>
+<div id='cnt-content'>
+	<div id='cnt-group-list'>
+		<div id='cnt-group-add'>
 			<div>
 				<img src='/include/add-channel.png'>
 			</div>
 		</div>
 
-		<div class="squad"> <!-- Строка -->
-			<div class="squad-avatar"> <!-- Аватарка канала/команды -->
+		<div class="cnt-group"> <!-- Строка -->
+			<div class="cnt-group-avatar"> <!-- Аватарка канала/команды -->
 				<div>
 					<img src='/include/cnt-lock-2.png'>
 				</div>
 			</div>
-			<div class="squad-name"> <!-- Наименование канала/команды -->
+			<div class="cnt-group-name"> <!-- Наименование канала/команды -->
 				<p>Все контакты (52)</p>
 			</div>
 			<div style='display: flex; width: 25'>
@@ -117,13 +118,13 @@
 			</div>
 		</div>
 
-		<div class="squad"> <!-- Строка -->
-			<div class="squad-avatar"> <!-- Аватарка канала/команды -->
+		<div class="cnt-group"> <!-- Строка -->
+			<div class="cnt-group-avatar"> <!-- Аватарка канала/команды -->
 				<div>
 					<img src='/include/cnt-lock-2.png'>
 				</div>
 			</div>
-			<div class="squad-name"> <!-- Наименование канала/команды -->
+			<div class="cnt-group-name"> <!-- Наименование канала/команды -->
 				<p>Приглашенные (26)</p>
 			</div>
 			<div style='display: flex; width: 25'>
@@ -133,13 +134,13 @@
 			</div>
 		</div>
 
-		<div class="squad"> <!-- Строка -->
-			<div class="squad-avatar"> <!-- Аватарка канала/команды -->
+		<div class="cnt-group"> <!-- Строка -->
+			<div class="cnt-group-avatar"> <!-- Аватарка канала/команды -->
 				<div>
 					<img src='/include/cnt-lock-2.png'>
 				</div>
 			</div>
-			<div class="squad-name"> <!-- Наименование канала/команды -->
+			<div class="cnt-group-name"> <!-- Наименование канала/команды -->
 				<p>Общие (24)</p>
 			</div>
 			<div style='display: flex; width: 25'>
@@ -149,13 +150,13 @@
 			</div>
 		</div>
 
-		<div class="squad"> <!-- Строка -->
-			<div class="squad-avatar"> <!-- Аватарка канала/команды -->
+		<div class="cnt-group"> <!-- Строка -->
+			<div class="cnt-group-avatar"> <!-- Аватарка канала/команды -->
 				<div>
 					<img src='/include/cnt-lock-2.png'>
 				</div>
 			</div>
-			<div class="squad-name"> <!-- Наименование канала/команды -->
+			<div class="cnt-group-name"> <!-- Наименование канала/команды -->
 				<p>Заблокированные (2)</p>
 			</div>
 			<div style='display: flex; width: 25'>
@@ -166,11 +167,11 @@
 		</div>
 	</div>
 
-	<div id='squad-roster'>
-		<div class="squad-member" data-search-exp="sandrabullok"> <!-- Строка -->
+	<div id='cnt-contact-list'>
+		<div class="cnt-contact" data-search-exp="sandrabullok"> <!-- Строка -->
 			
-			<div class='squad-member-check'>
-				<label class="cnt-checked-label"><input type='checkbox' class='cnt-checked'><span></span></label>
+			<div class='cnt-contact-check'>
+				<label class="cnt-check-label"><input type='checkbox' class='cnt-checked'><span></span></label>
 			</div>
 
 			<div style='display: flex; width: 20; margin-left: 10px'>
@@ -179,20 +180,20 @@
 				</div>
 			</div>
 
-			<div class="cnt_avatar cnt_avatar_small" style="background-image: none; width: 36px; height: 36px; margin: 0 10px 0 10px;"> <!-- Аватарка контакта -->
+			<div class="cnt-avatar cnt-avatar-small" style="background-image: none; width: 36px; height: 36px; margin: 0 10px 0 10px;"> <!-- Аватарка контакта -->
 				<svg fill="#BBB" height="36" viewBox="0 0 24 24" width="36" xmlns="http://www.w3.org/2000/svg">
 					<path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
 					<path d="M0 0h24v24H0z" fill="none"/>
 				</svg>
 			</div>
 
-			<div class="squad-member-name">
+			<div class="cnt-contact-name">
 				<p>Sandra Bullok</p>
 			</div>
-			<div class="squad-member-squad">
+			<div class="cnt-contact-group">
 				<p>Канал общих контактов</p>
 			</div>
-			<div class="squad-member-buttons">
+			<div class="cnt-contact-menu">
 				<div>
 					<img src='/include/cnt-info.png'>
 				</div>
@@ -205,10 +206,10 @@
 			</div>
 		</div>
 
-		<div class="squad-member" data-search-exp="sylvesterstallone"> <!-- Строка -->
+		<div class="cnt-contact" data-search-exp="sylvesterstallone"> <!-- Строка -->
 			
-			<div class='squad-member-check'>
-				<label class="cnt-checked-label"><input type='checkbox' class='cnt-checked'><span></span></label>
+			<div class='cnt-contact-check'>
+				<label class="cnt-check-label"><input type='checkbox' class='cnt-checked'><span></span></label>
 			</div>
 
 			<div style='display: flex; width: 20; margin-left: 10px'>
@@ -217,20 +218,20 @@
 				</div>
 			</div>
 
-			<div class="cnt_avatar cnt_avatar_small" style="background-image: none; width: 36px; height: 36px; margin: 0 10px 0 10px;"> <!-- Аватарка контакта -->
+			<div class="cnt-avatar cnt-avatar-small" style="background-image: none; width: 36px; height: 36px; margin: 0 10px 0 10px;"> <!-- Аватарка контакта -->
 				<svg fill="#BBB" height="36" viewBox="0 0 24 24" width="36" xmlns="http://www.w3.org/2000/svg">
 					<path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
 					<path d="M0 0h24v24H0z" fill="none"/>
 				</svg>
 			</div>
 
-			<div class="squad-member-name">
+			<div class="cnt-contact-name">
 				<p>Sylvester Stallone</p>
 			</div>
-			<div class="squad-member-squad">
+			<div class="cnt-contact-group">
 				<p>Канал приглашенных контактов</p>
 			</div>
-			<div class="squad-member-buttons">
+			<div class="cnt-contact-menu">
 				<div>
 					<img src='/include/cnt-info.png'>
 				</div>
@@ -243,10 +244,10 @@
 			</div>
 		</div>
 
-		<div class="squad-member" data-search-exp="arnoldschwarzenegger"> <!-- Строка -->
+		<div class="cnt-contact" data-search-exp="arnoldschwarzenegger"> <!-- Строка -->
 			
-			<div class='squad-member-check'>
-				<label class="cnt-checked-label"><input type='checkbox' class='cnt-checked'><span></span></label>
+			<div class='cnt-contact-check'>
+				<label class="cnt-check-label"><input type='checkbox' class='cnt-checked'><span></span></label>
 			</div>
 
 			<div style='display: flex; width: 20; margin-left: 10px'>
@@ -255,20 +256,20 @@
 				</div>
 			</div>
 
-			<div class="cnt_avatar cnt_avatar_small" style="background-image: none; width: 36px; height: 36px; margin: 0 10px 0 10px;"> <!-- Аватарка контакта -->
+			<div class="cnt-avatar cnt-avatar-small" style="background-image: none; width: 36px; height: 36px; margin: 0 10px 0 10px;"> <!-- Аватарка контакта -->
 				<svg fill="#BBB" height="36" viewBox="0 0 24 24" width="36" xmlns="http://www.w3.org/2000/svg">
 					<path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
 					<path d="M0 0h24v24H0z" fill="none"/>
 				</svg>
 			</div>
 
-			<div class="squad-member-name">
+			<div class="cnt-contact-name">
 				<p>Arnold Schwarzenegger</p>
 			</div>
-			<div class="squad-member-squad">
+			<div class="cnt-contact-group">
 				<p>Канал приглашенных контактов</p>
 			</div>
-			<div class="squad-member-buttons">
+			<div class="cnt-contact-menu">
 				<div>
 					<img src='/include/cnt-info.png'>
 				</div>
@@ -281,10 +282,10 @@
 			</div>
 		</div>
 
-		<div class="squad-member" data-search-exp="eddiemurphy"> <!-- Строка -->
+		<div class="cnt-contact" data-search-exp="eddiemurphy"> <!-- Строка -->
 			
-			<div class='squad-member-check'>
-				<label class="cnt-checked-label"><input type='checkbox' class='cnt-checked'><span></span></label>
+			<div class='cnt-contact-check'>
+				<label class="cnt-check-label"><input type='checkbox' class='cnt-checked'><span></span></label>
 			</div>
 
 			<div style='display: flex; width: 20; margin-left: 10px'>
@@ -293,20 +294,20 @@
 				</div>
 			</div>
 
-			<div class="cnt_avatar cnt_avatar_small" style="background-image: none; width: 36px; height: 36px; margin: 0 10px 0 10px;"> <!-- Аватарка контакта -->
+			<div class="cnt-avatar cnt-avatar-small" style="background-image: none; width: 36px; height: 36px; margin: 0 10px 0 10px;"> <!-- Аватарка контакта -->
 				<svg fill="#BBB" height="36" viewBox="0 0 24 24" width="36" xmlns="http://www.w3.org/2000/svg">
 					<path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
 					<path d="M0 0h24v24H0z" fill="none"/>
 				</svg>
 			</div>
 
-			<div class="squad-member-name">
+			<div class="cnt-contact-name">
 				<p>Eddie Murphy</p>
 			</div>
-			<div class="squad-member-squad">
+			<div class="cnt-contact-group">
 				<p>Канал заблокированных контактов</p>
 			</div>
-			<div class="squad-member-buttons">
+			<div class="cnt-contact-menu">
 				<div>
 					<img src='/include/cnt-info.png'>
 				</div>
@@ -322,24 +323,24 @@
 </div>
 
 <script>
-$('#list-of-squads').slimScroll({
+$('#cnt-group-list').slimScroll({
 	position: 'right',
 	height: '200px',
 	size: '7px', 
 	disableFadeOut: true
 });
 
-$('#squad-roster').slimScroll({
+$('#cnt-contact-list').slimScroll({
 	position: 'right',
 	height: '200px',
 	size: '7px', 
 	disableFadeOut: true
 });
 
-$('#squad-toolbar-tools-filter').on('click', function(e){
+$('#cnt-filter').on('click', function(e){
 	var letters = [];
 	var cntName, letter;
-	var contactList = $('#squad-roster').find('[class*="squad-member-name"]');
+	var contactList = $('#cnt-contact-list').find('[class*="cnt-contact-name"]');
 	
 	contactList.each(function(i, elem){
 		cntName = $(elem).children('p').text();
@@ -386,12 +387,12 @@ $('#squad-toolbar-tools-filter').on('click', function(e){
 					$('.modal_back').remove();
 
 					if(letter == 'Очистить фильтр') {
-						$('#squad-roster>div').show();
-						$('#squad-toolbar-tools-filter p').text('Фильтр: нет');
+						$('#cnt-contact-list>div').show();
+						$('#cnt-filter p').text('Фильтр: нет');
 					} else {
-						$('#squad-roster>div').hide();
-						$('#squad-toolbar-tools-filter p').text('Фильтр: ' + letter);
-						$('#squad-roster').find('[class*="squad-member-name"]').children('p').filter(function(){
+						$('#cnt-contact-list>div').hide();
+						$('#cnt-filter p').text('Фильтр: ' + letter);
+						$('#cnt-contact-list').find('[class*="cnt-contact-name"]').children('p').filter(function(){
 							return $(this).text().substr(0, 1) == letter;
 						}).parent().parent().show();
 					}
@@ -410,7 +411,7 @@ $('#squad-toolbar-tools-filter').on('click', function(e){
 	showModalWindow($('#letters-window'));
 });
 
-$("#squad-toolbar-tools-search").on('click',"#squad-search-button", function(e) {
+$("#cnt-search-box").on('click',"#cnt-search-button", function(e) {
 	e.stopPropagation();
 	if($(this).prev('input').css('display') == 'none') {
 		$(this).css('border-radius', '0 5px 5px 0');
@@ -432,14 +433,14 @@ $("#squad-toolbar-tools-search").on('click',"#squad-search-button", function(e) 
 						<path d="M19.4271164,21.4271164 C18.0372495,22.4174803 16.3366522,23 14.5,23 C9.80557939,23 6,19.1944206 6,14.5 C6,9.80557939 9.80557939,6 14.5,6 C19.1944206,6 23,9.80557939 23,14.5 C23,16.3366522 22.4174803,18.0372495 21.4271164,19.4271164 L27.0119176,25.0119176 C27.5621186,25.5621186 27.5575313,26.4424687 27.0117185,26.9882815 L26.9882815,27.0117185 C26.4438648,27.5561352 25.5576204,27.5576204 25.0119176,27.0119176 L19.4271164,21.4271164 L19.4271164,21.4271164 Z M14.5,21 C18.0898511,21 21,18.0898511 21,14.5 C21,10.9101489 18.0898511,8 14.5,8 C10.9101489,8 8,10.9101489 8,14.5 C8,18.0898511 10.9101489,21 14.5,21 L14.5,21 Z" id="search"></path>\
 					</svg>');
 
-		$('.squad-member').show();
+		$('.cnt-contact').show();
 	}
 });
 
-$('#squad-member-search').on('keyup', function(){
+$('#cnt-search-input').on('keyup', function(){
 	var inp_str = $(this).val();
 	if(inp_str == '') {
-		$('.squad-member').show();
+		$('.cnt-contact').show();
 		return;
 	}
 
@@ -447,17 +448,17 @@ $('#squad-member-search').on('keyup', function(){
 	s_str = encodeString(s_str);
 	$(this).removeClass('cnt-not-found');
 
-	var obj = $('#squad-roster').find('[data-search-exp*='+s_str+']');
+	var obj = $('#cnt-contact-list').find('[data-search-exp*='+s_str+']');
 	if(!obj.length)
 		$(this).addClass('cnt-not-found');
 
-	$('.squad-member').hide();
+	$('.cnt-contact').hide();
 	obj.show();
 });
 
 $('.cnt-checked').on('click', function(e){
 	var checked = $(this).prop('checked');
-	var cnt_checked = $(this).closest('.squad-member');
+	var cnt_checked = $(this).closest('.cnt-contact');
 
 	if(checked)
 		$(cnt_checked).addClass('checked');
@@ -475,7 +476,7 @@ $('#cnt-select-all').on('click', function(e){
 	$(checkbox_checked).prop('checked', checked);
 
 	 $(checkbox_checked).each(function(i, elem){
-		var cnt_checked = $(this).closest('.squad-member');
+		var cnt_checked = $(this).closest('.cnt-contact');
 
 		if(checked)
 			$(cnt_checked).addClass('checked');
@@ -486,7 +487,7 @@ $('#cnt-select-all').on('click', function(e){
 	calcSelectedItems();
 });
 
-$('#squad-toolbar-tools-selected').on('click', function(e){
+$('#cnt-selected-num').on('click', function(e){
 	updateRoster(true);
 });
 
@@ -499,23 +500,23 @@ function calcSelectedItems(){
 	if(selectedItems == $('.cnt-checked').length)
 		$('#cnt-select-all').prop("checked", true);
 
-	$('#squad-toolbar-tools-selected p').html('Выбрано: ' + selectedItems);
+	$('#cnt-selected-num p').html('Выбрано: ' + selectedItems);
 }
 
-$('.squad-member').mouseenter(function(){
-	$(this).find('[class="squad-member-buttons"]').children('div').css('display', 'flex');
+$('.cnt-contact').mouseenter(function(){
+	$(this).find('[class="cnt-contact-menu"]').children('div').css('display', 'flex');
 });
 
-$('.squad-member').mouseleave(function(){
-	$(this).find('[class="squad-member-buttons"]').children('div').css('display', 'none');
+$('.cnt-contact').mouseleave(function(){
+	$(this).find('[class="cnt-contact-menu"]').children('div').css('display', 'none');
 });
 
 function updateRoster(showCheckedOnly){
 	if(showCheckedOnly){
-		var checkedItems = $('#squad-roster').find('[class*="squad-member"][class*="checked"]');
+		var checkedItems = $('#cnt-contact-list').find('[class*="cnt-contact"][class*="checked"]');
 		if(checkedItems.length > 0){
-			$('.squad-member').hide();
-			$('#squad-roster').find('[class*="squad-member"][class*="checked"]').show();
+			$('.cnt-contact').hide();
+			$('#cnt-contact-list').find('[class*="cnt-contact"][class*="checked"]').show();
 		}
 	}
 	else{

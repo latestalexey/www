@@ -175,7 +175,7 @@
 
 <table class="cnt-contact-list" style = "display: block; table-layout: fixed; max-height: 495px; overflow-y: scroll; max-width: 1100px; overflow-x: hidden">
 	<tr>
-		<th width="24" align="left"><label class="cnt-checked-label"><input type="checkbox" id="cnt-select-all"><span></span></label></th>
+		<th width="24" align="left"><label class="cnt-check-label"><input type="checkbox" id="cnt-select-all"><span></span></label></th>
 		<th width="60">
 			<!--<div>
 				<div id="btn-contact-move" style="display: inline-block; vertical-align: middle; background: url('/my/data/svg/expand_more.svg'); width: 32px; height: 32px"></div>
@@ -205,7 +205,7 @@
 	foreach ($arContacts as $key=>$group) {
 		foreach ($group as $key2=>$cnt) {?>
 			<tr <?=array_key_exists($cnt['activedate'].'_'.$cnt['fullname'], $lastContacts)?'class="cnt-contact cnt-recent"':'class="cnt-contact"'?> data-cnt-id="cnt-<?=$cnt["user_id"]?>" data-cnt-name="<?=$cnt['name']?>" data-channel-name="<?=$cnt["group"]?>" data-search-exp="<?=mb_strtolower($cnt['name'],'UTF-8').'_ins_'.mb_strtolower($cnt['fullname'],'UTF-8')?>"> 
-				<td height="45" width="24" align="left"><label class="cnt-checked-label"><input type="checkbox" class="cnt-checked" <?=$cnt['name'] == "telebot"?"disabled":""?> data-cnt-id="cnt-<?=$cnt["user_id"]?>" data-cnt-name="<?=$cnt['name']?>" data-channel-name="<?=$cnt["group"]?>"><span></span></label></td>
+				<td height="45" width="24" align="left"><label class="cnt-check-label"><input type="checkbox" class="cnt-checked" <?=$cnt['name'] == "telebot"?"disabled":""?> data-cnt-id="cnt-<?=$cnt["user_id"]?>" data-cnt-name="<?=$cnt['name']?>" data-channel-name="<?=$cnt["group"]?>"><span></span></label></td>
 				<td height="45" width="60">
 					<div>
 						<?if($cnt['photo'] == '') 
