@@ -35,7 +35,7 @@
 				<img src='/my/data/svg/expand_more.svg' style='width:100%; '>
 			</div>
 		</div>
-		<div id='squad-statusbar-status-buttons'>
+		<div id='squad-statusbar-settings-buttons'>
 			<div>
 				<img src='/include/cnt-gear.png'>
 			</div>
@@ -72,7 +72,7 @@
 			</div>
 		</div>
 		<div id='squad-toolbar-tools-selected'>
-			<p>Выбрано: 999</p>
+			<p>Выбрано: 0</p>
 		</div>
 		
 		<div id='squad-toolbar-tools-sort'>
@@ -512,8 +512,11 @@ $('.squad-member').mouseleave(function(){
 
 function updateRoster(showCheckedOnly){
 	if(showCheckedOnly){
-		$('.squad-member').hide();
-		$('#squad-roster').find('[class*="squad-member"][class*="checked"]').show();
+		var checkedItems = $('#squad-roster').find('[class*="squad-member"][class*="checked"]');
+		if(checkedItems.length > 0){
+			$('.squad-member').hide();
+			$('#squad-roster').find('[class*="squad-member"][class*="checked"]').show();
+		}
 	}
 	else{
 		var channelName = $('.cnt-channel-list').find('.selected').attr('data-channel-name');
