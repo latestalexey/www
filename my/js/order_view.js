@@ -804,6 +804,7 @@ var delay = (function(){
 
 function sendDoc (message, receiver) {
 	var xhr = new XMLHttpRequest();
+	console.log(JSON.stringify(JSON.stringify(message)));
 	var body =	'action=send_msg' +
 				'&message=' + encodeURIComponent(JSON.stringify(message)) +
 				'&message_type=document' +
