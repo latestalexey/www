@@ -2,3 +2,8 @@ bitrix/cache/*
 bitrix/managed_cache/*
 bitrix/.settings.php
 bitrix/php_interface/dbconn.php
+node_modules/*
+package.json
+gulpfile.js
+my/sass/*
+bitrix/templates/furniture_dark-blue/css/rbaklanov.css
