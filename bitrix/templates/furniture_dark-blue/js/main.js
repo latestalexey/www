@@ -26,12 +26,12 @@ $(document).ready(function() {
 			if($(e.target).is('ymaps')) {return;}
 
 			$('.modal_window').hide();
-			$('.modal_window').not('#cnt-manager').remove();
+			$('.modal_window').remove();
 			$('.modal_back').remove();
 			$('.cnt_info').not($(e.target).children()).hide();
 			$('.msg_selected').removeClass('msg_selected');
 			//$('.trans_svg').toggleClass('transform_icon');
-	}	
+		}	
 	});
 	$('#ext_bar').on('click', function(e) {
 		e.stopPropagation();
@@ -745,7 +745,8 @@ $(document).ready(function() {
 			$('#main_content #squad-manager').remove();
 			$('#main_content').append('<div id="squad-manager" class="modal_window"></div>');
 
-			var htmlSquadWindow = '<div class="close_line"><div class="clw"><img src="/include/close_window.svg"/></div></div>' + xhr.responseText;
+			//var htmlSquadWindow = '<div class="close_line"><div class="clw"><img src="/include/close_window.svg"/></div></div>' + xhr.responseText;
+			var htmlSquadWindow = xhr.responseText;
 			$('#squad-manager').append(htmlSquadWindow);
 			showModalWindow($('#squad-manager'));
 			//RB

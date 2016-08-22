@@ -51,7 +51,7 @@ class CTSession
 	function post($str_data, $func) {
 		$sock = fsockopen("".$this->TLP_PREFIX."".$this->TLP_HOST, $this->TLP_PORT, $errno, $errstr, 30);
 		if (!$sock) die("$errstr ($errno)\n");
-		
+
 		fwrite($sock, "POST /".$func."?format=json HTTP/1.0\r\n");
 		fwrite($sock, "Host: ".$this->TLP_HOST."\r\n");
 		fwrite($sock, "Content-type: application/json; charset=utf-8;\r\n");
@@ -86,7 +86,6 @@ class CTSession
 		fwrite($sock, "Cookie: ".$this->str_cookies."\r\n");
 		fwrite($sock, "\r\n");
 		fwrite($sock, $str_data);
-
 		
 		$headers = "";
 		while ($str = trim(fgets($sock, 4096)))
