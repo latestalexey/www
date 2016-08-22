@@ -19,14 +19,14 @@ if($_GET["add"]=='nps')
 
 $mode = $_GET["mode"];
 if($mode=='')
-	$mode = 'catalog';
+	$mode = 'messages';
 ?>
 <title>TELEPORT. Личный портал</title>
 <link href="<?=SITE_TEMPLATE_PATH?>/css/slider.css" rel="stylesheet" type="text/css">
 <link href="<?=SITE_TEMPLATE_PATH?>/css/style_max.css" rel="stylesheet" type="text/css">
+<link href="<?=SITE_TEMPLATE_PATH?>/css/style_rbak.css" rel="stylesheet" type="text/css">
 <link href="<?=SITE_TEMPLATE_PATH?>/css/cnt_mngr.css" rel="stylesheet" type="text/css">
 <link href="<?=SITE_TEMPLATE_PATH?>/css/darktooltip.css" rel="stylesheet" type="text/css">
-<!--<link href="<?=SITE_TEMPLATE_PATH?>/css/font-awesome.min.css" rel="stylesheet" type="text/css">-->
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
 
 <script type="text/javascript" src="<?=SITE_TEMPLATE_PATH?>/js/teleport.js"></script>
@@ -93,6 +93,7 @@ if($mode=='')
 							<p id="add_channel">Создать новый канал</p>
 							<p id="add_cnt">Пригласить новый контакт</p>
 							<p id="manage_cnt">Управление контактами</p>
+							<p id="manage_squad">Управление командами</p>
 						</div>
 					</div>
 				</div>
@@ -109,7 +110,6 @@ if($mode=='')
 		</div>
 		<div id="ext_pan">
 			<div id="ext_bar" class="pan_bar" style="right: 303px;">
-				>
 			</div>
 			<div id="ext_pan_header" class="up_pan" style="position: relative; float: none;">
 				<div class="clw" style="position: absolute; right: 0px;">

@@ -37,7 +37,7 @@ else
 <title>TELEPORT - новая территория вашего бизнеса.</title>
 
 <link rel="icon" type="image/x-icon" href="/include/favicon.png"/>
-<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,600,800&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Lobster|Open+Sans:400,600,800&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
 
 <script type="text/javascript" src="<?=SITE_TEMPLATE_PATH?>/js/jquery.js"></script>
 <script type="text/javascript" src="<?=SITE_TEMPLATE_PATH?>/js/slimscroll.js"></script>

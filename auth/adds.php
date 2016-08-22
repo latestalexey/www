@@ -4,11 +4,12 @@
 
 $TLP_HOST = "sstest.e-teleport.ru";
 $TLP_PORT = 443;
+$TLP_PREFIX = "ssl://";
 
 function post_req($name, $arParameters) {
 	$str_data = json_encode($arParameters);
 
-	$sock = fsockopen("ssl://".$GLOBALS['TLP_HOST'], $GLOBALS['TLP_PORT'], $errno, $errstr, 30);
+	$sock = fsockopen("".$GLOBALS['TLP_PREFIX']."".$GLOBALS['TLP_HOST'], $GLOBALS['TLP_PORT'], $errno, $errstr, 30);
 	if (!$sock) die("$errstr ($errno)\n");
 		
 	  $func_name = $name."?format=json";	

@@ -13,7 +13,12 @@ body
 	/*background-color: #B0BEC5; */
 	font: normal 14px Arial, Helvetica, sans-serif;
 }
-.empty_body  {background-image: url('/include/back.svg');}
+.empty_body  {
+	background-image: url(/include/teleport.jpg);
+	background-color: #AAC9D7;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
 .empty_wall {font-family: 'Open Sans', Arial, Helvetica, sans-serif; text-align: center;padding-top: 30px;font-size: 44px;color: #777777;}
 
 #content {margin-left: auto; margin-right: auto;	 width: 100%; position: relative; z-index: 10;
@@ -72,7 +77,7 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 	background-image: url(/include/checked.svg);
 }
 /*Confirmation*/
-#confirmation {text-align: center; color: #FFFFFF; padding-top: 50px; min-height: 650px;}
+#confirmation {text-align: center; color: #FFFFFF; padding-top: 70px; min-height: 650px;}
 #confirmation a {color: #FFFFFF; text-decoration: underline;}
 #confirmation a:hover, #confirmation_g a:hover {color: #FF6E53; text-decoration: underline;}
 
@@ -136,6 +141,9 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 	font-size: 1.8em;
 	line-height: 1.2em;
     font-weight: 300;
+	text-shadow: rgba(0,0,0,.65)0 1px 1px;
+    max-width: 930px;
+    margin: 72px auto 10px auto;	
 }
 .intro_text {
 	margin: 54px auto;
@@ -334,7 +342,6 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 	position: absolute;
 	top: 30px;
 	width: 300px;
-	z-index: 900;
 }
 #new_cntresponse {
 	text-align: center;
@@ -360,7 +367,9 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 	top: 4px;
 	left: 253px;
 }
-
+#invitings {
+	display: none;
+}
 .contact_list {border-bottom: solid 1px #CCCCCC;}
 .contact_list h3, .cnt_abutton {
 	background-image: url(/my/data/svg/expand_less.svg); background-repeat: no-repeat; background-position: 265px center; 
@@ -374,7 +383,7 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 }
 .contact_list h3.close_list {background-image: url(/my/data/svg/expand_more.svg);}
 .contact_short {border-left: solid 1px #CCCCCC;	border-right: solid 1px #CCCCCC; position: relative;}
-.contact_inf 
+.contact_inf, .contact_invite 
 {
 	padding: 10px 10px 2px 10px;
 	color: #252525;
@@ -420,6 +429,19 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 .cnt_text span, .cnt_mail span{ background-color: #26A69A; color: #FFF;}
 
 .cnt_mail {display: none;}
+
+.msg_begin_avatar {
+	display: inline-block; 
+	height: 70px; 
+	width: 70px; 
+	margin: 0 0 0 15px; 
+	z-index:50;
+	background-size: cover;    
+	border-radius: 7px;
+    background-repeat: no-repeat;
+    background-position: center;
+    border: 1px solid #CCCCCC;
+}
 /*.cnt_mail span{ background-color: #26A69A;}*/
 .search_result {
 	max-height: 180px;
@@ -455,6 +477,8 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 	padding-left: 9px;
 	max-height: 30px;
 	overflow: hidden;
+    text-overflow: ellipsis;
+    word-wrap: break-word;	
 }
 .cnt_avatar {
 	background-size: cover; 
@@ -901,7 +925,7 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 .message_line a:hover{text-decoration: underline;}
 
 .image_file {height: 250px; text-align: center;}
-.image_file img{max-height: 226px;}
+.image_file img{height: 226px;}
 
 .close_image {height: 24px;}
 .close_image img{display: none;}
@@ -990,9 +1014,7 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 	z-index: 10;
 	left: 0px;
 }
-
-.new_msg
-{
+.new_invites {
 	height: 26px;
 	width: 26px;
 	text-align: center;
@@ -1000,21 +1022,40 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 	font-size: 14px;
 	color: #FFF;
 	position: absolute; 
-	top: 25px;
-	right: 5px;
+	top: 7px;
+	right: 30px;
+	/*background-image: url(/my/data/svg/chat_bubble.svg);*/
+	background-color: #ff6600;
+    border-radius: 15px;
+	display: none;
+
+}
+.new_invites span {position: relative; top: 5px;}
+
+.new_msg
+{
+	height: 20px;
+	width: 20px;
+	text-align: center;
+	/*font-weight: 600;*/
+	font-size: 14px;
+	color: #FFF;
+	position: absolute; 
+	top: 30px;
+	right: 10px;
 	/*background-image: url(/my/data/svg/chat_bubble.svg);*/
 	background-color: #26A69A;
     border-radius: 15px;
 	display: none;
 }
-.new_msg span {position: relative; top: 5px;}
+.new_msg span {position: relative; top: 2px;}
 
 .new_ord
 {
 	height: 29px;
 	width: 32px;
 	text-align: center;
-	font-weight: 600;
+	/*font-weight: 600;*/
 	font-size: 14px;
 	color: #26A69A;
 	position: absolute; 
@@ -1072,14 +1113,16 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 	display: block;
 	font-weight: 600;
 	text-align: left;
-	white-space: nowrap;
 	position: relative;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;	
 }
 .it_filter[data-filter-type=enum], .doc_filter {
 	padding: 15px 15px 15px 50px;
     background-image: url(/my/data/svg/expand_more.svg);
     background-repeat: no-repeat;
-    background-position: 15px center;
+    background-position: 15px 8px;
 }
 .it_filter[data-filter-type=boolean] {
 	padding: 15px 15px 15px 20px;
@@ -1140,7 +1183,9 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 	box-sizing: border-box;
 	text-align: left;
 	cursor: pointer;
-	
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;	
 }
 .it_filter_value:hover, .doc_filter_value:hover {
 	background-color: #EEE;
@@ -1167,7 +1212,7 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-	
+	width: 90%;
 }
 .it_category .it_filter, .it_category .it_filter_enum, .it_category .empty_cat{
 	display: none;
@@ -1229,7 +1274,7 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
     font-size: 14px;
     font-weight: 600;
     width: 300px;
-    padding: 14px;
+    padding: 21px;
     background-color: #E0F2F1;
     font-style: italic;
 }	
@@ -1242,7 +1287,8 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 #telebot_msg a:hover {
 	color: #26A69A;
 }
-
+.clw_bot {position: absolute; top: 1px; right: 5px; display: inline-block; width: 24px; height: 24px; text-align: center; border: 1px solid transparent; cursor: pointer; border-radius: 12px}
+.clw_bot:hover {border: 1px solid #AAAAAA;}
 #cnt_menu, #info_content {margin: 0px 10px;}
  
 #cnt_menu p, #info_content p, #up_menu p, #active_menu p {border: 1px solid #FBFBFB; font-family: 'Open Sans', Arial, Helvetica, sans-serif; padding: 10px; cursor: pointer; font-size: 14px; font-weight: 600; /*color: #777777;*/}
@@ -1904,6 +1950,10 @@ overflow: auto;
 	font-family: 'Open Sans', Arial, Helvetica, sans-serif;
 	font-weight: 600;
 }
+#cnt_filelist {
+	max-height: 350px;
+	min-height: 250px;
+}
 .cnt_photo {
 	width: 150px;
 	min-height: 107px;
@@ -2076,6 +2126,12 @@ overflow: auto;
 	cursor: pointer;
 }
 
+.accept_button {
+	background-color: #26a69a !important;
+	color: #FFF !important;
+	border-color: #26a69a !important;
+}
+
 .item_line div .simple_button, .simple_button {
 	display: inline-block;
 	border-radius: 5px; 
@@ -2086,10 +2142,10 @@ overflow: auto;
 }
 
 .item_line div .simple_button:hover, .simple_button:hover {
-    background-color: #26A69A;
+    background-color: #26A69A !important;
     cursor: pointer;
-    border-color: #26A69A;
-	color: #FFF;
+    border-color: #26A69A !important;
+	color: #FFF !important;
 }
 .item_line div .simple_button:hover svg, .simple_button:hover svg{
 	fill: #FFF;
@@ -2271,282 +2327,3 @@ a:active {color:#000000; text-decoration: none;}
 
 
 #footer {width: 100%; height: 120px; background-color: #FF6E53;}
-
-/*items maxim*/
-/*#download_cat {
-	position: relative; 
-	top:-90%; 
-	width:800px;
-	margin: 0 auto;
-	overflow: hidden;
-}
-
-#teleport_link,
-#yml_link,
-#bitrix_link,
-#excel_link {
-	position: relative;
-	overflow: hidden;
-	padding-top: 25px;
-	margin-bottom: 25px;
-}
-
-#download_cat .button{
-	display:block;
-	float:left;
-	width: 300px;
-	left:20px;
-	padding: 20px; 
-	font-weight: 600; 
-	text-align:center; 
-	font-size: 18px; 
-}
-
-#download_cat .share_text,
-#download_cat .public_text{
-	position: absolute;
-	left: 465px;
-	line-height: 24px;
-	font-weight: 600;
-}
-
-#download_cat .public_link,
-#download_cat .public_text{
-	bottom:0;
-}
-
-#download_cat .share_link.active+.share_text{
-	top: 15px;
-}
-
-#download_cat .share_link.active{
-	line-height: 20px;
-}
-
-#download_cat .link_flag{
-	position: absolute;
-	left: 400px;
-	width: 56px;
-	height: 24px;
-	margin-right: 10px;
-	background: url('/include/checkbox.png') no-repeat;
-	background-position:0 0;
-	cursor: pointer;
-}
-
-#download_cat .link_flag.active{
-	background-position:0 -24px;
-}
-#download_cat input{
-	cursor:pointer;
-}
-
-#copy_cat {
-	width:350px; 
-	height:350px; 
-	position: relative; 
-	top:-90%; 
-	margin: 0 auto;
-	overflow: hidden;
-}
-
-#copy_cat .caption {
-	width:100%; 
-	padding:30px 0 50px 0; 
-	text-align:center; 
-	font-size:18px; 
-	font-weight:600; 
-	line-height: 24px;
-}
-
-#copy_cat .button{
-	width:125px; 
-	left:35px;
-	padding:10px; 
-	text-align:center; 
-	font-size:16px; 
-	font-weight:600;
-	box-sizing:border-box;	
-}
-
-#copy_cat .button:hover{
-	background:#26A69A;
-	color: #FFF;
-}
-
-#copy_cat .button.no{
-	left:65px;
-}
-
-#copy_cat .cat_autoupdate {
-	position: relative;
-	padding: 20px 0 0 35px;
-	cursor:pointer;
-}
-
-#copy_cat .cat_autoupdate .checkbox {
-	float: left;
-	border: 1px solid #CCC;
-}
-
-#copy_cat .cat_autoupdate .checkbox.checked {
-    background-image: url('/my/data/svg/check.svg');
-}
-
-#copy_cat .update_val {
-	width: 250px;
-	padding-left:30px; 
-	font-size: 16px; 
-	font-weight: 600;
-	color:#777;
-}
-
-#copy_cat  .close_line .help_icon {
-	left:10px;
-	right:inherit;
-    top: 10px;
-}
-
-#copy_cat  .cat_autoupdate .help_icon {
-    top: 20px;
-}
-*/
-/*===============================Cat_Update============================*/
-/*#update_cat {
-	width:350px; 
-	min-height:150px; 
-	height:auto;
-	position: relative; 
-	top:-90%; 
-	margin: 0 auto;
-	overflow: hidden;
-}
-
-#update_cat .title { 
-	width:300px;
-	padding: 20px 0; 
-	margin: 0 auto;
-	font-weight: 600;
-    text-align: center;
-    font-size: 18px;
-	line-height: 24px;
-}
-
-#update_cat  #add_catfile {
-	width: 180px;
-    height: 40px;
-	margin: 0 auto;
-    border: 1px solid #CCC;
-    border-radius: 5px;
-    -moz-border-radius: 5px;
-    -webkit-border-radius: 5px;
-    position: relative;
-	cursor:pointer;
-}
-
-#update_cat #add_catfile p{
-	padding-left:40px;
-	font-weight: 600;
-    font-size: 16px;
-    line-height: 40px;
-	text-align:left;
-}
-
-#update_cat #add_catfile svg{
-    position: absolute;
-	top: 4px;
-    left: 4px;
-}
-
-#update_cat #add_catfile:hover {
-    background: #26A69A;
-	color: #FFF;
-}
-
-#update_cat #add_catfile:hover svg{
-    fill: #fff;
-}
-
-#update_cat #cat-fileinfo .msg_file{
-	display: block;
-    width: 300px;
-    margin: 30px auto;
-	background-color: #FFF;
-    border: 1px solid #DDD;
-    border-radius: 5px;
-}
-
-#update_cat #upload_catfile.button { 
-    width: 180px;
-    height: 40px;
-	left:85px;
-	font-weight: 600;
-    font-size: 16px;
-    line-height: 40px;
-	text-align:center;
-	cursor:pointer;
-}
-*/		
-/*===============================Cat_Update_End============================*/
-
-/*===============================CntView_AddFile============================*/
-/*#cnt_view #add_cntfile {
-    position: relative;
-	float:left;
-    border: 1px solid #CCC;
-    width: 180px;
-    height: 40px;
-	margin: 0 20px 20px 0;
-    border-radius: 5px;
-    -moz-border-radius: 5px;
-    -webkit-border-radius: 5px;
-	cursor:pointer;
-}
-
-
-#cnt_view #add_cntfile p{
-	margin-left:40px;
-	font-weight: 600;
-    font-size: 16px;
-    line-height: 40px;
-	text-align:left;
-}
-
-#cnt_view #add_cntfile svg{
-    position: absolute;
-	top: 4px;
-    left: 4px;
-}
-
-#cnt_view #add_cntfile:hover {
-    background: #26A69A;
-	color: #FFF;
-}
-
-#cnt_view #add_cntfile:hover svg{
-    fill: #fff;
-}
-
-#cnt_view #cnt-fileinfo {
-	clear:both;
-}
-
-#cnt_view #upload_cntfile:hover svg{
-    fill: #26A69A;
-}
-
-#cnt_view #send_cntfile {
-	margin: 20px 0;
-    height: 40px;
-}
-
-#cnt_view #send_cntfile svg {
-	margin-top:4px;
-	cursor:pointer;
-}
-
-#cnt_view #send_cntfile:hover svg {
-	fill: #26A69A;
-}
-*/
-/*===============================CntView_AddFile_End============================*/

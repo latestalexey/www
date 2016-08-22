@@ -26,7 +26,7 @@ ob_end_clean();
 header_remove();
 
 $str_data = '';
-$sock = fsockopen("ssl://".$TLP_obj->TLP_HOST, $TLP_obj->TLP_PORT, $errno, $errstr, 180);
+$sock = fsockopen("".$TLP_obj->TLP_PREFIX."".$TLP_obj->TLP_HOST, $TLP_obj->TLP_PORT, $errno, $errstr, 180);
 if (!$sock) die("$errstr ($errno)\n");
 
 header('Content-Description: File Transfer');

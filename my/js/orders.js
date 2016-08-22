@@ -28,16 +28,6 @@ var delType = { 'pickup': 'Самовывоз',
 
 var docs_filter = [];
 
-function getOrderDate(date){
-	var year = date.getFullYear();
-	var month = (date.getMonth().toString().length>1) ? date.getMonth()+1 : '0'+(date.getMonth()+1);
-	var day = (date.getDate().toString().length>1) ? date.getDate() : '0'+date.getDate();
-	var hh = (date.getHours().toString().length>1) ? date.getHours() : '0'+date.getHours();
-	var mm = (date.getMinutes().toString().length>1) ? date.getMinutes() : '0'+date.getMinutes();
-	var ss = (date.getSeconds().toString().length>1) ? date.getSeconds() : '0'+date.getSeconds();
-	return {"year":year, "month":month, "day":day, "hh":hh, "mm":mm, "ss":ss};
-};
-
 $(document).ready(function()
 {
 	$("#order_list").css("height", $(".main_pan").height() - $("#orders_header").height());
@@ -52,9 +42,15 @@ $(document).ready(function()
 	$('#contact_filter, #exp_filter').off();
 	$('#contact_filter').text('Показать по всем контактам');
 	hideExtPan();
-	
 	hideTelebotInfo();
 	initOrderList(true);
+	
+	if (localStorage.getItem("userDocId")) {
+		getTmpDocInfo(localStorage.getItem("userDocId"), localStorage.getItem("sender"), localStorage.getItem("receiver"));
+		localStorage.removeItem("userDocId");
+		localStorage.removeItem("sender");
+		localStorage.removeItem("receiver");
+	};
 	
 	$('#contact_filter').on('click', function(e) {
 		e.stopPropagation();
@@ -81,7 +77,9 @@ $(document).ready(function()
 		e.stopPropagation();
 		var obj = $(this).closest('.order');
 		var id = obj.attr('data-order-id');
-		obj.hasClass('new') ? getTmpDocInfo(id) : getDocInfo(id);
+		var sender = obj.attr('data-order-sender');
+		var receiver = obj.attr('data-order-receiver');
+		obj.hasClass('new') ? getTmpDocInfo(id, sender, receiver) : getDocInfo(id, sender, receiver);
 	});
 
 	$("#order_list").scroll(function() 
@@ -110,9 +108,9 @@ $(document).ready(function()
 		else {
 			$('#orders_header').find('[data-contractor]').text('Получатель');
 		}
-		
-		initOrderList(false);
-	
+		var contact = getActiveContact();
+		var allContacts = (contact.id == undefined);
+		initOrderList(allContacts);
 	});
 	
 	$('.my_body').on('click','#download_doclist', function(e) {
@@ -128,21 +126,38 @@ $(document).ready(function()
 		e.stopPropagation();
 		var contact = getActiveContact();
 		if (contact.id !== undefined) {
-			$.post('/my/ajax/order.php', { action: 'Documents_GetLastId' }, function(docid) {
-				addNewDoc(++docid, contact);				
-			});		
+			var xhr = new XMLHttpRequest();
+			var body =	'action=catalog_getQuantity' +
+						'&contact=' + encodeURIComponent(contact.name);
+			xhr.open("POST", '/my/ajax/action.php', true);
+			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+			xhr.onreadystatechange = function() { 
+				if (xhr.readyState != 4) return;
+				if(!(xhr.responseText.indexOf('%err%') == -1)) {
+					showError(xhr.responseText.replace('%err%',''));
+					return;
+				}
+				var itemsQty = xhr.responseText || 0;
+				if (xhr.responseText>0) {
+					$.post('/my/ajax/order.php', { action: 'Documents_GetLastId'}, function(docid) {
+						addNewDoc(++docid, contact);				
+					});
+				}
+				else {
+					showTelebotInfo("Указанный контакт не имеет собственного каталога. Пожалуйста, выберите другой контакт...","", 3000);
+				};			
+			}		
+			xhr.send(body);
 		}
 		else {
 			showTelebotInfo("Выберите контакт - получателя документа ...","", 3000);
 		};	
 		hideModalWindow($('#active_menu'));
 		$('.modal_back').remove();			
-	});
-	
+	});	
 });
 
 function addNewDoc(docid, contact){
-	console.log(docid);
 	var curDate = new Date;
 	var message = {
 		"docHeader":{
@@ -188,7 +203,7 @@ function addNewDoc(docid, contact){
 			if (data == 1) {
 				var docDate = getOrderDate(curDate);
 				$('#order_li').prepend(
-					'<div id='+docid+' class="order new" data-order-id='+docid+' data-order-sender='+contact.name+' data-order-receiver="">' +
+					'<div id='+docid+' class="order new" data-order-id='+docid+' data-order-sender='+smuser.name+' data-order-receiver='+contact.name+'>' +
 						'<div class="order_content">' +
 							'<div class="order_line">' +
 								'<div class="col_0">'+docType[message.docHeader.type]+'</div>' +
@@ -202,7 +217,7 @@ function addNewDoc(docid, contact){
 						'<p class="sub_info"><img src="/include/stdown.png"></p>' +
 					'</div>'
 				);	
-				getTmpDocInfo(docid);	
+				getTmpDocInfo(docid, smuser.name, contact.name);	
 			}		
 		}
 	);
@@ -319,7 +334,7 @@ function initOrderList(allContacts) {
 		$('#contact_filter').addClass('ext_selected');
 		$('#cur_contact').html('<div style="padding: 5px 10px;">\
 			<div style="font-weight: 600;"> Включен режим просмотра документов по всем контактам.</div>\
-			<div style="color: #444;">Для отбора документов по одному контакту выберите его в списке ваших контактов</div>\
+			<div style="color: #444; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Для отбора документов по одному контакту выберите его в списке ваших контактов</div>\
 			</div>');
 	}
 	lastOrderDate = new Date();
@@ -347,7 +362,6 @@ function getOrderList() {
 		xhr.onreadystatechange = function() 
 		{ 
 			if (xhr.readyState != 4) return;
-			
 			if(!(xhr.responseText.indexOf('%err%') == -1)) {
 				showError(xhr.responseText.replace('%err%',''));
 				return;
@@ -360,7 +374,8 @@ function getOrderList() {
 function getTmpDocs(){
 	var docDate = getOrderDate(new Date());
 	var contact = getActiveContact();
-	$.post('/my/ajax/order.php', {"action": "Documents_GetList", "receiver": contact.name}, function(data){
+	var doctype = $('.order_content_header .selected_col').attr('data-ltype');
+	$.post('/my/ajax/order.php', {"action": "Documents_GetList", "receiver": contact.name, "doctype": doctype}, function(data){
 		if (data.length) {
 			$.each(data, function(i, val){
 				var contact = getContactInfo(val.receiver);
@@ -372,7 +387,7 @@ function getTmpDocs(){
 								'<div class="col_1">'+val.num+'</div>' +
 								'<div class="col_2">'+docDate.day+'-'+docDate.month+'-'+docDate.year+'</div>' +
 								'<div class="col_3">'+contact.fullname+'</div>' +
-								'<div class="col_4">'+val.sum+'</div>' +
+								'<div class="col_4">'+number_format(val.sum, 2, '.', ' ')+'</div>' +
 								'<div class="col_5">'+docStatus[val.status]+'</div>' +
 							'</div>' +
 						'</div>' +

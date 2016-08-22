@@ -26,7 +26,7 @@ $(document).ready(function() {
 			if($(e.target).is('ymaps')) {return;}
 
 			$('.modal_window').hide();
-			$('.modal_window').remove();
+			$('.modal_window').not('#cnt-manager').remove();
 			$('.modal_back').remove();
 			$('.cnt_info').not($(e.target).children()).hide();
 			$('.msg_selected').removeClass('msg_selected');
@@ -379,7 +379,6 @@ $(document).ready(function() {
 		
 		var mcnt_obj = $('#cnt_'+$(this).parent().attr('data-usr-id'));
 		var gr_obj = getGroupHead(mcnt_obj);
-		console.log(gr_obj);
 		if(gr_obj.attr('data-srtnum') == 999) {
 			block_str = '<p id="unblock">Разблокировать контакт</p>';
 		}
@@ -523,6 +522,19 @@ $(document).ready(function() {
 		
 		
 	});
+	$('#cnt_short_invite').on('click','.contact_invite .simple_button', function(e) {
+		e.stopPropagation();
+		invitaionAnswer($(this).parent().parent(), $(this).attr('id'));
+	});
+	$('#cnt_short_invite').on('mouseenter','#cancel',function(){
+		$(this).addClass("accept_button");
+		$('#cnt_short_invite #confirm').removeClass('accept_button');
+    });
+	$('#cnt_short_invite').on('mouseleave','#cancel',function(){
+		$(this).removeClass("accept_button");
+		$('#cnt_short_invite #confirm').addClass('accept_button');
+    });
+
 	//menu
 	 $(".topmenu li").click(function(){
 		if(!$(this).hasClass('active')) {
@@ -558,7 +570,7 @@ $(document).ready(function() {
 			obj.append(str);
 			$('.cnt_inp').bind("change keyup click", function() {
 				if(this.value.length >= 3 && $('.search_result').attr("data-last-value") != this.value){
-					$.ajax({type: 'post', url: "/my/ajax/action.php",  data: {'action': 'FindPersons', 'new_cntname':this.value},  response: 'text',
+					$.ajax({type: 'post', url: "/my/ajax/action.php",  data: {'action': 'FindPersons', 'new_cntname':this.value, 'adds':'html'},  response: 'text',
 						success: function(data){
 							$('.search_result').attr("data-last-value", $('.cnt_inp').val());
 							$(".search_result").html(data).fadeIn(); 
@@ -568,7 +580,10 @@ $(document).ready(function() {
 					$(".search_result").html("").fadeOut(); 
 				}
 			});
-				
+			$('.cnt_inp').on('blur',function() {
+				$(".search_result").fadeOut();
+			});
+			
 			$(".search_result").on("click", ".contact_inf", function(){
 				$(".cnt_inp").val($(this).attr('data-usr-name'));
 				$(".search_result").fadeOut();
@@ -673,6 +688,7 @@ $(document).ready(function() {
 		}
 		obj.find('.new_cnt').slideToggle(200);
 	});
+	
 	$('.my_body').on('click','#manage_cnt', function(e) {
 		e.stopPropagation();
 		$('.modal_back').remove();
@@ -703,8 +719,39 @@ $(document).ready(function() {
 			resetMouseEventListener();
 			addCntManagerEvents();
 			//RB
+		}	
+		xhr.send(body);
+	});
 
+	$('.my_body').on('click','#manage_squad', function(e) {
+		e.stopPropagation();
+		$('.modal_back').remove();
+		$('#active_menu').remove();
+		
+		var xhr = new XMLHttpRequest();
+		var body =	'';
 
+		xhr.open("POST", '/my/ajax/squad_mngr.php', true);
+		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+		xhr.onreadystatechange = function() 
+		{ 
+			if (xhr.readyState != 4) return;
+			
+			if(!(xhr.responseText.indexOf('%err%') == -1)) {
+				showError(xhr.responseText.replace('%err%',''));
+				return;
+			}
+			
+			$('#main_content #squad-manager').remove();
+			$('#main_content').append('<div id="squad-manager" class="modal_window"></div>');
+
+			var htmlSquadWindow = '<div class="close_line"><div class="clw"><img src="/include/close_window.svg"/></div></div>' + xhr.responseText;
+			$('#squad-manager').append(htmlSquadWindow);
+			showModalWindow($('#squad-manager'));
+			//RB
+			//resetMouseEventListener();
+			//addCntManagerEvents();
+			//RB
 		}	
 		xhr.send(body);
 	});
@@ -764,7 +811,7 @@ $(document).ready(function() {
 		//topMenu_action($(".topmenu li.active").attr('id'));
 	}
 	if($('#login_user').attr('data-nps') == 'y') {
-		var strHeader = 'Добро пожаловать в TELEPORT.<br><br>Вы не знаете свой пароль?<br>Тогда укажите свой новый пароль для входа в систему.'
+		var strHeader = 'Добро пожаловать в TELEPORT.<br><br>Вам необходимо сменить свой пароль<br>Придумайте новый пароль для входа в систему.'
 		ChangeUserPassword(strHeader);
 	}
 
@@ -773,9 +820,9 @@ $(document).ready(function() {
 	setInterval(messagesRequest, 5000);
 	
 	showGreeting();
-	if ($('#m_cnt_list .contact_inf').length < 5) {
-		setTimeout(function() {showTelebotInfo('Пригласите в TELEPORT, своих партнеров и друзей для работы и общения.<br>Для этого вам надо нажать на "+" над списком контактов и выбрать пункт "Пригласить новый контакт"','',20)}, 30);
-	}	
+	/*if ($('#m_cnt_list .contact_inf').length < 5) {
+		setTimeout(function() {showTelebotInfo('Нажмите на значок "+" над списком контактов, чтобы пригласить в TELEPORT, своих партнеров и друзей для работы и общения.','',15000)}, 30000);
+	}*/	
 });
 
 function parseURL(url_string) {
@@ -838,10 +885,12 @@ function showTelebotInfo(msg, emojion, timeout) {
 	}
 	str = '<div id="telebot_info">\
 				<img id="telebot_image" style="height: 150px; width: 108px;" src="/my/data/telebot_'+emojion+'.png"/>\
-				<div id="telebot_msg">'+msg+'</div>\
+				<div id="telebot_msg"><div><div class="clw_bot"><img src="/include/close_window.svg"/></div></div>'+msg+'</div>\
 			</div>';
 	$('#content').append(str);
-	
+	$('#telebot_info').on('click','.clw_bot', function() {
+		hideTelebotInfo();
+	});
 	$('#telebot_info').css('display','block');
 	resizeTelebot();
 	if(timeout > 0) {
@@ -961,3 +1010,40 @@ function showGreeting() {
 
 	});
 }
+
+function number_format(number, decimals, dec_point, thousands_sep) {
+  number = (number + '').replace(/[^0-9+\-Ee.]/g, '');
+  var n = !isFinite(+number) ? 0 : +number,
+    prec = !isFinite(+decimals) ? 0 : Math.abs(decimals),
+    sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep,
+    dec = (typeof dec_point === 'undefined') ? '.' : dec_point,
+    s = '',
+    toFixedFix = function(n, prec) {
+      var k = Math.pow(10, prec);
+      return '' + (Math.round(n * k) / k)
+        .toFixed(prec);
+    };
+  // Fix for IE parseFloat(0.55).toFixed(0) = 0;
+  s = (prec ? toFixedFix(n, prec) : '' + Math.round(n))
+    .split('.');
+  if (s[0].length > 3) {
+    s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep);
+  }
+  if ((s[1] || '')
+    .length < prec) {
+    s[1] = s[1] || '';
+    s[1] += new Array(prec - s[1].length + 1)
+      .join('0');
+  }
+  return s.join(dec);
+}
+
+function getOrderDate(date){
+	var year = date.getFullYear();
+	var month = (date.getMonth().toString().length>1) ? date.getMonth()+1 : '0'+(date.getMonth()+1);
+	var day = (date.getDate().toString().length>1) ? date.getDate() : '0'+date.getDate();
+	var hh = (date.getHours().toString().length>1) ? date.getHours() : '0'+date.getHours();
+	var mm = (date.getMinutes().toString().length>1) ? date.getMinutes() : '0'+date.getMinutes();
+	var ss = (date.getSeconds().toString().length>1) ? date.getSeconds() : '0'+date.getSeconds();
+	return {"year":year, "month":month, "day":day, "hh":hh, "mm":mm, "ss":ss};
+};

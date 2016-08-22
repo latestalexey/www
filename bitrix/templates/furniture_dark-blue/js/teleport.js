@@ -216,6 +216,10 @@ function htmlspecialchars(text) {
       .replace(/'/g, "&#039;");
 }
 function encodeString(str) {
+	if(str == undefined) {
+		return "";
+	}	
+	
 	var fname = str.replace(new RegExp("@",'g'),'\\@');
 	fname = fname.replace(new RegExp("\\.",'g'),'\\.');
 	fname = fname.replace(new RegExp(" ",'g'),'\\ ');
@@ -317,7 +321,7 @@ function messagesRequest() {
 				return;
 			}
 			try {
-				if(xhr.responseText.indexOf('%%auth_failed%%') != -1) {
+				if(!(xhr.responseText.indexOf('%%auth_failed%%') == -1)) {
 					window.location.href = window.location.href;
 				}
 				else {
@@ -342,9 +346,9 @@ function messagesRequest() {
 					req_quantity	= rqobject.quantity;
 					req_prefix 		= (req_type == 'message')?('msg'):('ord');
 					var new_msg_obj = $('[data-usr-name='+req_sender+']').find(".new_" + req_prefix);
-					if(req_quantity > 0) {
+					if(req_quantity > 0 && new_msg_obj.length != 0) {
 						new_msg_obj.css("display", "block");
-						if(new_msg_obj.first().find('span').text() != req_quantity) {
+						if(!(new_msg_obj.first().find('span').text() == req_quantity)) {
 							new_msg_obj.html("<span>" + req_quantity + "</span>");
 
 							moveContactRecentTop($('[data-usr-name='+req_sender+']').attr('data-usr-id'));
@@ -393,8 +397,8 @@ function sendCntRequest(name, msg_text, obj) {
 				showError(xhr.responseText.replace('%err%',''));
 				return;
 			}
+			updateContactList('');
 			if(!(obj == undefined)) {
-				updateContactList('');
 				
 				obj.find('.cnt_inp').val('');
 				obj.slideUp(100);
@@ -421,8 +425,10 @@ function ContactInfoView(name) {
 				showError(xhr.responseText.replace('%err%',''));
 				return;
 			}
+			
+			hideModalWindow($('.modal_window').not('#cnt-manager'));
 			$('#main_content #cnt_view').remove();
-			$('#main_content').append('<div id="cnt_view" class="modal_window"></div>');
+			$('#main_content').append('<div id="cnt_view" class="modal_window"></div>');		
 			var strwindow = '<div class="close_line"><div class="clw"><img src="/include/close_window.svg"/></div></div>';
 
 			//var arInfo = jQuery.parseJSON(xhr.responseText);
@@ -493,7 +499,7 @@ function ContactInfoView(name) {
 				}
 				else {
 					var strPhoto = '<div class="modal_back back_curt"></div><div id="detail_photo" class="modal_window">' +
-						'<div class="close_line"><div class="clw"><img style="height: 18px;" src="/include/close_window.svg"/></div></div>'+
+						'<div class="close_line"><div class="clw"><img src="/include/close_window.svg"/></div></div>'+
 						'<img src="'+$(this).find('img').attr('src')+'" style="max-height: 600px;"/>'+
 						'</div>';
 					$('#main_content').append(strPhoto);
@@ -517,6 +523,7 @@ function ContactInfoView(name) {
 				$('#cnt_view #cnt_company_card').hide(0);
 				$('#cnt_view #cnt_settings').hide(0);
 				$('#cnt_view #cnt_addings').hide(0);
+				$('#cnt_view #cnt_filelist').hide(0);
 				$('#cnt_view #cnt_info_body').show(0);
 				$('#cnt_view #buttons').show(0);
 				$('#cnt_view #cnt_logo').hide(0, function(){
@@ -600,7 +607,6 @@ function ContactInfoView(name) {
 				else if($('#cnt_view #cnt_logo img').attr('data-change') == '2') {
 					body =	body + '&company_logo=';
 				}
-				console.log(body);
 				xhr.open("POST", '/my/ajax/action.php', true);
 				xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 				xhr.onreadystatechange = function()	{ 
@@ -662,14 +668,7 @@ function ContactInfoView(name) {
 			});	
 
 			$('#cnt_view').on('click', '#cnt_info_docs' ,function() {
-				if ($('#cnt_filelist').length) {
-					$('#cnt_filelist').remove();
-				}
-				else {
-					$('#cnt_view').append('<div id="cnt_filelist" style="max-height:350px; margin-top: 20px; display:none;"><div id="cnt_filelist_header"></div><div id="cnt_filelist_content"></div></div>');
-					$('#telebot_info').remove();
-					SearchCntFiles()
-				};
+				SearchCntFiles();
 			});
 			$('#cnt_view').on('click', '#add_cntfile' ,function() {
 				$(this).siblings('#uploadifive-cntfile_upl').children().last().click();
@@ -680,18 +679,15 @@ function ContactInfoView(name) {
 			});	
 		}		
 		xhr.send(body);
-	
 }
-	
+
 function SearchCntFiles() {
 	var contact = $('#main_content #cnt_view #cnt_info_main').attr('data-usr-name');
 	var xhr = new XMLHttpRequest();
-	var body =	'action=files_getList' +
+	var body =	'action=filesList' +
 				'&adds=json' +
 				'&contact=' + encodeURIComponent(contact) +
-				'&status=*' +
-				'&limit=100' +
-				'&nom=1';					
+				'&Category=userFiles';					
 	xhr.open("POST", '/my/ajax/action.php', true);
 	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 	xhr.onreadystatechange = function() 
@@ -704,7 +700,7 @@ function SearchCntFiles() {
 		}
 		try {
 			var arResult = jQuery.parseJSON(xhr.responseText);
-			requestCntFileBrowser(arResult.result.reverse());
+			requestCntFileBrowser(arResult);
 		}	
 		catch (err)	{
 			showError('Не удалось получить список файлов. <br>Сбой операции <br> Повторите попытку позже');
@@ -716,20 +712,27 @@ function SearchCntFiles() {
 function requestCntFileBrowser(arResult) {	
 	var contact = $('#main_content #cnt_view #cnt_info_main').attr('data-usr-name');
 	var contactfn = $('#main_content #cnt_view #cnt_info_main').attr('data-usr-flname');
-	$('#cnt_filelist_header').append('<div style="text-align: center; padding: 13px 10px; color: #777; font-weight: 800; border-bottom: 1px solid #CCC;">Файлы контакта '+contactfn+'</div>');
+	
+	$('#cnt_filelist_content').removeClass('border_block');
+	$('#cnt_view #cnt_filelist_content').html('');
+	$('#cnt_view #cnt_filelist_content').off();
+	
 	var files_html = '';
+	
 	var delete_svg = '<svg fill="#BBB" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">'+
-	'<path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>'+
-	'<path d="M0 0h24v24H0z" fill="none"/></svg>';
+		'<path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>'+
+		'<path d="M0 0h24v24H0z" fill="none"/></svg>';
+
 	var file_html = '<div class="msg_file uploadifive-queue-item"><div class="upfile" ><div class="file_icon"></div>'+
-	'<div class="file_block"><p class="filename"></p>'+
-	'<p class="file_info"></p></div>'+
-	'<a class="del_file close"><div class="cloud">'+delete_svg+'</div></a>'+
-	'<div class="fileinfo">Готов к отправке</div>'+
-	'<div class="progress"><div class="progress-bar"></div></div>'+
-	'</div>';
-	$(arResult).each(function(){
-		files_html = files_html + '<div class="msg_file" style="padding: 0px 0 10px 0; width:99%; max-width:99%">' + addCntFileToList($(this), true) + '</div>';
+		'<div class="file_block"><p class="filename"></p>'+
+		'<p class="file_info"></p></div>'+
+		'<a class="del_file close"><div class="cloud">'+delete_svg+'</div></a>'+
+		//'<div class="fileinfo">Готов к отправке</div>'+
+		'<div class="progress"><div class="progress-bar"></div></div>'+
+		'</div>';
+		
+	$(arResult).each(function(key, val){
+		files_html = files_html + '<div class="msg_file">' + addCntFileToList(val, true) + '</div>';
 	});	
 	
 	if (contact == smuser.name) {
@@ -740,13 +743,10 @@ function requestCntFileBrowser(arResult) {
 							'<path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path>' +
 							'<path d="M0 0h24v24H0z" fill="none"></path>' +
 						'</svg>' +
-						'<p>Добавить файл</p>' +
-					'</div>' +
-					'<div id="send_cntfile" style="display:none;">' +
-						'<svg fill="#777" height="36" viewBox="0 0 24 24" width="36" xmlns="http://www.w3.org/2000/svg">' +
-							'<path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>' +
-							'<path d="M0 0h24v24H0z" fill="none"/>' +
-						'</svg>' +
+						'<p>Добавить файл в профиль контакта</p>' +
+						'<p style="font-size: 12px; font-weight: 400; font-style: italic;">\
+							Ваши бланки договоров, сертификаты, пресс-релизы и прайс-листы все ваши контакты смогут свободно скачивать здесь и не отвлекать вас. (Макс. 60Мб каждый файл)\
+						</p>'+
 					'</div>' +
 					'<div id="upload_cntfile" style="display:none">' +
 						'<svg fill="#777" height="36" viewBox="0 0 24 24" width="36" xmlns="http://www.w3.org/2000/svg">' +
@@ -758,14 +758,27 @@ function requestCntFileBrowser(arResult) {
 					'<input type="file" name="cntfile_upl" id="cntfile_upl" style="display: none;">' +
 					'<input type="hidden" name="action" value="upload_cntfile">' +	
 				'</form>';		
-		$('#cnt_filelist_content').append(html_str);
+		$('#cnt_filelist .cnt_headline').append(html_str);
+	} else if(files_html == '') {
+		files_html = '<div id="empty_files">\
+			Файлы в профиле контакта отсутствуют\
+			<p style="font-size: 14px;font-weight: 400;font-style: italic;">\
+				Не теряйте время на отправку необходимых шаблонов и документов.<br>\
+				В файлах профиля можно выкладывать и безопасно хранить для своих контактов любые файлы. Бланки договоров, сертификаты, пресс-релизы, прайс-листы и многое другое, что необходимо для работы. <br>\
+				Файлы будут доступны только вашим контактам.\
+			</p>\
+			</div>';
+		$('#cnt_filelist_content').addClass('border_block');
 	};
 	
 	$('#cnt_filelist_content').append(files_html);
 	$('#cnt_filelist_content').wrapInner('<div class="scrolllist"></div>');	
-	$('#cnt_filelist').show();
+
+	$('#cnt_view #buttons').hide(0);
+	$('#cnt_view #cnt_info_body').hide(0);
+	$('#cnt_filelist').show(0);
 	
-	$('#cnt_filelist_content').height($('#cnt_filelist').height()-$('#cnt_filelist_header').height());
+	$('#cnt_filelist_content').height($('#cnt_filelist').height() - $('#cnt_filelist .cnt_headline').height()-10);
 	$('#cnt_filelist_content .scrolllist').slimScroll({height: 'auto', size: '7px', disableFadeOut: false});
 
 	$('#cnt_filelist_content').on('click','.image_file .close_line svg',function(e) {	
@@ -787,8 +800,8 @@ function requestCntFileBrowser(arResult) {
 	});
 	
 	$(function() {	
-	$("#cnt_filelist_content #cntfile_upl").uploadifive({
-		'auto' : false,
+	$("#cnt_filelist #cntfile_upl").uploadifive({
+		'auto' : true,
 		'uploadScript' : '/my/ajax/action.php',
 		'buttonText' : '',
 		'buttonClass' : 'filename_button',
@@ -801,6 +814,7 @@ function requestCntFileBrowser(arResult) {
 		'itemTemplate' : file_html,
 		'formData': {'action': 'send_cnt_file'},
 		'onAddQueueItem': function(file_obj) {
+			console.log(file_obj);
 			var file_name = file_obj.name;
 			var fileUrl = file_name, parts, ext = ( parts = file_name.split("/").pop().split(".") ).length > 1 ? parts.pop() : "";
 			var file_size = Math.round(file_obj.size/1024);
@@ -816,10 +830,24 @@ function requestCntFileBrowser(arResult) {
 				$(value).parent().parent().find('.file_icon').html(att_svg);
 				$(value).next('p').html(file_size+file_met+' '+file_type);
 			});
-			$('#send_cntfile').show(200);
 		},
 		'onUploadComplete' : function(file, data) {
-			
+			$('#cnt-fileinfo').hide(100);
+			var ext = ( parts = file.name.split("/").pop().split(".") ).length > 1 ? parts.pop() : "";
+			var obj = {
+				add_date: new Date(), 
+				file_category: 'userFiles', 
+				file_extention: ext, 
+				file_id: '', 
+				file_name: file.name, 
+				file_size: file.size, 
+				has_preview: false, 
+				message_id: '', 
+				public_access: false, 
+				receiver: '',
+				user_name: smuser.name
+			};
+			$('#cnt_filelist_content .scrolllist').prepend('<div class="msg_file">' + addCntFileToList(obj, true) + '</div>');
 		},
 		'onQueueComplete' : function() {
 			
@@ -832,12 +860,12 @@ function addCntFileToList(obj, hide_image) {
 		'<path d="M0 0h24v24H0z" fill="none"/>'+
 		'<path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/>'+
 		'</svg>	';
-	var file_size = Math.round(obj.attr('fsize')/1024);
-	var file_idat = getFileType(obj.attr('fext'));
+	var file_size = Math.round(obj.file_size/1024);
+	var file_idat = getFileType(obj.file_extention);
 	var file_type = file_idat.type;
 	var att_svg = file_idat.svg;
-	var file_url = '/my/ajax/fld.php?a=dload&i='+obj.attr('ID');//$(this).attr('furl');
-	var pvfile_url = '/my/ajax/fld.php?a=prv&i='+obj.attr('ID');//$(this).attr('furl');
+	var file_url = '/my/ajax/files.php?a=detail&i='+obj.file_id;//$(this).attr('furl');
+	var pvfile_url = '/my/ajax/files.php?a=prev&i='+obj.file_id;//$(this).attr('furl');
 	var file_met = "KB";
 	if(file_size > 1024) { 
 		file_size = Math.round(file_size/1024);
@@ -855,9 +883,10 @@ function addCntFileToList(obj, hide_image) {
 		'<img src="'+pvfile_url+'"/>'+
 		'</div>';
 	}
-	var str_html = 	'<div class="upfile" id="fn_'+obj.attr('ID') + '" data-furl="'+file_url+'"><a target="_blank" href="'+file_url+'"><div class="file_icon">'+att_svg+'</div></a>'+
-					'<div class="file_block"><a target="_blank" href="'+file_url+'"><p class="filename">' + obj.attr('fname') + '</p></a>'+
+	var str_html = 	'<div class="upfile" id="fn_'+ obj.file_id + '" data-furl="'+file_url+'"><a target="_blank" href="'+file_url+'"><div class="file_icon">'+att_svg+'</div></a>'+
+					'<div class="file_block"><a target="_blank" href="'+file_url+'"><p class="filename">' + obj.file_name + '</p></a>'+
 					'<p class="file_info">'+file_size+file_met+' '+file_type+'</p></div>'+
+					'<div id="del-user-file" class="fa fa-trash-o help_icon"><div class="help_info">Удалить файл</div></div>' +
 					'<a target="_blank" href="'+file_url+'"><div class="cloud help_icon"><div class="help_info">Скачать файл</div>'+cloud_svg+'</div></a>'+ img_str +
 					'</div>';
 
@@ -886,6 +915,17 @@ function ContactDeleteBlocking(name, block) {
 			if(obj.length != 0) {
 				var obj = $('#cnt_'+obj.eq(0).attr('data-usr-id'));
 				var lst_obj = $('#lst_'+obj.eq(0).attr('data-usr-id'));
+				var contact_obj = $('#cnt_short_invite .contact_invite[data-usr-name='+fname+']');
+				if(contact_obj.length != 0) {
+					var inv_num = $('#cnt_short_invite .contact_invite').length;
+					$('#invitings').find('.new_invites span').html(inv_num);
+					if(inv_num == 0) {
+						$('#cnt_short_invite').hide();
+						$('#cnt_short_invite').html('');
+						$('#invitings').find('.new_invites').hide(0);
+						$('#invitings').hide(0);
+					}
+				}	
 			}
 			if(block == 'true') {
 				var group = $("#m_cnt_list .group_block").find('h3[data-srtnum=999]');
@@ -908,6 +948,9 @@ function ContactDeleteBlocking(name, block) {
 					
 				}	
 			}
+			
+			updateContactList('');
+			
 		}
 		xhr.send(body);
 
@@ -975,7 +1018,8 @@ function moveContactRecentTop(cnt_id) {
 		});
 	
 }
-function invitaionAnswer(contact, mode) {
+function invitaionAnswer(contact_obj, mode) {
+	var contact = contact_obj.attr('data-usr-name')
 	if(mode == 'cancel') {
 		ContactDeleteBlocking(contact, 'false');
 	}
@@ -995,44 +1039,115 @@ function invitaionAnswer(contact, mode) {
 				showError(xhr.responseText.replace('%err%',''));
 				return;
 			}
+			contact_obj.remove();
+			var inv_num = $('#cnt_short_invite .contact_invite').length;
+			$('#invitings').find('.new_invites span').html(inv_num);
+			if(inv_num == 0) {
+				$('#cnt_short_invite').hide();
+				$('#cnt_short_invite').html('');
+				$('#invitings').find('.new_invites').hide(0);
+				$('#invitings').hide(0);
+			}	
+			
 			updateContactList('');
 		}	
 		xhr.send(body);
+	}
+}
+
+function addContactRequests(name, msg, result) {
+	var fullname = (result == undefined)?(name):(result.fullname);
+	var avatar = (result == undefined)?('/include/no_avatar.svg'):('/my/ajax/files.php?a=prev&amp;i='+result.photo_id);
+	var str = '<div class="contact_invite" data-usr-name="'+name+'">\
+				<table style="border-spacing: 0;">\
+					<tbody><tr>\
+						<td>\
+							<div>\
+								<div class="cnt_avatar cnt_avatar_small" style="background-image: url('+avatar+');"></div>\
+							</div>\
+						</td>\
+						<td>\
+							<div class="cnt_text">'+fullname+'</div>\
+							<div class="cnt_add">'+msg.replace(name,'')+msg+'</div>\
+						</td>\
+						</tr>\
+					</tbody>\
+				</table>\
+				<div style="text-align: center;">\
+					<div id="confirm" class="simple_button accept_button" style="margin: 5px; min-width: 115px; padding: 5px;">Принять</div>\
+					<div id="cancel" class="simple_button" style="margin: 5px; min-width: 115px; padding: 5px; ">Отказать</div>\
+				</div>\
+			</div>';
+
+	$('#cnt_short_invite').append(str);
+	$('#invitings').show(0);
+	$('#invitings').removeClass('close_list');
+	$('#cnt_short_invite').show(0);
+
+	var inv_num = $('#cnt_short_invite .contact_invite').length;
+	if(inv_num == 0) {
+		$('#invitings').find('.new_invites span').html('0');
+		$('#invitings').find('.new_invites').hide(0);
+	} else {
+		$('#invitings').find('.new_invites span').html(inv_num);
+		$('#invitings').find('.new_invites').show(0);
 	}
 }
 function showContactRequests(name, msg) {
 	if($('#rqst_window').find('[data-contact-name='+encodeString(name)+']').length != 0) {
 		return;
 	}
-	var str_block = '<div class="rqst_block" data-contact-name="'+name+'">'+
-			'<div style="text-align: center; color: #444;"><b>'+name+'</b> хочет пригласить Вас в список своих контактов</div>' + 
-			'<div class="msg_header">Сообщение от '+name+'</div>' + 
-			'<div class="msg">'+msg+'</div>' + 
-			'<div style="padding: 15px 0 0 0;"><div id="confirm" class="menu_button">Принять</div></div>' + 
-			'<div style="padding: 15px 0 0 0;"><div id="cancel" class="menu_button">Отказать</div></div>' + 
-		'</div>';
-	if($('#rqst_window').length == 0) {
-		var str_window = '<div id="rqst_window" class="modal_window">'+
-		'<div class="inv_header">Приглашение</div>'+
-		'</div>';
-		$('#content').append(str_window);
-		$('#rqst_window').show(10);
-		$('#rqst_window').on('click','.rqst_block .menu_button', function(e) {
-			e.stopPropagation();
-			invitaionAnswer($(this).parent().parent().attr('data-contact-name'), $(this).attr('id'));
-			
-			$(this).parent().parent().remove();
-			if($('#rqst_window .rqst_block').length == 0) {
-				$('#rqst_window').remove();
+	req_name = encodeString(name);
+	if($('#cnt_short_invite [data-usr-name='+req_name+']').length == 0) {
+
+		var hasInfo = false;
+		var key = 'pinf_'+req_name;
+		if(storu) {
+			try {
+				var personInfo = sessionStorage.getItem(key);
+				if(!(personInfo == undefined)) {
+					personInfo = LZString.decompress(personInfo);
+					var result = $.parseJSON(personInfo)[0];
+					hasInfo = true;
+				}	
+			} catch (e) {
+				sessionStorage.removeItem(key);
 			}
-			else {
-				$($('#rqst_window .rqst_block')[0]).show();
-			}	
-		});
+		}
 		
-	}	
-	$('#rqst_window').append(str_block);
-	$($('#rqst_window .rqst_block')[0]).show();
+		if(!hasInfo) {
+			var xhr = new XMLHttpRequest();
+			var body =	'action=FindPersons' +
+						'&adds=json' +
+						'&new_cntname=' + encodeURIComponent(name);
+
+			xhr.open("POST", '/my/ajax/action.php', true);
+			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+			xhr.onreadystatechange = function() 
+			{ 
+				if (xhr.readyState != 4) return;
+				
+				if(!(xhr.responseText.indexOf('%err%') == -1)) {
+					showError(xhr.responseText.replace('%err%',''));
+					return;
+				}
+				try {
+					result = $.parseJSON(xhr.responseText)[0];
+					if(storu) {
+						var zipResult = LZString.compress(xhr.responseText);
+						sessionStorage.setItem(key, zipResult);
+					}
+					hasInfo = true;				
+					addContactRequests(name, msg, result);
+				} catch (e) {
+					addContactRequests(name, msg, undefined);
+				}			
+			}
+			xhr.send(body);
+		} else {
+			addContactRequests(name, msg, result);
+		}	
+	}			
 }
 function droppableCreate(obj) {
    obj.droppable({
