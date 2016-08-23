@@ -4,7 +4,7 @@ require_once($_SERVER["DOCUMENT_ROOT"]."/my/admin/before.php");
 
 $TLP_obj = unserialize($_SESSION["TLP_obj"]);
 $user = $TLP_obj->user_info['name'];
-$action = strlen($_POST['action']) ? $_POST['action'] : $_GET['action'];
+$action = $_POST['action'];
 
 function json_encode_cyr($str) {
 $arr_replace_utf = array('\u0410', '\u0430','\u0411','\u0431','\u0412','\u0432',
@@ -48,7 +48,7 @@ if($action == 'Documents_saveDocToLocalBase')
 					sum = $sum,
 					currencyId = '$currencyId',
 					hash = '$hash'
-				where message_id = $message_id and sender = '$user'") or die (mysql_error());
+				where message_id = $message_id") or die (mysql_error());
 	echo $result;		
 }
 elseif($action == 'Documents_addItemToExistDoc')
@@ -80,7 +80,7 @@ elseif($action == 'Documents_addItemToExistDoc')
 	};
 	print_r($message);
 	$jsonmessage = json_encode_cyr($message);
-	mysql_query ("UPDATE t_documents SET sum = $totalsum, message = '$jsonmessage' where message_id = $id and sender='$user'") or die (mysql_error());
+	mysql_query ("UPDATE t_documents SET sum = $totalsum, message = '$jsonmessage' where message_id = $id") or die (mysql_error());
 }
 elseif($action == 'Documents_addNew')
 {	
@@ -101,8 +101,8 @@ elseif($action == 'Documents_addNew')
 elseif($action == 'Documents_GetLastId')
 {
 	$receiver = $_POST["receiver"];
-	$query = "SELECT message_id FROM t_documents WHERE sender = '$user'";
-	if (strlen($receiver)) $query = $query . " AND receiver = '$receiver'";
+	$query = "SELECT message_id FROM t_documents";
+	if (strlen($receiver)) $query = $query . " WHERE receiver = '$receiver'";
 	$query = $query . " order by message_id desc limit 1";
 	$result = mysql_query ($query) or die (mysql_error());
 	$docid = mysql_result ($result,0);
@@ -110,11 +110,12 @@ elseif($action == 'Documents_GetLastId')
 }
 elseif($action == 'Documents_GetList')
 {
-	$filters = json_decode($_POST["filters"]);
-	$query = "SELECT message_id, sender, receiver, type, status, date, num, sum, currencyId, hash FROM t_documents WHERE sender = '$user'";
-	foreach($filters as $key=>$filter) {
-		$query = $query . " AND ".$filter->name." ".$filter->operation." '".$filter->value."'";
-	};
+	$receiver = $_POST["receiver"];
+	$doctype = $_POST["doctype"];
+	$query = "SELECT message_id, sender, receiver, type, status, date, num, sum, currencyId, hash FROM t_documents WHERE sender='$user'";
+	if (strlen($receiver)) $query = $query . " and receiver = '$receiver'";
+	if (strlen($doctype) && ($doctype == 'sent')) $query = $query . " and sender = '$user'";
+	if (strlen($doctype) && ($doctype == 'recieved')) $query = $query . " and sender != '$user'";
 	$result = mysql_query ($query) or die (mysql_error());
 	$data = array();
 	while($row=mysql_fetch_assoc($result)) {
@@ -135,7 +136,7 @@ elseif($action == 'Documents_GetList')
 elseif($action == 'Documents_GetById')
 {
 	$message_ID = $_POST["message_id"];
-	$result = mysql_query ("SELECT message FROM t_documents WHERE message_id=$message_ID and sender = '$user'") or die (mysql_error());
+	$result = mysql_query ("SELECT message FROM t_documents WHERE message_id=$message_ID") or die (mysql_error());
 	$message = mysql_result ($result,0);
 	echo $message;
 }
@@ -149,73 +150,6 @@ elseif($action == 'Documents_getItemPosInfo')
 		array_push($data, json_decode($row['message']));
 	};
 	echo json_encode_cyr($data);
-}
-elseif($action == 'upl_pos_from_xls')
-{
-	function readExelFile($filepath){
-		require_once 'PHPExcel.php';
-		$arPos=array(); 
-		$inputFileType = PHPExcel_IOFactory::identify($filepath);
-		$objReader = PHPExcel_IOFactory::createReader($inputFileType);
-		$objPHPExcel = $objReader->load($filepath); 
-		$arPos = $objPHPExcel->getActiveSheet()->toArray();
-		return $arPos; 
-	};
-	if (!empty($_FILES['Filedata'])) {
-		$arPos =  readExelFile($_FILES['Filedata']['tmp_name']);
-	};
-	function filterPos($var){
-		return($var[0] != null);
-	};
-	echo json_encode_cyr(array_filter($arPos, "filterPos"));	
-}
-elseif($action == 'Positions_SaveErrors')
-{
-	$today = date("d-m-Y_His");
-	//$fname = iconv('cp1252', 'utf-8', $_POST['filename']);
-	//$filename = substr($fname, 0, strrpos($fname, '.')-1).'_errors_'.$today.'.xlsx';
-	$filename = 'errors_'.$today.'.xlsx';
-	$arError = json_decode($_POST['arError']);
-	require_once 'PHPExcel.php';
-	$phpexcel = new PHPExcel();
-	$page = $phpexcel->setActiveSheetIndex(0); 
-	foreach($arError as $key=>$order){
-		++$key;
-		$page->setCellValue('A'.$key, $order[0], PHPExcel_Cell_DataType::TYPE_STRING);
-		$page->setCellValueExplicit('B'.$key, $order[1], PHPExcel_Cell_DataType::TYPE_STRING);
-		$page->setCellValue('C'.$key, $order[2], PHPExcel_Cell_DataType::TYPE_STRING);
-	}
-	$objWriter = PHPExcel_IOFactory::createWriter($phpexcel, 'Excel2007');
-	$objWriter->save($filename);
-	echo $filename;
-}
-elseif($action == 'Positions_DownloadErrors')
-{
-	$filename = $_GET['filename'];
-	print_r($_POST);
-	if (file_exists($filename)) {
-		while (ob_get_level()) {
-			ob_end_clean();
-		};
-		header('Content-Description: File Transfer');
-		header('Content-Type: application/vnd.ms-excel');
-		header('Content-Disposition: attachment; filename='.basename($filename));
-		header('Content-Transfer-Encoding: binary');
-		header('Expires: 0');
-		header('Cache-Control: must-revalidate');
-		header('Pragma: public');
-		header('Content-Length: '.filesize($filename));
-		readfile($filename);
-		unlink($filename);
-		exit;
-	};
-}
-elseif($action == 'Documents_delSentDoc')
-{	
-	$docid = $_POST["message_id"];
-	$receiver = $_POST["receiver"];
-	$query = "DELETE FROM t_documents WHERE message_id=$docid AND sender='$user' AND receiver = '$receiver'";
-	$result = mysql_query ($query) or die (mysql_error());
 };
 
 
