@@ -826,106 +826,115 @@ function initDocView(arDoc, sender, receiver) {
 			},
 			'onUploadComplete' : function(file, data) {
 				var arPos = JSON.parse(data);
-				var arErr = [];
-				$.each(arPos, function(key, val){
-					var arr_fld = ['*'];
-					it_filter = [{"mode": "item", "name":"name", "operation":"LIKE", "value": '%'+val[0]+'%'}];
-					var xhr = new XMLHttpRequest();
-					var body =	'action=catalog_get' +
-								'&adds=json' +
-								'&contact=' + encodeURIComponent(receiver.name) +
-								'&filters=' + encodeURIComponent(JSON.stringify(it_filter)) +
-								'&fields=' + encodeURIComponent(JSON.stringify(arr_fld)) +
-								'&limit=1' + 
-								'&nom=1';
+				var  article_str = '';
+				arPos.forEach(function(val, key, arPos){
+					article_str = article_str + '"' + val[0] + '",';
+				});
+				var arr_fld = ['*'];
+				it_filter = [{"mode": "item", "name":"article", "operation":"IN", "value": article_str.substr(0, article_str.length-1)}];
+				var xhr = new XMLHttpRequest();
+				var body =	'action=catalog_get' +
+							'&adds=json' +
+							'&contact=' + encodeURIComponent(receiver.name) +
+							'&filters=' + encodeURIComponent(JSON.stringify(it_filter)) +
+							'&fields=' + encodeURIComponent(JSON.stringify(arr_fld)) +
+							'&limit=1000' + 
+							'&nom=1';
 
-					xhr.open("POST", '/my/ajax/action.php', false);
-					xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-					xhr.onreadystatechange = function() { 
-						if (xhr.readyState != 4) return;	
-						if(!(xhr.responseText.indexOf('%err%') == -1)) {
-							showError(xhr.responseText.replace('%err%',''));
-							return;
-						};
-						var item = JSON.parse(xhr.responseText);	
-						if (item.catalog.length) {	
-							var	exItem = $('.order_item_list_content .item[data-it-id='+item.catalog[0].id+']');		
-							if ( exItem.length && (parseFloat(item.catalog[0].price) == parseFloat($('.col_6', exItem).text().replace(/ /g, ''))) ) {
+				xhr.open("POST", '/my/ajax/action.php');
+				xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+				xhr.onreadystatechange = function() { 
+					if (xhr.readyState != 4) return;	
+					if(!(xhr.responseText.indexOf('%err%') == -1)) {
+						showError(xhr.responseText.replace('%err%',''));
+						return;
+					};
+					var items = JSON.parse(xhr.responseText);
+					var articleAr = JSON.search(items.catalog, '//article');
+					var arErr = arPos.filter(function(ar) {
+						return $.inArray(ar[0], articleAr)<0;
+					});
+					if (items.catalog.length && (arErr.length != arPos.length)) {
+						$.each(items.catalog, function(key, item){
+							var curPos = arPos.filter(function(subAr) {return subAr[0] == item.article});
+							var	exItem = $('.order_item_list_content .item[data-it-id='+item.id+']');	
+							if ( exItem.length && (parseFloat(item.price) == parseFloat($('.col_6', exItem).text().replace(/ /g, ''))) ) {
 								var old_qty = $('.quantity', exItem).val() || 0;
-								var new_qty = val[2] || 0;
+								var new_qty = curPos[0][2] || 0;
 								var qty = old_qty*1 + new_qty*1;
-								var price = parseFloat(item.catalog[0].price).toFixed(2) || 0.00;
+								var price = parseFloat(item.price).toFixed(2) || 0.00;
 								var total = number_format(qty*price, 2, '.', ' ');
 								$('.quantity', exItem).val(qty);
 								$('.col_7', exItem).text(total);
-							}
-							else {
+							} else {
 								var col = 8;	
 								var html_str = '';
 								$.each(tabHeader.props, function(i, column){
 									html_str = html_str + '<td class="col_'+col+' '+column.name+'"></td>';
 									col++;
 								});	
-								var name = item.catalog[0].name;
-								var price = number_format(item.catalog[0].price, 2, '.', ' ');
+								var name = item.name;
+								var price = number_format(item.price, 2, '.', ' ');
 								$('#order_view .order_item_list_content').prepend(
-									'<tr id="it_'+item.catalog[0].id+'" class="item" data-it-id='+item.catalog[0].id+'>' +
+									'<tr id="it_'+item.id+'" class="item" data-it-id='+item.id+'>' +
 										'<td class="col_0"><i class="fa"></i></td>' +
-										'<td class="col_1">'+item.catalog[0].article+'</td>' +
+										'<td class="col_1">'+item.article+'</td>' +
 										'<td class="col_2"><span class="caption">'+name+'</span><i class="fa fa-chevron-up"></i></td>'+
 										'<td class="col_3">шт</td>'+
-										'<td class="col_4 required"><i class="fa fa-minus" aria-hidden="true"></i><input class="quantity" value="'+number_format(val[2], 0, '', ' ')+'"><i class="fa fa-plus" aria-hidden="true"></i></td>'+
+										'<td class="col_4 required"><i class="fa fa-minus" aria-hidden="true"></i><input class="quantity" value="'+number_format(curPos[0][2], 0, '', ' ')+'"><i class="fa fa-plus" aria-hidden="true"></i></td>'+
 										'<td class="col_5"><i class="fa fa-minus" aria-hidden="true"></i><input class="confirmed" value="0"><i class="fa fa-plus" aria-hidden="true"></i></td>'+
 										'<td class="col_6">'+price+'</td>'+
-										'<td class="col_7">'+number_format(price*val[2], 2, '.', ' ')+'</td>'+	html_str +						
+										'<td class="col_7">'+number_format(price*curPos[0][2], 2, '.', ' ')+'</td>'+	html_str +						
 									'</tr>'
 								);
 								setOrderItemListContentHeight();
 								setEditPolicy (smuser.name, docHeader.status);
 							};	
-							getTotalSum();
-						}
-						else {
-							arErr.push(val);
-						};
-					}		
-					xhr.send(body);	
-				});
-				if (arErr.length && (arPos.length>arErr.length)) {
-					$('#upl_xls').addClass('danger');
-					if (!$('#order_view #dialog').length) {
-						var html_text = 'Часть позиций, указанных в файле, не была обработана.</br> Выгрузить список необработанных позиций в отдельный файл?';
-						var html_str = '<div id="dialog"><div class="text-box">'+html_text+'</div><div class="button-box"><div class="yes button">Да</div><div class="no button">Нет</div></div>';
-						$('#order_view').append(html_str);
+							getTotalSum();	
+						});	
 					};
-					$('#order_view #dialog').fadeIn(300);
-					$('#order_view').on('click', '#dialog .button', function(e){
-						$('#order_view #dialog').fadeOut(300);
-						if ($(this).hasClass('yes')) {
-							$.post('/my/ajax/order.php', { action: 'Positions_SaveErrors', arError: JSON.stringify(arErr), filename: file.name}, function(){
-								$('#order_view #dialog').remove();
-							});
+					hideTelebotInfo();
+					if (arErr.length && (arPos.length>arErr.length)) {
+						$('#upl_xls').addClass('danger');
+						if (!$('#order_view #dialog').length) {
+							var html_text = 'Часть позиций, указанных в файле, не была обработана.</br> Выгрузить список необработанных позиций в отдельный файл?';
+							var html_str = '<div id="dialog"><div class="text-box">'+html_text+'</div><div class="button-box"><div class="yes button">Да</div><div class="no button">Нет</div></div>';
+							$('#order_view').append(html_str);
 						};
-						setTimeout(function(){$('#upl_xls').removeClass('danger')}, 5000);
-					});
-				}
-				else if (arErr.length && (arPos.length==arErr.length)) {
-					$('#upl_xls').addClass('error');
-					var html_text = 'В выгружаемом файле нет позиций, доступных для загрузки. <br> Пожалуйста, проверьте корректность загружаемых данных';
-					showTelebotInfo(html_text,"", 5000);
-					setTimeout(function(){$('#upl_xls').removeClass('error')}, 5000);
-				}
-				else {
-					$('#upl_xls').addClass('success');
-					setTimeout(function(){$('#upl_xls').removeClass('success')}, 5000);
-				};
-			},
-			'onQueueComplete' : function() {
-				hideTelebotInfo();
-				$('#main_content .modal_bg').remove();
+						$('#order_view #dialog').fadeIn(300);
+						$('#order_view').on('click', '#dialog .button', function(e){
+							$('#order_view #dialog').fadeOut(300);
+							if ($(this).hasClass('yes')) {
+								$.post('/my/ajax/order.php', { action: 'Positions_SaveErrors', arError: JSON.stringify(arErr), filename: file.name}, function(fname){
+									var html_text = 'Скачать файл с незагруженными позициями можно по <a href="/my/ajax/order.php?action=Positions_DownloadErrors&filename='+fname+'" target=_blank>ссылке</a>';
+									showTelebotInfo(html_text,"", 0);
+									$('#telebot_msg').on('click', 'a', function(){
+										hideTelebotInfo();
+										setTimeout("setOrderItemListContentHeight();", 500);
+									});
+									
+								});
+							};
+							setTimeout(function(){$('#upl_xls').removeClass('danger')}, 5000);
+						});
+					}
+					else if (arErr.length && (arPos.length==arErr.length)) {
+						$('#upl_xls').addClass('error');
+						var html_text = 'В выгружаемом файле нет позиций, доступных для загрузки. <br> Пожалуйста, проверьте корректность загружаемых данных';
+						showTelebotInfo(html_text,"", 5000);
+						setTimeout(function(){$('#upl_xls').removeClass('error')}, 5000);
+					}
+					else {
+						$('#upl_xls').addClass('success');
+						setTimeout(function(){$('#upl_xls').removeClass('success');}, 5000);
+					};
+					$('#main_content .modal_bg').remove();
+				}		
+				xhr.send(body);	
 			}
 		});
-	});		
+	});	
+		
 };
 
 var delay = (function(){
@@ -1129,7 +1138,11 @@ function setOrderItemListContentHeight(){
 	var h3 = $('#order_view .order_controls')[0].clientHeight;
 	var h4 = $('#order_view .order_positions .order_item_list_head')[0].clientHeight;
 	var h = h1-h2-h3-h4-20;
+	h = h>0 ? h : 0;
+	console.log(h);
 	$('#order_view .order_positions .order_item_list_content').slimScroll({height: h, size: '7px', disableFadeOut: false});
+	$('#order_view .order_positions .slimScrollDiv').height(h);
+	$('#order_view .order_positions .order_item_list_content').height(h);
 	
 	$('#order_view .order_positions .item_list_header td').each(function(i){
 		var headerWidth = $(this).width() || 0;
@@ -1139,6 +1152,12 @@ function setOrderItemListContentHeight(){
 		$('#order_view .order_item_list_content .col_'+i).css({'min-width':width+21, 'max-width':width+21, 'width':width+21});
 	})
 };
+
+$(window).resize(function() {
+	if ($('#order_view').length) {
+		setOrderItemListContentHeight();
+	}
+});
 
 function showPosList(obj, contact){
 	if(!(contact == undefined)){

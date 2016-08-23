@@ -926,8 +926,9 @@ div#UserDocList .UserDocItem:hover {
 	display: inline-block;
 }
 
-#uploadifive-xls_upl-queue {
-	display: none;
+#uploadifive-xls_upl,
+.uploadifive-queue-item  {
+	display: none !important;
 }
 
 #order_view #dialog {

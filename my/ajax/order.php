@@ -4,7 +4,7 @@ require_once($_SERVER["DOCUMENT_ROOT"]."/my/admin/before.php");
 
 $TLP_obj = unserialize($_SESSION["TLP_obj"]);
 $user = $TLP_obj->user_info['name'];
-$action = $_POST['action'];
+$action = strlen($_POST['action']) ? $_POST['action'] : $_GET['action'];
 
 function json_encode_cyr($str) {
 $arr_replace_utf = array('\u0410', '\u0430','\u0411','\u0431','\u0412','\u0432',
@@ -160,16 +160,19 @@ elseif($action == 'upl_pos_from_xls')
 		$objPHPExcel = $objReader->load($filepath); 
 		$arPos = $objPHPExcel->getActiveSheet()->toArray();
 		return $arPos; 
-	}
-	if (!empty($_FILES['Filedata'])) {
-		echo json_encode_cyr(readExelFile($_FILES['Filedata']['tmp_name']));
 	};
-
+	if (!empty($_FILES['Filedata'])) {
+		$arPos =  readExelFile($_FILES['Filedata']['tmp_name']);
+	};
+	function filterPos($var){
+		return($var[0] != null);
+	};
+	echo json_encode_cyr(array_filter($arPos, "filterPos"));	
 }
 elseif($action == 'Positions_SaveErrors')
 {
 	$today = date("d-m-Y_His");
-	$fname = iconv('cp1252', 'utf-8', $_POST['filename']);
+	//$fname = iconv('cp1252', 'utf-8', $_POST['filename']);
 	//$filename = substr($fname, 0, strrpos($fname, '.')-1).'_errors_'.$today.'.xlsx';
 	$filename = 'errors_'.$today.'.xlsx';
 	$arError = json_decode($_POST['arError']);
@@ -184,6 +187,28 @@ elseif($action == 'Positions_SaveErrors')
 	}
 	$objWriter = PHPExcel_IOFactory::createWriter($phpexcel, 'Excel2007');
 	$objWriter->save($filename);
+	echo $filename;
+}
+elseif($action == 'Positions_DownloadErrors')
+{
+	$filename = $_GET['filename'];
+	print_r($_POST);
+	if (file_exists($filename)) {
+		while (ob_get_level()) {
+			ob_end_clean();
+		};
+		header('Content-Description: File Transfer');
+		header('Content-Type: application/vnd.ms-excel');
+		header('Content-Disposition: attachment; filename='.basename($filename));
+		header('Content-Transfer-Encoding: binary');
+		header('Expires: 0');
+		header('Cache-Control: must-revalidate');
+		header('Pragma: public');
+		header('Content-Length: '.filesize($filename));
+		readfile($filename);
+		unlink($filename);
+		exit;
+	};
 }
 elseif($action == 'Documents_delSentDoc')
 {	

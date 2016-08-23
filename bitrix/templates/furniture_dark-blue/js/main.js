@@ -23,15 +23,15 @@ $(document).ready(function() {
 		}
 		else if(!($(e.target).parents().hasClass('modal_window')) && !$(e.target).hasClass('modal_window'))
 		{
-			if($(e.target).is('ymaps')) {return;}
-
+			if($(e.target).is('ymaps')) {return;};
+			if($(e.target).parents().is('#telebot_info')) {return;};
 			$('.modal_window').hide();
 			$('.modal_window').remove();
 			$('.modal_back').remove();
 			$('.cnt_info').not($(e.target).children()).hide();
 			$('.msg_selected').removeClass('msg_selected');
 			//$('.trans_svg').toggleClass('transform_icon');
-	}	
+		}	
 	});
 	$('#ext_bar').on('click', function(e) {
 		e.stopPropagation();
@@ -522,6 +522,19 @@ $(document).ready(function() {
 		
 		
 	});
+	$('#cnt_short_invite').on('click','.contact_invite .simple_button', function(e) {
+		e.stopPropagation();
+		invitaionAnswer($(this).parent().parent(), $(this).attr('id'));
+	});
+	$('#cnt_short_invite').on('mouseenter','#cancel',function(){
+		$(this).addClass("accept_button");
+		$('#cnt_short_invite #confirm').removeClass('accept_button');
+    });
+	$('#cnt_short_invite').on('mouseleave','#cancel',function(){
+		$(this).removeClass("accept_button");
+		$('#cnt_short_invite #confirm').addClass('accept_button');
+    });
+
 	//menu
 	 $(".topmenu li").click(function(){
 		if(!$(this).hasClass('active')) {
@@ -557,7 +570,7 @@ $(document).ready(function() {
 			obj.append(str);
 			$('.cnt_inp').bind("change keyup click", function() {
 				if(this.value.length >= 3 && $('.search_result').attr("data-last-value") != this.value){
-					$.ajax({type: 'post', url: "/my/ajax/action.php",  data: {'action': 'FindPersons', 'new_cntname':this.value},  response: 'text',
+					$.ajax({type: 'post', url: "/my/ajax/action.php",  data: {'action': 'FindPersons', 'new_cntname':this.value, 'adds':'html'},  response: 'text',
 						success: function(data){
 							$('.search_result').attr("data-last-value", $('.cnt_inp').val());
 							$(".search_result").html(data).fadeIn(); 
@@ -675,6 +688,7 @@ $(document).ready(function() {
 		}
 		obj.find('.new_cnt').slideToggle(200);
 	});
+	
 	$('.my_body').on('click','#manage_cnt', function(e) {
 		e.stopPropagation();
 		$('.modal_back').remove();
@@ -705,8 +719,40 @@ $(document).ready(function() {
 			resetMouseEventListener();
 			addCntManagerEvents();
 			//RB
+		}	
+		xhr.send(body);
+	});
 
+	$('.my_body').on('click','#manage_squad', function(e) {
+		e.stopPropagation();
+		$('.modal_back').remove();
+		$('#active_menu').remove();
+		
+		var xhr = new XMLHttpRequest();
+		var body =	'';
 
+		xhr.open("POST", '/my/ajax/squad_mngr.php', true);
+		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+		xhr.onreadystatechange = function() 
+		{ 
+			if (xhr.readyState != 4) return;
+			
+			if(!(xhr.responseText.indexOf('%err%') == -1)) {
+				showError(xhr.responseText.replace('%err%',''));
+				return;
+			}
+			
+			$('#main_content #squad-manager').remove();
+			$('#main_content').append('<div id="squad-manager" class="modal_window"></div>');
+
+			//var htmlSquadWindow = '<div class="close_line"><div class="clw"><img src="/include/close_window.svg"/></div></div>' + xhr.responseText;
+			var htmlSquadWindow = xhr.responseText;
+			$('#squad-manager').append(htmlSquadWindow);
+			showModalWindow($('#squad-manager'));
+			//RB
+			//resetMouseEventListener();
+			//addCntManagerEvents();
+			//RB
 		}	
 		xhr.send(body);
 	});
@@ -775,9 +821,9 @@ $(document).ready(function() {
 	setInterval(messagesRequest, 5000);
 	
 	showGreeting();
-	if ($('#m_cnt_list .contact_inf').length < 5) {
+	/*if ($('#m_cnt_list .contact_inf').length < 5) {
 		setTimeout(function() {showTelebotInfo('Нажмите на значок "+" над списком контактов, чтобы пригласить в TELEPORT, своих партнеров и друзей для работы и общения.','',15000)}, 30000);
-	}	
+	}*/	
 });
 
 function parseURL(url_string) {
