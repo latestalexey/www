@@ -23,8 +23,8 @@ $(document).ready(function() {
 		}
 		else if(!($(e.target).parents().hasClass('modal_window')) && !$(e.target).hasClass('modal_window'))
 		{
-			if($(e.target).is('ymaps')) {return;}
-
+			if($(e.target).is('ymaps')) {return;};
+			if($(e.target).parents().is('#telebot_info')) {return;};
 			$('.modal_window').hide();
 			$('.modal_window').remove();
 			$('.modal_back').remove();
