@@ -520,7 +520,6 @@ elseif($action == 'catalog_getItem')
 			$allow_prices = $arResult['settings']['allow_prices'];
 			$arItmes = $arResult['catalog'];
 			$arPictures = $arResult['pictures'];
-			
 			$arProperties = array();
 			foreach($arResult['properties'] as $curArray)
 			{$arProperties = $curArray;}
