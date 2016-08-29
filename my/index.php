@@ -38,6 +38,7 @@ if($mode=='')
 <script async type="text/javascript" src="<?=SITE_TEMPLATE_PATH?>/js/defiant.min.js"></script>
 <script async type="text/javascript" src="//api-maps.yandex.ru/2.1/?lang=ru_RU"></script>
 <script async type="text/javascript" src="/my/js/cnt_mngr.js"></script>
+<script async type="text/javascript" src="/my/js/squad_mngr.js"></script>
 
 <div id="main_content">
 	<a href="/"><div id="logo"></div></a>
@@ -92,8 +93,7 @@ if($mode=='')
 						<div style="margin: 0px 10px;">
 							<p id="add_channel">Создать новый канал</p>
 							<p id="add_cnt">Пригласить новый контакт</p>
-							<p id="manage_cnt">Управление контактами</p>
-							<p id="manage_squad">Управление командами</p>
+							<p id="manage_squad">Управление контактами</p>
 						</div>
 					</div>
 				</div>

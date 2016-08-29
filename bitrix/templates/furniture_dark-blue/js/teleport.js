@@ -426,7 +426,7 @@ function ContactInfoView(name) {
 				return;
 			}
 			
-			hideModalWindow($('.modal_window').not('#cnt-manager'));
+			hideModalWindow($('.modal_window').not('#cnt-manager').not('#squad-manager'));
 			$('#main_content #cnt_view').remove();
 			$('#main_content').append('<div id="cnt_view" class="modal_window"></div>');		
 			var strwindow = '<div class="close_line"><div class="clw"><img src="/include/close_window.svg"/></div></div>';

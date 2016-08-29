@@ -16,8 +16,7 @@ $(document).ready(function() {
 			$('.msg_selected').removeClass('msg_selected');
 			//RB
 			hideCtxChannelMenu($('#ctx-channel-menu'));
-			hideSelectedList();
-			hideContactMoveList();
+			hideCtxGroupSelector();
 			//RB
 			//$('.trans_svg').toggleClass('transform_icon');
 		}
@@ -689,39 +688,39 @@ $(document).ready(function() {
 		obj.find('.new_cnt').slideToggle(200);
 	});
 	
-	$('.my_body').on('click','#manage_cnt', function(e) {
-		e.stopPropagation();
-		$('.modal_back').remove();
-		$('#active_menu').remove();
+	// $('.my_body').on('click','#manage_cnt', function(e) {
+	// 	e.stopPropagation();
+	// 	$('.modal_back').remove();
+	// 	$('#active_menu').remove();
 		
-		var xhr = new XMLHttpRequest();
-		var body =	'';
+	// 	var xhr = new XMLHttpRequest();
+	// 	var body =	'';
 
-		xhr.open("POST", '/my/ajax/cnt_mngr.php', true);
-		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-		xhr.onreadystatechange = function() 
-		{ 
-			if (xhr.readyState != 4) return;
+	// 	xhr.open("POST", '/my/ajax/cnt_mngr.php', true);
+	// 	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+	// 	xhr.onreadystatechange = function() 
+	// 	{ 
+	// 		if (xhr.readyState != 4) return;
 			
-			if(!(xhr.responseText.indexOf('%err%') == -1)) {
-				showError(xhr.responseText.replace('%err%',''));
-				return;
-			}
+	// 		if(!(xhr.responseText.indexOf('%err%') == -1)) {
+	// 			showError(xhr.responseText.replace('%err%',''));
+	// 			return;
+	// 		}
 			
-			$('#main_content #cnt-manager').remove();
-			$('#main_content').append('<div id="cnt-manager" class="modal_window"></div>');
+	// 		$('#main_content #cnt-manager').remove();
+	// 		$('#main_content').append('<div id="cnt-manager" class="modal_window"></div>');
 
-			var strwindow = '<div class="close_line"><div class="clw"><img src="/include/close_window.svg"/></div></div>';
-			var str_html = strwindow + xhr.responseText;
-			$('#cnt-manager').append(str_html);
-			showModalWindow($('#cnt-manager'));
-			//RB
-			resetMouseEventListener();
-			addCntManagerEvents();
-			//RB
-		}	
-		xhr.send(body);
-	});
+	// 		var strwindow = '<div class="close_line"><div class="clw"><img src="/include/close_window.svg"/></div></div>';
+	// 		var str_html = strwindow + xhr.responseText;
+	// 		$('#cnt-manager').append(str_html);
+	// 		showModalWindow($('#cnt-manager'));
+	// 		//RB
+	// 		resetMouseEventListener();
+	// 		addCntManagerEvents();
+	// 		//RB
+	// 	}	
+	// 	xhr.send(body);
+	// });
 
 	$('.my_body').on('click','#manage_squad', function(e) {
 		e.stopPropagation();
@@ -750,8 +749,7 @@ $(document).ready(function() {
 			$('#squad-manager').append(htmlSquadWindow);
 			showModalWindow($('#squad-manager'));
 			//RB
-			//resetMouseEventListener();
-			//addCntManagerEvents();
+			addSquadManagerEvents();
 			//RB
 		}	
 		xhr.send(body);
