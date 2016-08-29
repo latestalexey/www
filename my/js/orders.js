@@ -163,8 +163,7 @@ function addNewDoc(docid, contact){
 		"docHeader":{
 			"id":docid,
 			"status":"new",
-			"sender":smuser.name,
-			"receiver":contact.name,
+			"owner":smuser.name,
 			"type":"order",
 			"date":curDate,
 			"num":"",
@@ -228,23 +227,20 @@ function uploadDocsList() {
 	lastOrderDate = new Date();
 	lastOrderDate.setDate(lastOrderDate.getDate() + 2);
 	from_date.setDate(lastOrderDate.getDate() - 700);
-	var arrFilter = {"filter": docs_filter};
-	var arrHeader = [];
-	arrHeader.push($("#orders_header .order_content_header .menu_col.selected_col").text());
+	var arHeader = [];
+	arHeader.push($("#orders_header .order_content_header .menu_col.selected_col").text());
 	$("#orders_header .order:last-child .order_line div").each(function(i, val){
-		arrHeader.push($(this).text());
+		arHeader.push($(this).text());
 	});
-	
-	var body =	'header=' + encodeURIComponent(JSON.stringify(arrHeader)) +
-				'&rtype=json' +
-				'&requestXML=' + encodeURIComponent(JSON.stringify(arrFilter)) +
+	compileFilter();
+	var body =	'header=' + encodeURIComponent(JSON.stringify(arHeader)) +
+				'&filters=' + encodeURIComponent(JSON.stringify(docs_filter)) +
 				'&start_date=' + getStringFromDate(from_date) + 
 				'&end_date=' + getStringFromDate(lastOrderDate) + 
-				'&maxlimit=1000';
+				'&limit=1000';
 				
-	var href = "/my/ajax/docslist_xls.php?" + body;
+	var href = "/my/ajax/docslist_xls.php?"+body;
 	window.open(href, '_blank');
-	//window.location.href = href;
 }
 
 function compileFilter() {
@@ -375,7 +371,7 @@ function getTmpDocs(){
 	var docDate = getOrderDate(new Date());
 	var contact = getActiveContact();
 	var doctype = $('.order_content_header .selected_col').attr('data-ltype');
-	$.post('/my/ajax/order.php', {"action": "Documents_GetList", "receiver": contact.name, "doctype": doctype}, function(data){
+	$.post('/my/ajax/order.php', {"action": "Documents_GetList", "filters": JSON.stringify(docs_filter)}, function(data){
 		if (data.length) {
 			$.each(data, function(i, val){
 				var contact = getContactInfo(val.receiver);

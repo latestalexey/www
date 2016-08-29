@@ -492,6 +492,7 @@
 }
 
 #order_view  .order_controls .fa {
+	float: left;
 	padding:15px;
 	margin: 0 20px;
 	font-size:20px;
@@ -915,4 +916,86 @@ div#UserDocList .UserDocItem:hover {
 
 .msg_file:hover #del-user-file {
 	display: block;
+}
+
+#it_cart .info>div {
+	display: inline-block;
+}
+
+#upl_xls_form {
+	display: inline-block;
+}
+
+#uploadifive-xls_upl,
+.uploadifive-queue-item  {
+	display: none !important;
+}
+
+#order_view #dialog {
+    display: block;
+    top: -70%;
+    width: 400px;
+    text-align: center;
+    box-sizing: border-box;
+    padding: 30px;
+    margin: 0 auto;
+    position: relative;
+    margin: 0 auto;
+	background-color: #FBFBFB;
+    border: 1px solid #CCCCCC;
+	display: none;
+    z-index: 9999;
+    box-shadow: 2px 2px 4px #777777;
+    -moz-box-shadow: 2px 2px 4px #777777;
+    -webkit-box-shadow: 2px 2px 4px #777777;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+}
+
+#order_view #dialog .text-box {
+	padding-bottom: 30px;
+}
+
+#order_view #dialog .button-box {
+	
+}
+
+#order_view #dialog .button-box .button {
+	width: 60px;
+	left: 0;
+	padding: 5px 15px;
+	margin: 0 30px;
+}
+
+#telebot_info {
+	z-index: 9999;
+}
+
+#upl_xls.success {
+	background: #26A69A;
+	color: #fff;
+	transition: background 0.5s;
+}
+
+#upl_xls.danger {
+	background: #f0b66a;
+	color: #fff;
+	transition: background 0.5s;
+}
+
+#upl_xls.error {
+	background: #bd1f1f;
+	color: #fff;
+	transition: background 0.5s;
+}
+
+.modal_bg {
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    position: absolute;
+    top: 0;
+    left: 0;
+	background: rgba(249, 249, 249, 0.8);
 }
