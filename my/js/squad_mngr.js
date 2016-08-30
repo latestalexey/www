@@ -1,4 +1,30 @@
 function addSquadManagerEvents(){
+	$('#cnt-sort').on('click', function(e){
+		var sortType = $('#cnt-sort').attr('data-sort-type');
+		let contactList = $('.cnt-contact').get();
+		contactList.sort(function(a, b) {
+			let compA = $(a).attr('data-cnt-name').toUpperCase();
+			let compB = $(b).attr('data-cnt-name').toUpperCase();
+			if(sortType == '0' || sortType == '2'){
+				return (compA < compB) ? -1 : (compA > compB) ? 1 : 0;
+			}else{
+				return (compA > compB) ? -1 : (compA < compB) ? 1 : 0;
+			}
+		});
+		$('.cnt-contact').remove();
+		contactList.forEach(function(item, i, arr){
+			$('#cnt-contact-list').append(item);
+		});
+
+		if(sortType == '0' || sortType == '2'){
+			$('#cnt-sort').attr('data-sort-type', '1');
+			$('#cnt-sort p').text('Сортировка: А-я');
+		}else{
+			$('#cnt-sort').attr('data-sort-type', '2');
+			$('#cnt-sort p').text('Сортировка: Я-а');
+		}
+	});
+
 	$('#cnt-filter').on('mouseenter', function(e){
 		var letters = [];
 		var cntName, letter;

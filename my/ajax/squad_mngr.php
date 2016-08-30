@@ -197,9 +197,9 @@
 			<p>Выбрано: 0</p>
 		</div>
 		
-<!-- 		<div id='cnt-sort'>
-			<p>Сортировка: А-я</p>
-		</div> -->
+		<div id='cnt-sort' data-sort-type='0'>
+			<p>Сортировка: Нет</p>
+		</div>
 		<div id='cnt-filter'>
 			<p>Фильтр: нет</p>
 		</div>
