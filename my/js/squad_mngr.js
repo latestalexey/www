@@ -1,5 +1,5 @@
 function addSquadManagerEvents(){
-	$('#cnt-filter').on('click', function(e){
+	$('#cnt-filter').on('mouseenter', function(e){
 		var letters = [];
 		var cntName, letter;
 		var contactList = $('#cnt-contact-list').find('[class*="cnt-contact-name"]');
