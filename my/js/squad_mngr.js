@@ -12,36 +12,44 @@ function addSquadManagerEvents(){
 		});
 
 		$('#squad-manager').append('<div class="modal_back back_curt"></div>');
-		var htmlLettersWindow = 
-			$('\
-				<div id="letters-window" class="modal_window">\
-					<div>\
-						<p>A</p><p>B</p><p>C</p><p>D</p><p>E</p><p>F</p><p>G</p><p>H</p><p>I</p><p>J</p><p>K</p><p>L</p>\
-					</div>\
-					<div>\
-						<p>M</p><p>N</p><p>O</p><p>P</p><p>Q</p><p>R</p><p>S</p><p>T</p><p>U</p><p>V</p><p>W</p><p>X</p>\
-					</div>\
-					<div>\
-						<p>Y</p><p>Z</p><p>А</p><p>Б</p><p>В</p><p>Г</p><p>Д</p><p>Е,Ё</p><p>Ж</p><p>З</p><p>И,Й</p><p>К</p>\
-					</div>\
-					<div>\
-						<p>Л</p><p>М</p><p>Н</p><p>О</p><p>П</p><p>Р</p><p>С</p><p>Т</p><p>У</p><p>Ф</p><p>Х</p><p>Ц</p>\
-					</div>\
-					<div>\
-						<p>Ч</p><p>Ш,Щ</p><p>Э</p><p>Ю</p><p>Я</p><p>0</p><p>1</p><p>2</p><p>3</p><p>4</p><p>5</p><p>6</p>\
-					</div>\
-					<div>\
-						<p>7</p><p>8</p><p>9</p><p style="width: 550px; font-size: 12px">Очистить фильтр</p>\
-					</div>\
-				</div>\
-			');
+		// var htmlLettersWindow = 
+		// 	$('\
+		// 		<div id="letters-window" class="modal_window">\
+		// 			<div>\
+		// 				<p>A</p><p>B</p><p>C</p><p>D</p><p>E</p><p>F</p><p>G</p><p>H</p><p>I</p><p>J</p><p>K</p><p>L</p>\
+		// 			</div>\
+		// 			<div>\
+		// 				<p>M</p><p>N</p><p>O</p><p>P</p><p>Q</p><p>R</p><p>S</p><p>T</p><p>U</p><p>V</p><p>W</p><p>X</p>\
+		// 			</div>\
+		// 			<div>\
+		// 				<p>Y</p><p>Z</p><p>А</p><p>Б</p><p>В</p><p>Г</p><p>Д</p><p>Е,Ё</p><p>Ж</p><p>З</p><p>И,Й</p><p>К</p>\
+		// 			</div>\
+		// 			<div>\
+		// 				<p>Л</p><p>М</p><p>Н</p><p>О</p><p>П</p><p>Р</p><p>С</p><p>Т</p><p>У</p><p>Ф</p><p>Х</p><p>Ц</p>\
+		// 			</div>\
+		// 			<div>\
+		// 				<p>Ч</p><p>Ш,Щ</p><p>Э</p><p>Ю</p><p>Я</p><p>0</p><p>1</p><p>2</p><p>3</p><p>4</p><p>5</p><p>6</p>\
+		// 			</div>\
+		// 			<div>\
+		// 				<p>7</p><p>8</p><p>9</p><p style="width: 550px; font-size: 12px">Очистить фильтр</p>\
+		// 			</div>\
+		// 		</div>\
+		// 	');
+
+		var htmlLettersWindow = '<div id="letters-window" class="modal_window"><div>';
+		letters.forEach(function(item, i, arr){
+			htmlLettersWindow += '<p>' + item + '</p>';
+		});
+
+		htmlLettersWindow += '</div><div><p style="width: 100%; font-size: 12px">Очистить фильтр</p></div>';
 
 		$('#squad-manager').append(htmlLettersWindow);
+		$('#letters-window').offset({top:$(this).position().top, left:$(this).position().left});
 
 		letters.forEach(function(item, i, letters){
 			$('#letters-window div p').filter(function(){
 				var letter = $(this).text();
-				var result = (letter == item) || letter == ('Очистить фильтр');
+				var result = (letter == item) || (letter == ('Очистить фильтр'));
 				if(result){
 					$(this).off();
 					$(this).on('click', function(e){
