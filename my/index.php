@@ -25,7 +25,6 @@ if($mode=='')
 <link href="<?=SITE_TEMPLATE_PATH?>/css/slider.css" rel="stylesheet" type="text/css">
 <link href="<?=SITE_TEMPLATE_PATH?>/css/style_max.css" rel="stylesheet" type="text/css">
 <link href="<?=SITE_TEMPLATE_PATH?>/css/style_rbak.css" rel="stylesheet" type="text/css">
-<link href="<?=SITE_TEMPLATE_PATH?>/css/cnt_mngr.css" rel="stylesheet" type="text/css">
 <link href="<?=SITE_TEMPLATE_PATH?>/css/darktooltip.css" rel="stylesheet" type="text/css">
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
 
