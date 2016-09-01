@@ -1,5 +1,5 @@
 #order_li .order.new .order_content {
-	background-color:#fffff6;
+	background-color:#ffffd6;
 }
 
 .not_find {
@@ -23,14 +23,29 @@
 	overflow: hidden;
 }
 
-#teleport_link,
-#yml_link,
-#bitrix_link,
-#excel_link {
+#download_cat .teleport_buttons,
+#download_cat .teleport_links {
+	width: 400px;
+	float: left;
+}
+
+#download_cat .teleport_links {
+	padding-top: 25px;
+}
+
+#teleport_btn,
+#yml_btn,
+#bitrix_btn,
+#excel_btn {
 	position: relative;
 	overflow: hidden;
 	padding-top: 25px;
 	margin-bottom: 25px;
+}
+
+#bitrix_btn,
+#excel_btn {
+	display: none;
 }
 
 #download_cat .button{
@@ -46,15 +61,9 @@
 
 #download_cat .share_text,
 #download_cat .public_text{
-	position: absolute;
-	left: 465px;
 	line-height: 24px;
 	font-weight: 600;
-}
-
-#download_cat .public_link,
-#download_cat .public_text{
-	bottom:0;
+	margin-bottom: 10px;
 }
 
 #download_cat .share_link.active+.share_text{
@@ -66,11 +75,11 @@
 }
 
 #download_cat .link_flag{
-	position: absolute;
-	left: 400px;
 	width: 56px;
-	height: 24px;
+	height: 23px;
+	float: left;
 	margin-right: 10px;
+	margin-bottom: 10px;
 	background: url('/include/checkbox.png') no-repeat;
 	background-position:0 0;
 	cursor: pointer;
@@ -796,8 +805,8 @@
 }
 
 #order_view .order_positions .col_0 {
-	width: 25px !important;
-	min-width: 25px !important;
+	width: 40spx !important;
+	min-width: 40px !important;
 }
 
 #order_view .order_positions .col_1 {
