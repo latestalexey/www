@@ -165,7 +165,7 @@
 				<img src='/include/cnt-dog.png'>
 			</div> -->
 			<div id='cnt-power'>
-				<img src='/include/cnt-power.png'>
+				<img src='/include/close_window.svg'>
 			</div>
 		</div>
 	</div>
@@ -219,7 +219,8 @@
 	<div id='cnt-group-list'>
 		<div id='cnt-group-add'>
 			<div>
-				<img src='/include/add-channel.png'>
+				<!-- <img src='/include/add-channel.png'> -->
+				<button>Добавить новый канал</button>
 			</div>
 		</div>
 		<div id='get-newgroup-name' style="display: none;">
@@ -294,11 +295,11 @@
 					<label class="cnt-check-label"><input type='checkbox' class='cnt-check' <?=$cnt['group'] == "Команда Teleport"?"disabled":""?> data-cnt-id="cnt-<?=$cnt["user_id"]?>" data-cnt-name="<?=$cnt['name']?>" data-group-name="<?=$cnt["group"]?>"><span></span></label>
 				</div>
 
-				<div style='display: flex; width: 20; margin-left: 10px'>
+				<!--<div style='display: flex; width: 20; margin-left: 10px'>
 					<div style="width: 20px; height: 20px;">
 						<img src='/include/cnt-star-3.png' style='width:100%;'>  
 					</div>
-				</div>
+				</div> -->
 				<?if($cnt['photo'] == '') 
 				{?>
 				<div class="cnt-avatar cnt-avatar-small" style="background-image: none; width: 36px; height: 36px; margin: 0 10px 0 10px;"> 

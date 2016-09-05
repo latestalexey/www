@@ -25,7 +25,7 @@ function addSquadManagerEvents(){
 		}
 	});
 
-	$('#cnt-filter').on('mouseenter', function(e){
+	$('#cnt-filter').on('click', function(e){
 		var letters = [];
 		var cntName, letter;
 		var contactList = $('#cnt-contact-list').find('[class*="cnt-contact-name"]');
@@ -609,17 +609,9 @@ function addSquadManagerEvents(){
 
 	function toggleGroupNameWindow(){
 		if(!$('#get-newgroup-name').is(':visible')){
-			var cssValues = {
-				'transform':'rotate(45deg)',
-				'-moz-transform':'rotate(45deg)',
-				'-ms-transform':'rotate(45deg)',
-				'-webkit-transform':'rotate(45deg)',
-				'-o-transform':'rotate(45deg)'
-			}
-
-			$('#cnt-group-add div').css(cssValues);
+			$('#cnt-group-add div button').text('Закрыть');
 		}else{
-			$('#cnt-group-add div').css({transform: 'none'});
+			$('#cnt-group-add div button').text('Добавить новый канал');
 			$('#text-newgroup-name').val('');
 		}
 		$('#get-newgroup-name').slideToggle(200);
