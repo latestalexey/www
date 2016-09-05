@@ -618,8 +618,8 @@ progress::-moz-progress-bar {
   cursor: pointer; }
 
 #cnt-group-add div button {
-  border: 3px solid #26A69A;
-  color: #26A69A;
+  border: 1px solid #CCC;
+  color: black;
   background-color: transparent;
   padding: 5px;
   border-radius: 5px;
@@ -632,6 +632,7 @@ progress::-moz-progress-bar {
   -moz-box-shadow: 2px 2px 4px #777777;
   -webkit-box-shadow: 2px 2px 4px #777777; }
   #cnt-group-add div button:hover {
+    border: none;
     -webkit-border-radius: 5px;
     border-radius: 5px;
     box-shadow: 2px 2px 9px #444;
