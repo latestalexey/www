@@ -1,5 +1,5 @@
 #order_li .order.new .order_content {
-	background-color:#fffff6;
+	background-color:#ffffd6;
 }
 
 .not_find {
@@ -18,27 +18,52 @@
 #download_cat {
 	position: relative; 
 	top:-90%; 
-	width:800px;
+	width:400px;
 	margin: 0 auto;
 	overflow: hidden;
 }
 
-#teleport_link,
-#yml_link,
-#bitrix_link,
-#excel_link {
+#download_cat .teleport_buttons,
+#download_cat .teleport_links,
+#download_cat .link-block {
+	width: 400px;
+	padding: 0 10px;
+	margin: 15px 0;
+	box-sizing: border-box;
+	overflow: hidden;
+}
+
+#download_cat .teleport_links {
+	padding-top: 25px;
+	clear: both;
+	border-top: 2px inset #f4f4f4;
+}
+
+#download_cat .teleport_buttons .header {
+	font-size: 24px;
+}
+
+#teleport_btn,
+#yml_btn,
+#bitrix_btn,
+#excel_btn {
 	position: relative;
 	overflow: hidden;
-	padding-top: 25px;
-	margin-bottom: 25px;
+	float: left;
+}
+
+#bitrix_btn,
+#excel_btn {
+	display: none;
 }
 
 #download_cat .button{
 	display:block;
 	float:left;
-	width: 300px;
-	left:20px;
-	padding: 20px; 
+	left: 0;
+	width: 120px;
+	padding: 15px 20px; 
+	margin: 14px;
 	font-weight: 600; 
 	text-align:center; 
 	font-size: 18px; 
@@ -46,15 +71,9 @@
 
 #download_cat .share_text,
 #download_cat .public_text{
-	position: absolute;
-	left: 465px;
 	line-height: 24px;
 	font-weight: 600;
-}
-
-#download_cat .public_link,
-#download_cat .public_text{
-	bottom:0;
+	margin-bottom: 10px;
 }
 
 #download_cat .share_link.active+.share_text{
@@ -66,23 +85,40 @@
 }
 
 #download_cat .link_flag{
-	position: absolute;
-	left: 400px;
 	width: 56px;
-	height: 24px;
+	height: 23px;
+	float: left;
 	margin-right: 10px;
+	margin-bottom: 10px;
 	background: url('/include/checkbox.png') no-repeat;
 	background-position:0 0;
 	cursor: pointer;
+	border: 0 !important;
+    outline: none;
 }
 
 #download_cat .link_flag.active{
 	background-position:0 -24px;
 }
 
-#download_cat input{
-	cursor:pointer;
+#download_cat .link-block span {
+	display: block;
+	font-size: 14px; 
+	font-weight: 600;
+	padding: 15px 0 5px 0;
 }
+
+#download_cat .link-block input{
+	cursor:pointer;
+	padding: 5px;
+	border: 1px solid #ccc;
+	border-radius: 3px;
+	color: #777;
+	width: 100%;
+	font-size: 12px; 
+	background: #fbfbfb; 
+}
+
 /*===============================Cat_Download_End============================*/
 
 
@@ -796,8 +832,8 @@
 }
 
 #order_view .order_positions .col_0 {
-	width: 25px !important;
-	min-width: 25px !important;
+	width: 40spx !important;
+	min-width: 40px !important;
 }
 
 #order_view .order_positions .col_1 {

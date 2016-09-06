@@ -782,6 +782,7 @@ function requestCntFileBrowser(arResult) {
 	$('#cnt_filelist_content .scrolllist').slimScroll({height: 'auto', size: '7px', disableFadeOut: false});
 
 	$('#cnt_filelist_content').on('click','.image_file .close_line svg',function(e) {	
+		e.stopPropagation();
 		var obj = $(this).parent().parent();
 		obj.toggleClass('close_image');
 		if(obj.hasClass('close_image')) {
@@ -800,59 +801,62 @@ function requestCntFileBrowser(arResult) {
 	});
 	
 	$(function() {	
-	$("#cnt_filelist #cntfile_upl").uploadifive({
-		'auto' : true,
-		'uploadScript' : '/my/ajax/action.php',
-		'buttonText' : '',
-		'buttonClass' : 'filename_button',
-		'dnd' : false,
-		'queueID' : 'cnt-fileinfo',
-		'fileSizeLimit' : '20MB',
-		'uploadLimit' : 0,
-		'queueSizeLimit' : 10,
-		'simUploadLimit' : 0,
-		'itemTemplate' : file_html,
-		'formData': {'action': 'send_cnt_file'},
-		'onAddQueueItem': function(file_obj) {
-			console.log(file_obj);
-			var file_name = file_obj.name;
-			var fileUrl = file_name, parts, ext = ( parts = file_name.split("/").pop().split(".") ).length > 1 ? parts.pop() : "";
-			var file_size = Math.round(file_obj.size/1024);
-			var file_idat = getFileType(ext);
-			var file_type = file_idat.type;
-			var att_svg = file_idat.svg;
-			var file_met = "KB";
-			if(file_size > 1024) { 
-				file_size = Math.round(file_size/1024);
-				file_met = "MB";
-			}		
-			$('#cnt-fileinfo .msg_file .filename:contains('+encodeString(file_name)+')').each(function(key, value) {
-				$(value).parent().parent().find('.file_icon').html(att_svg);
-				$(value).next('p').html(file_size+file_met+' '+file_type);
-			});
-		},
-		'onUploadComplete' : function(file, data) {
-			$('#cnt-fileinfo').hide(100);
-			var ext = ( parts = file.name.split("/").pop().split(".") ).length > 1 ? parts.pop() : "";
-			var obj = {
-				add_date: new Date(), 
-				file_category: 'userFiles', 
-				file_extention: ext, 
-				file_id: '', 
-				file_name: file.name, 
-				file_size: file.size, 
-				has_preview: false, 
-				message_id: '', 
-				public_access: false, 
-				receiver: '',
-				user_name: smuser.name
-			};
-			$('#cnt_filelist_content .scrolllist').prepend('<div class="msg_file">' + addCntFileToList(obj, true) + '</div>');
-		},
-		'onQueueComplete' : function() {
-			
-		}
-	});
+		$("#cnt_filelist #cntfile_upl").uploadifive({
+			'auto' : true,
+			'uploadScript' : '/my/ajax/action.php',
+			'buttonText' : '',
+			'buttonClass' : 'filename_button',
+			'dnd' : false,
+			'queueID' : 'cnt-fileinfo',
+			'fileSizeLimit' : '20MB',
+			'uploadLimit' : 0,
+			'queueSizeLimit' : 10,
+			'simUploadLimit' : 0,
+			'itemTemplate' : file_html,
+			'formData': {'action': 'send_cnt_file'},
+			'onAddQueueItem': function(file_obj) {
+				console.log(file_obj);
+				var file_name = file_obj.name;
+				var fileUrl = file_name, parts, ext = ( parts = file_name.split("/").pop().split(".") ).length > 1 ? parts.pop() : "";
+				var file_size = Math.round(file_obj.size/1024);
+				var file_idat = getFileType(ext);
+				var file_type = file_idat.type;
+				var att_svg = file_idat.svg;
+				var file_met = "KB";
+				if(file_size > 1024) { 
+					file_size = Math.round(file_size/1024);
+					file_met = "MB";
+				}		
+				$('#cnt-fileinfo .msg_file .filename:contains('+encodeString(file_name)+')').each(function(key, value) {
+					$(value).parent().parent().find('.file_icon').html(att_svg);
+					$(value).next('p').html(file_size+file_met+' '+file_type);
+				});
+			},
+			'onUploadComplete' : function(file, data) {
+				$('#cnt-fileinfo').hide(100);
+				var ext = ( parts = file.name.split("/").pop().split(".") ).length > 1 ? parts.pop() : "";
+				var obj = {
+					add_date: new Date(), 
+					file_category: 'userFiles', 
+					file_extention: ext, 
+					file_id: '', 
+					file_name: file.name, 
+					file_size: file.size, 
+					has_preview: false, 
+					message_id: '', 
+					public_access: false, 
+					receiver: '',
+					user_name: smuser.name
+				};
+				$('#cnt_filelist_content .scrolllist').prepend('<div class="msg_file">' + addCntFileToList(obj, true) + '</div>');
+			},
+			'onQueueComplete' : function() {
+				
+			}
+		});
+		$('#cnt_view').on('click', '#del-user-file', function(){
+			console.log('del');
+		});
 	});	
 };
 function addCntFileToList(obj, hide_image) {
@@ -883,10 +887,14 @@ function addCntFileToList(obj, hide_image) {
 		'<img src="'+pvfile_url+'"/>'+
 		'</div>';
 	}
+	var del_icon = '';
+	if ($("#cnt_info_main").attr('data-usr-name') === smuser.name) {
+		del_icon = '<div id="del-user-file" class="fa fa-trash-o help_icon"><div class="help_info">Удалить файл</div></div>';
+	};
 	var str_html = 	'<div class="upfile" id="fn_'+ obj.file_id + '" data-furl="'+file_url+'"><a target="_blank" href="'+file_url+'"><div class="file_icon">'+att_svg+'</div></a>'+
 					'<div class="file_block"><a target="_blank" href="'+file_url+'"><p class="filename">' + obj.file_name + '</p></a>'+
 					'<p class="file_info">'+file_size+file_met+' '+file_type+'</p></div>'+
-					'<div id="del-user-file" class="fa fa-trash-o help_icon"><div class="help_info">Удалить файл</div></div>' +
+					del_icon +
 					'<a target="_blank" href="'+file_url+'"><div class="cloud help_icon"><div class="help_info">Скачать файл</div>'+cloud_svg+'</div></a>'+ img_str +
 					'</div>';
 

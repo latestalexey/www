@@ -426,5 +426,3 @@ function showOrders(responseText) {
 	$("#orders_header").css('padding-right', $("#work_zone").width() - $("#order_li").width());	
 	$("#order_list").css("height", $(".main_pan").height() - $("#orders_header").height());
 }
-
-
