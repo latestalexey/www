@@ -346,9 +346,9 @@ function messagesRequest() {
 					req_quantity	= rqobject.quantity;
 					req_prefix 		= (req_type == 'message')?('msg'):('ord');
 					var new_msg_obj = $('[data-usr-name='+req_sender+']').find(".new_" + req_prefix);
-					if(req_quantity > 0) {
+					if(req_quantity > 0 && new_msg_obj.length != 0) {
 						new_msg_obj.css("display", "block");
-						if(new_msg_obj.first().find('span').text() != req_quantity) {
+						if(!(new_msg_obj.first().find('span').text() == req_quantity)) {
 							new_msg_obj.html("<span>" + req_quantity + "</span>");
 
 							moveContactRecentTop($('[data-usr-name='+req_sender+']').attr('data-usr-id'));
@@ -397,8 +397,8 @@ function sendCntRequest(name, msg_text, obj) {
 				showError(xhr.responseText.replace('%err%',''));
 				return;
 			}
+			updateContactList('');
 			if(!(obj == undefined)) {
-				updateContactList('');
 				
 				obj.find('.cnt_inp').val('');
 				obj.slideUp(100);
@@ -425,7 +425,8 @@ function ContactInfoView(name) {
 				showError(xhr.responseText.replace('%err%',''));
 				return;
 			}
-			hideModalWindow($('.modal_window'));
+			
+			hideModalWindow($('.modal_window').not('#cnt-manager').not('#squad-manager'));
 			$('#main_content #cnt_view').remove();
 			$('#main_content').append('<div id="cnt_view" class="modal_window"></div>');		
 			var strwindow = '<div class="close_line"><div class="clw"><img src="/include/close_window.svg"/></div></div>';
@@ -678,9 +679,8 @@ function ContactInfoView(name) {
 			});	
 		}		
 		xhr.send(body);
-	
 }
-	
+
 function SearchCntFiles() {
 	var contact = $('#main_content #cnt_view #cnt_info_main').attr('data-usr-name');
 	var xhr = new XMLHttpRequest();
@@ -782,6 +782,7 @@ function requestCntFileBrowser(arResult) {
 	$('#cnt_filelist_content .scrolllist').slimScroll({height: 'auto', size: '7px', disableFadeOut: false});
 
 	$('#cnt_filelist_content').on('click','.image_file .close_line svg',function(e) {	
+		e.stopPropagation();
 		var obj = $(this).parent().parent();
 		obj.toggleClass('close_image');
 		if(obj.hasClass('close_image')) {
@@ -800,59 +801,62 @@ function requestCntFileBrowser(arResult) {
 	});
 	
 	$(function() {	
-	$("#cnt_filelist #cntfile_upl").uploadifive({
-		'auto' : true,
-		'uploadScript' : '/my/ajax/action.php',
-		'buttonText' : '',
-		'buttonClass' : 'filename_button',
-		'dnd' : false,
-		'queueID' : 'cnt-fileinfo',
-		'fileSizeLimit' : '20MB',
-		'uploadLimit' : 0,
-		'queueSizeLimit' : 10,
-		'simUploadLimit' : 0,
-		'itemTemplate' : file_html,
-		'formData': {'action': 'send_cnt_file'},
-		'onAddQueueItem': function(file_obj) {
-			console.log(file_obj);
-			var file_name = file_obj.name;
-			var fileUrl = file_name, parts, ext = ( parts = file_name.split("/").pop().split(".") ).length > 1 ? parts.pop() : "";
-			var file_size = Math.round(file_obj.size/1024);
-			var file_idat = getFileType(ext);
-			var file_type = file_idat.type;
-			var att_svg = file_idat.svg;
-			var file_met = "KB";
-			if(file_size > 1024) { 
-				file_size = Math.round(file_size/1024);
-				file_met = "MB";
-			}		
-			$('#cnt-fileinfo .msg_file .filename:contains('+encodeString(file_name)+')').each(function(key, value) {
-				$(value).parent().parent().find('.file_icon').html(att_svg);
-				$(value).next('p').html(file_size+file_met+' '+file_type);
-			});
-		},
-		'onUploadComplete' : function(file, data) {
-			$('#cnt-fileinfo').hide(100);
-			var ext = ( parts = file.name.split("/").pop().split(".") ).length > 1 ? parts.pop() : "";
-			var obj = {
-				add_date: new Date(), 
-				file_category: 'userFiles', 
-				file_extention: ext, 
-				file_id: '', 
-				file_name: file.name, 
-				file_size: file.size, 
-				has_preview: false, 
-				message_id: '', 
-				public_access: false, 
-				receiver: '',
-				user_name: smuser.name
-			};
-			$('#cnt_filelist_content .scrolllist').prepend('<div class="msg_file">' + addCntFileToList(obj, true) + '</div>');
-		},
-		'onQueueComplete' : function() {
-			
-		}
-	});
+		$("#cnt_filelist #cntfile_upl").uploadifive({
+			'auto' : true,
+			'uploadScript' : '/my/ajax/action.php',
+			'buttonText' : '',
+			'buttonClass' : 'filename_button',
+			'dnd' : false,
+			'queueID' : 'cnt-fileinfo',
+			'fileSizeLimit' : '20MB',
+			'uploadLimit' : 0,
+			'queueSizeLimit' : 10,
+			'simUploadLimit' : 0,
+			'itemTemplate' : file_html,
+			'formData': {'action': 'send_cnt_file'},
+			'onAddQueueItem': function(file_obj) {
+				console.log(file_obj);
+				var file_name = file_obj.name;
+				var fileUrl = file_name, parts, ext = ( parts = file_name.split("/").pop().split(".") ).length > 1 ? parts.pop() : "";
+				var file_size = Math.round(file_obj.size/1024);
+				var file_idat = getFileType(ext);
+				var file_type = file_idat.type;
+				var att_svg = file_idat.svg;
+				var file_met = "KB";
+				if(file_size > 1024) { 
+					file_size = Math.round(file_size/1024);
+					file_met = "MB";
+				}		
+				$('#cnt-fileinfo .msg_file .filename:contains('+encodeString(file_name)+')').each(function(key, value) {
+					$(value).parent().parent().find('.file_icon').html(att_svg);
+					$(value).next('p').html(file_size+file_met+' '+file_type);
+				});
+			},
+			'onUploadComplete' : function(file, data) {
+				$('#cnt-fileinfo').hide(100);
+				var ext = ( parts = file.name.split("/").pop().split(".") ).length > 1 ? parts.pop() : "";
+				var obj = {
+					add_date: new Date(), 
+					file_category: 'userFiles', 
+					file_extention: ext, 
+					file_id: '', 
+					file_name: file.name, 
+					file_size: file.size, 
+					has_preview: false, 
+					message_id: '', 
+					public_access: false, 
+					receiver: '',
+					user_name: smuser.name
+				};
+				$('#cnt_filelist_content .scrolllist').prepend('<div class="msg_file">' + addCntFileToList(obj, true) + '</div>');
+			},
+			'onQueueComplete' : function() {
+				
+			}
+		});
+		$('#cnt_view').on('click', '#del-user-file', function(){
+			console.log('del');
+		});
 	});	
 };
 function addCntFileToList(obj, hide_image) {
@@ -883,10 +887,14 @@ function addCntFileToList(obj, hide_image) {
 		'<img src="'+pvfile_url+'"/>'+
 		'</div>';
 	}
+	var del_icon = '';
+	if ($("#cnt_info_main").attr('data-usr-name') === smuser.name) {
+		del_icon = '<div id="del-user-file" class="fa fa-trash-o help_icon"><div class="help_info">Удалить файл</div></div>';
+	};
 	var str_html = 	'<div class="upfile" id="fn_'+ obj.file_id + '" data-furl="'+file_url+'"><a target="_blank" href="'+file_url+'"><div class="file_icon">'+att_svg+'</div></a>'+
 					'<div class="file_block"><a target="_blank" href="'+file_url+'"><p class="filename">' + obj.file_name + '</p></a>'+
 					'<p class="file_info">'+file_size+file_met+' '+file_type+'</p></div>'+
-					'<div id="del-user-file" class="fa fa-trash-o help_icon"><div class="help_info">Удалить файл</div></div>' +
+					del_icon +
 					'<a target="_blank" href="'+file_url+'"><div class="cloud help_icon"><div class="help_info">Скачать файл</div>'+cloud_svg+'</div></a>'+ img_str +
 					'</div>';
 
@@ -915,6 +923,17 @@ function ContactDeleteBlocking(name, block) {
 			if(obj.length != 0) {
 				var obj = $('#cnt_'+obj.eq(0).attr('data-usr-id'));
 				var lst_obj = $('#lst_'+obj.eq(0).attr('data-usr-id'));
+				var contact_obj = $('#cnt_short_invite .contact_invite[data-usr-name='+fname+']');
+				if(contact_obj.length != 0) {
+					var inv_num = $('#cnt_short_invite .contact_invite').length;
+					$('#invitings').find('.new_invites span').html(inv_num);
+					if(inv_num == 0) {
+						$('#cnt_short_invite').hide();
+						$('#cnt_short_invite').html('');
+						$('#invitings').find('.new_invites').hide(0);
+						$('#invitings').hide(0);
+					}
+				}	
 			}
 			if(block == 'true') {
 				var group = $("#m_cnt_list .group_block").find('h3[data-srtnum=999]');
@@ -937,6 +956,9 @@ function ContactDeleteBlocking(name, block) {
 					
 				}	
 			}
+			
+			updateContactList('');
+			
 		}
 		xhr.send(body);
 
@@ -1004,7 +1026,8 @@ function moveContactRecentTop(cnt_id) {
 		});
 	
 }
-function invitaionAnswer(contact, mode) {
+function invitaionAnswer(contact_obj, mode) {
+	var contact = contact_obj.attr('data-usr-name')
 	if(mode == 'cancel') {
 		ContactDeleteBlocking(contact, 'false');
 	}
@@ -1024,9 +1047,58 @@ function invitaionAnswer(contact, mode) {
 				showError(xhr.responseText.replace('%err%',''));
 				return;
 			}
+			contact_obj.remove();
+			var inv_num = $('#cnt_short_invite .contact_invite').length;
+			$('#invitings').find('.new_invites span').html(inv_num);
+			if(inv_num == 0) {
+				$('#cnt_short_invite').hide();
+				$('#cnt_short_invite').html('');
+				$('#invitings').find('.new_invites').hide(0);
+				$('#invitings').hide(0);
+			}	
+			
 			updateContactList('');
 		}	
 		xhr.send(body);
+	}
+}
+
+function addContactRequests(name, msg, result) {
+	var fullname = (result == undefined)?(name):(result.fullname);
+	var avatar = (result == undefined)?('/include/no_avatar.svg'):('/my/ajax/files.php?a=prev&amp;i='+result.photo_id);
+	var str = '<div class="contact_invite" data-usr-name="'+name+'">\
+				<table style="border-spacing: 0;">\
+					<tbody><tr>\
+						<td>\
+							<div>\
+								<div class="cnt_avatar cnt_avatar_small" style="background-image: url('+avatar+');"></div>\
+							</div>\
+						</td>\
+						<td>\
+							<div class="cnt_text">'+fullname+'</div>\
+							<div class="cnt_add">'+msg.replace(name,'')+msg+'</div>\
+						</td>\
+						</tr>\
+					</tbody>\
+				</table>\
+				<div style="text-align: center;">\
+					<div id="confirm" class="simple_button accept_button" style="margin: 5px; min-width: 115px; padding: 5px;">Принять</div>\
+					<div id="cancel" class="simple_button" style="margin: 5px; min-width: 115px; padding: 5px; ">Отказать</div>\
+				</div>\
+			</div>';
+
+	$('#cnt_short_invite').append(str);
+	$('#invitings').show(0);
+	$('#invitings').removeClass('close_list');
+	$('#cnt_short_invite').show(0);
+
+	var inv_num = $('#cnt_short_invite .contact_invite').length;
+	if(inv_num == 0) {
+		$('#invitings').find('.new_invites span').html('0');
+		$('#invitings').find('.new_invites').hide(0);
+	} else {
+		$('#invitings').find('.new_invites span').html(inv_num);
+		$('#invitings').find('.new_invites').show(0);
 	}
 }
 function showContactRequests(name, msg) {
@@ -1035,57 +1107,55 @@ function showContactRequests(name, msg) {
 	}
 	req_name = encodeString(name);
 	if($('#cnt_short_invite [data-usr-name='+req_name+']').length == 0) {
-		var str = '<div class="contact_inf" data-usr-name="'+name+'">\
-						<table style="border-spacing: 0;">\
-							<tbody><tr>\
-								<td>\
-									<div>\
-										<div class="cnt_avatar cnt_avatar_small" style="background-image: url(/my/ajax/files.php?a=prev&amp;i=tlpav_2);"></div>\
-									</div>\
-								</td>\
-								<td>\
-									<div class="cnt_text">' + name + '</div>\
-									<p class="cnt_add">Канал общих контактов</p>\
-								</td>\
-								</tr>\
-							</tbody>\
-						</table>\
-					</div>';
-		$('#cnt_short_invite').append(str);
-		$('#invitings').show(0);
-		$('#invitings').removeClass('close_list');
-		$('#cnt_short_invite').show(0);
-	}			
-	/*var str_block = '<div class="rqst_block" data-contact-name="'+name+'">'+
-			'<div style="text-align: center; color: #444;"><b>'+name+'</b> хочет пригласить Вас в список своих контактов</div>' + 
-			'<div class="msg_header">Сообщение от '+name+'</div>' + 
-			'<div class="msg">'+msg+'</div>' + 
-			'<div style="padding: 15px 0 0 0;"><div id="confirm" class="menu_button">Принять</div></div>' + 
-			'<div style="padding: 15px 0 0 0;"><div id="cancel" class="menu_button">Отказать</div></div>' + 
-		'</div>';
-	if($('#rqst_window').length == 0) {
-		var str_window = '<div id="rqst_window" class="modal_window">'+
-		'<div class="inv_header">Приглашение</div>'+
-		'</div>';
-		$('#content').append(str_window);
-		$('#rqst_window').show(10);
-		$('#rqst_window').on('click','.rqst_block .menu_button', function(e) {
-			e.stopPropagation();
-			invitaionAnswer($(this).parent().parent().attr('data-contact-name'), $(this).attr('id'));
-			
-			$(this).parent().parent().remove();
-			if($('#rqst_window .rqst_block').length == 0) {
-				$('#rqst_window').remove();
+
+		var hasInfo = false;
+		var key = 'pinf_'+req_name;
+		if(storu) {
+			try {
+				var personInfo = sessionStorage.getItem(key);
+				if(!(personInfo == undefined)) {
+					personInfo = LZString.decompress(personInfo);
+					var result = $.parseJSON(personInfo)[0];
+					hasInfo = true;
+				}	
+			} catch (e) {
+				sessionStorage.removeItem(key);
 			}
-			else {
-				$($('#rqst_window .rqst_block')[0]).show();
-			}	
-		});
+		}
 		
-	}	
-	$('#rqst_window').append(str_block);
-	$($('#rqst_window .rqst_block')[0]).show();
-	*/
+		if(!hasInfo) {
+			var xhr = new XMLHttpRequest();
+			var body =	'action=FindPersons' +
+						'&adds=json' +
+						'&new_cntname=' + encodeURIComponent(name);
+
+			xhr.open("POST", '/my/ajax/action.php', true);
+			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+			xhr.onreadystatechange = function() 
+			{ 
+				if (xhr.readyState != 4) return;
+				
+				if(!(xhr.responseText.indexOf('%err%') == -1)) {
+					showError(xhr.responseText.replace('%err%',''));
+					return;
+				}
+				try {
+					result = $.parseJSON(xhr.responseText)[0];
+					if(storu) {
+						var zipResult = LZString.compress(xhr.responseText);
+						sessionStorage.setItem(key, zipResult);
+					}
+					hasInfo = true;				
+					addContactRequests(name, msg, result);
+				} catch (e) {
+					addContactRequests(name, msg, undefined);
+				}			
+			}
+			xhr.send(body);
+		} else {
+			addContactRequests(name, msg, result);
+		}	
+	}			
 }
 function droppableCreate(obj) {
    obj.droppable({

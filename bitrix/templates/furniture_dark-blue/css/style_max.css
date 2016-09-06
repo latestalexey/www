@@ -18,19 +18,29 @@
 #download_cat {
 	position: relative; 
 	top:-90%; 
-	width:800px;
+	width:400px;
 	margin: 0 auto;
 	overflow: hidden;
 }
 
 #download_cat .teleport_buttons,
-#download_cat .teleport_links {
+#download_cat .teleport_links,
+#download_cat .link-block {
 	width: 400px;
-	float: left;
+	padding: 0 10px;
+	margin: 15px 0;
+	box-sizing: border-box;
+	overflow: hidden;
 }
 
 #download_cat .teleport_links {
 	padding-top: 25px;
+	clear: both;
+	border-top: 2px inset #f4f4f4;
+}
+
+#download_cat .teleport_buttons .header {
+	font-size: 24px;
 }
 
 #teleport_btn,
@@ -39,8 +49,7 @@
 #excel_btn {
 	position: relative;
 	overflow: hidden;
-	padding-top: 25px;
-	margin-bottom: 25px;
+	float: left;
 }
 
 #bitrix_btn,
@@ -51,9 +60,10 @@
 #download_cat .button{
 	display:block;
 	float:left;
-	width: 300px;
-	left:20px;
-	padding: 20px; 
+	left: 0;
+	width: 120px;
+	padding: 15px 20px; 
+	margin: 14px;
 	font-weight: 600; 
 	text-align:center; 
 	font-size: 18px; 
@@ -83,15 +93,32 @@
 	background: url('/include/checkbox.png') no-repeat;
 	background-position:0 0;
 	cursor: pointer;
+	border: 0 !important;
+    outline: none;
 }
 
 #download_cat .link_flag.active{
 	background-position:0 -24px;
 }
 
-#download_cat input{
-	cursor:pointer;
+#download_cat .link-block span {
+	display: block;
+	font-size: 14px; 
+	font-weight: 600;
+	padding: 15px 0 5px 0;
 }
+
+#download_cat .link-block input{
+	cursor:pointer;
+	padding: 5px;
+	border: 1px solid #ccc;
+	border-radius: 3px;
+	color: #777;
+	width: 100%;
+	font-size: 12px; 
+	background: #fbfbfb; 
+}
+
 /*===============================Cat_Download_End============================*/
 
 

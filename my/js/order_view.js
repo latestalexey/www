@@ -921,7 +921,7 @@ function initDocView(arDoc, sender, receiver) {
 						var arErr = arPos.filter(function(ar) {
 							return $.inArray(ar[0], articleAr)<0;
 						});
-						if (items.catalog.length && (arErr.length != arPos.length)) {
+						if (items.catalog.length && (arErr.length != (arPos.length-1))) {
 							$.each(items.catalog, function(key, item){
 								var curPos = arPos.filter(function(subAr) {return subAr[0] == item.article});
 								var	exItem = $('.order_item_list_content .item[data-it-id='+item.id+']');	
@@ -961,7 +961,7 @@ function initDocView(arDoc, sender, receiver) {
 							});	
 						};
 						hideTelebotInfo();
-						if (arErr.length && (arPos.length>arErr.length)) {
+						if (arErr.length && ((arPos.length-1)>arErr.length)) {
 							$('#upl_xls').addClass('danger');
 							if (!$('#order_view #dialog').length) {
 								var html_text = 'Часть позиций, указанных в файле, не была обработана.</br> Выгрузить список необработанных позиций в отдельный файл?';
@@ -985,7 +985,7 @@ function initDocView(arDoc, sender, receiver) {
 								setTimeout(function(){$('#upl_xls').removeClass('danger')}, 5000);
 							});
 						}
-						else if (arErr.length && (arPos.length==arErr.length)) {
+						else if (arErr.length && ((arPos.length-1)==arErr.length)) {
 							$('#upl_xls').addClass('error');
 							var html_text = 'В выгружаемом файле нет позиций, доступных для загрузки. <br> Пожалуйста, проверьте корректность загружаемых данных';
 							showTelebotInfo(html_text,"amaze", 5000);
@@ -1214,9 +1214,10 @@ $(window).resize(function() {
 });
 
 function showPosList(obj, contact){
+	console.log(obj.val());
 	if(!(contact == undefined)){
 		var arr_fld = ['*'];
-		it_filter = [{"mode": "item", "name":"name", "operation":"LIKE", "value": '%'+obj.val()+'%'}];
+		it_filter = [{"mode": "item", "name":"name", "operation":"LIKE", "value": +obj.val()}];
 		var xhr = new XMLHttpRequest();
 		var body =	'action=catalog_get' +
 					'&adds=json' +
@@ -1236,6 +1237,7 @@ function showPosList(obj, contact){
 				return;
 			};
 			var item = JSON.parse(xhr.responseText);	
+			console.log(xhr.responseText);
 			if (item.catalog.length) {	
 				var html_str = '';	
 				$.each(item.catalog, function(key, item){
