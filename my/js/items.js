@@ -259,100 +259,119 @@ $(document).ready(function()
 	//cat downloads
 	$('.my_body').on('click', '#cat_dwlnd',function() {
 		var contact = getActiveContact();
-		var public_link = {
-			'teleport' : 'ya.ru',
-			'yml' : '',
-			'bitrix' : '',
-			'excel' : '',
-		};
-		var width = '400px';
-		if (contact.id == undefined) {
-			width = '800px';
-		}
-		else {
-			$.each(public_link, function(i,val) {
-				if ($.trim(val).length) {
-					width = '800px';
-					return false;
-				};
-			});
-		};
 		hideModalWindow($('.modal_window'));
 		$('.modal_back').remove();	
-		$('#main_content').append(
-					'<div id="download_cat" class="modal_window" style="width:'+width+'">' +
-						'<div class="close_line"><div class="clw"><img src="/include/close_window.svg"/></div></div>' +
-						'<div id="teleport_link">' +
-							'<div class="button" format-value=teleport>Скачать в формате Teleport</div>' +
-						'</div>' +	
-						'<div id="yml_link">' +
-							'<div class="button" format-value=yml>Скачать в формате YML</div>' +
-						'</div>' +	
-						'<div id="bitrix_link">' +
-							'<div class="button" format-value=bitrix>Скачать в формате Bitrix</div>' +
-						'</div>' +	
-						'<div id="excel_link">' +
-							'<div class="button" format-value=excel>Скачать в формате Excel</div>' +						
-						'</div>' +
-					'</div>'	
-		);
 		
 		if (contact.id == undefined) {
-			$('#teleport_link, #yml_link, #bitrix_link, #excel_link').append( 
-				'<div class="share_link link_flag"></div><div class="share_text">Поделиться ссылкой с моими контактами</div>' +
-				'<div class="public_link link_flag"></div><div class="public_text">Ссылка на каталог доступна всем</div>'
+			getDownloadButtons(smuser.name);
+			$('#download_cat').append( 
+				'<div class="teleport_links">' +
+					'<button class="share_link link_flag"></button><div class="share_text">Поделиться ссылкой с моими контактами</div>' +
+					'<button class="public_link link_flag"></button><div class="public_text">Ссылка на каталог доступна всем</div>' +
+				'</div>'	
 			);
-		}
-		else {
-			if (public_link.teleport.length) {
-				$('#teleport_link').append(
-					'<span style="font-size:12px; margin-left: 60px;">Ссылка на каталог в формате Teleport</span><br>' + 
-					'<input style="width:250px; font-size: 14px; margin-left: 60px; margin-top: 5px; background: #fbfbfb; border: 1px solid #ccc; padding: 2px;" value='+public_link.teleport+' readonly>'
-				);
-			};
-			if (public_link.yml.length) {
-				$('#yml_link').append( 
-					'<span style="font-size:12px; margin-left: 60px;">Ссылка на каталог в формате Teleport</span><br>' + 
-					'<input style="width:250px; font-size: 14px; margin-left: 60px; margin-top: 5px; background: #fbfbfb; border: 1px solid #ccc; padding: 2px;" value='+public_link.yml+' readonly>'
-				);
-			};
-			if (public_link.bitrix.length) {
-				$('#bitrix_link').append( 
-					'<span style="font-size:12px; margin-left: 60px;">Ссылка на каталог в формате Teleport</span><br>' + 
-					'<input style="width:250px; font-size: 14px; margin-left: 60px; margin-top: 5px; background: #fbfbfb; border: 1px solid #ccc; padding: 2px;" value='+public_link.bitrix+' readonly>'
-				);
-			};	
-			if (public_link.excel.length) {
-				$('#excel_link').append( 
-					'<span style="font-size:12px; margin-left: 60px;">Ссылка на каталог в формате Teleport</span><br>' + 
-					'<input style="width:250px; font-size: 14px; margin-left: 60px; margin-top: 5px; background: #fbfbfb; border: 1px solid #ccc; padding: 2px;" value='+public_link.excel+' readonly>'
-				);
-			};	
+			$.post('/my/ajax/action.php', { action: "getPersonInfo", "contact": smuser.name, "adds": "json" }, function(data) {
+				var arUser = JSON.parse(data);
+				if (arUser.catalog_shared == 1) {
+					$('.teleport_links .share_link').addClass('active');
+					getSharedCatalog(smuser.name);
+				} else 
+				if (arUser.catalog_shared == 2)  {
+					$('.teleport_links .share_link').addClass('active');
+					$('.teleport_links .public_link').addClass('active');
+					getSharedCatalog(smuser.name);
+				};
+				showModalWindow($('#download_cat'));
+			});
+		} else {
+			$.post('/my/ajax/action.php', { action: "getPersonInfo", "contact": contact.name, "adds": "json" }, function(data) {
+				var arUser = JSON.parse(data);
+				if (arUser.catalog_shared == 2) {
+					getSharedCatalog(contact.name);
+				} else if (arUser.catalog_shared == 0) {
+					showTelebotInfo('Извините, но в настоящее время выбранный контакт не открыл доступ для скачивания своего каталога.','',5000);
+					return;
+				};
+				showModalWindow($('#download_cat'));
+			});
 		};
-		showModalWindow($('#download_cat'));
+		
+		function getDownloadButtons(contact){
+			var href = window.location.protocol+'//'+window.location.hostname+'/Catalog_GetSharedCatalog?contact='+contact+'&catalog_type=';
+			$('#main_content').append(
+					'<div id="download_cat" class="modal_window">' +
+						'<div class="close_line"><div class="clw"><img src="/include/close_window.svg"/></div></div>' +
+						'<div class="teleport_buttons">' +
+							'<div class="header">Скачать каталог в формате:</div>' +
+							'<div id="teleport_btn">' +
+								'<a href="'+href+'teleport" target=_blank class="button" format-value=teleport>Teleport</a>' +
+							'</div>' +	
+							'<div id="yml_btn">' +
+								'<a href="'+href+'yandex" target=_blank class="button" format-value=yandex>YML</a>' +
+							'</div>' +	
+							'<div id="bitrix_btn">' +
+								'<a href="'+href+'bitrix" target=_blank class="button" format-value=bitrix>Bitrix</a>' +
+							'</div>' +	
+							'<div id="excel_btn">' +
+								'<a href="'+href+'excel" target=_blank class="button" format-value=excel>Excel</a>' +						
+							'</div>' +
+						'</div>' +
+						'' +
+						'</div>' +
+					'</div>'
+			);
+		};
+		
+		function getSharedCatalog(contact){
+			$('#download_cat .link-block').remove();
+			var href = window.location.protocol+'//'+window.location.hostname+'/Catalog_GetSharedCatalog?contact='+contact+'&catalog_type=';
+			$('#download_cat').append( 
+				'<div class="link-block">' +
+					'<span>Ссылка на каталог в формате Teleport</span>' + 
+					'<input value='+href+'teleport readonly>' +
+					'<span>Ссылка на каталог в формате YML</span>' + 
+					'<input value='+href+'yandex readonly>' +
+					'<span>Ссылка на каталог в формате Bitrix</span>' + 
+					'<input value='+href+'bitrix readonly>' +
+					'<span>Ссылка на каталог в формате Excel</span>' + 
+					'<input value='+href+'excel readonly>' +
+				'</div>'
+			);
+		};
 		
 		$('#download_cat').on('click', '.link_flag', function() {
 			$(this).toggleClass('active');
-		
-			var linkstr = 'http://yandex.ru';
+			
+			$('.teleport_links button').attr('disabled', true);
+			
 			if ($(this).is('.public_link.active')) {
-				linkstr = 'http://google.ru';
 				$(this).siblings('.share_link').addClass('active');
 			};
 
 			if (!$(this).is('.share_link.active')) {
 				$(this).siblings('.public_link').removeClass('active');
 			};
-		
-			if ($(this).parent().children('.share_link.active').length) {
-				var str = 
-				'<span style="font-size:10px; font-weight: normal; line-height:10px;">Ссылка на каталог в формате '+ $(this).siblings('.button').attr('format-value') +'</span><br>' + 
-				'<input style="width:250px; margin-top: 3px; background: #fbfbfb; border: 1px solid #ccc; padding: 2px;" value='+linkstr+' readonly>';
-			}
-			else {
-				var str = 'Поделиться ссылкой с моими контактами';
-			};	
-			$(this).siblings('.share_text').html(str);
+			
+			var catalog_shared = 0;
+			var shared_link_len = $('.teleport_links .share_link.active').length;
+			var public_link_len = $('.teleport_links .public_link.active').length;
+			
+			if (shared_link_len && public_link_len) {
+				catalog_shared = 2;
+			};
+			
+			if (shared_link_len && !public_link_len) {
+				catalog_shared = 1;
+			};
+			
+			$.post("/my/ajax/action.php", {"action": "setPersonInfo", "Request_JSON":{"catalog_shared":1}},  function(data){
+				$('#download_cat .link-block').remove();
+				if (catalog_shared) {
+					getSharedCatalog(smuser.name);
+				};
+				$('.teleport_links button').attr('disabled', false);
+				console.log(data);
+			});
 		});
 		
 		$('#download_cat').on('click', 'input', function() {
@@ -360,13 +379,10 @@ $(document).ready(function()
 		});
 
 		$('#download_cat').on('click', '.button',function() {
-			var format = $(this).attr('format-value');
-			var isShared = $(this).siblings('.share_link').hasClass('active') ? true : false;
-			var isPublic = $(this).siblings('.public_link').hasClass('active') ? true : false;
-			hideModalWindow($('#download_cat'));
-			CatDwnld(format, isShared, isPublic);
+			//hideModalWindow($('#download_cat'));
 		});	
 	});
+	
 	$('.my_body').on('click', '#cat_update',function() {
 		var contact = getActiveContact();
 		hideModalWindow($('.modal_window'));
@@ -575,9 +591,6 @@ function CatCopy(update_params) {
 		xhr.send(body);
 	*/	
 }
-function CatDwnld(format, isShared, isPublic) {
-	console.log(format, isShared, isPublic);
-}
 
 function resizeItemInfo() {
 	var modal_obj = $('#detail_info_window');
@@ -703,7 +716,7 @@ function getSelectedContactItems(it_nom, it_filter) {
 		xhr.onreadystatechange = function() 
 		{ 
 			if (xhr.readyState != 4) return;
-
+			
 			if(!(xhr.responseText.indexOf('%err%') == -1)) {
 				showError(xhr.responseText.replace('%err%',''));
 				return;
@@ -1351,6 +1364,7 @@ function addItemToNewDoc(Item, contact) {
 			hash: message.docHeader.hash
 			}, 
 			function(data) {
+				//console.log(data);
 				getItemPosInfo();
 			}
 		);
@@ -1370,7 +1384,7 @@ function getItemPosInfo() {
 				var DocDate = getOrderDate(new Date(val.docHeader.date));	 	
 				html_str = html_str + '<div class="UserDocItem" data-doc-id='+val.docHeader.id+' data-doc-owner='+val.docHeader.owner+'>Заказ №'+(++key)+' от '+DocDate.day+'-'+DocDate.month+'-'+DocDate.year+'</div>';		
 			}); 
-			$('#it_cart .info').html('Выбрано <span>'+UserItemsQty+'</span> позиций в <span>'+UserDocsQty+'</span> заказах ' + (UserDocsQty ? '<span class="show-docs fa fa-chevron-down"></span>' : ''));		
+			$('#it_cart .info').html('Выбрано <span>'+UserItemsQty+'</span> позиций в <span>'+UserDocsQty+'</span> заказах ' + (UserDocsQty ? '<span class="show-docs fa fa-chevron-down"></span>' : ''));	
 			$('#UserDocList').remove();
 			$('#items_header #it_rule_pan').append('<div id="UserDocList">'+html_str+'</div>');		
 		})	
