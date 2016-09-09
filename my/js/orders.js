@@ -199,6 +199,7 @@ function addNewDoc(docid, contact){
 			currencyId: message.docHeader.currencyId, 
 			hash: message.docHeader.hash
 		}, function(data) {
+		console.log(data);
 			if (data == 1) {
 				var docDate = getOrderDate(curDate);
 				$('#order_li').prepend(

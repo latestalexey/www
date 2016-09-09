@@ -223,21 +223,25 @@ elseif($action == 'send_msg')
 	$res = $TLP_obj->datapost('Messages_Send', $arParam);
 
 	$res = json_decode($res, true);
-	if($res['errCode'] == 0)
-	{
-		$msg_object = $res['retval'][0];
-		$tz_pos = stripos($msg_object['dt'],'+');
-		if(!$tz_pos === false) {
-			$msg_object['dt'] =substr($msg_object['dt'], 0, $tz_pos);
+	if (array_key_exists("errCode",$res)) {
+		if($res['errCode'] === 0)
+		{
+			$msg_object = $res['retval'][0];
+			$tz_pos = stripos($msg_object['dt'],'+');
+			if(!$tz_pos === false) {
+				$msg_object['dt'] =substr($msg_object['dt'], 0, $tz_pos);
+			}
+			if($msg_object['msg_text'] == '') {
+				$msg_object['msg_text'] = htmlspecialchars($_POST["message"]);
+			}
+			$msg_object['tmpGUID'] = ($_POST["tmpGUID"] == "")?(""):($_POST["tmpGUID"]);
+			echo json_encode(array($msg_object));
 		}
-		if($msg_object['msg_text'] == '') {
-			$msg_object['msg_text'] = htmlspecialchars($_POST["message"]);
-		}
-		$msg_object['tmpGUID'] = ($_POST["tmpGUID"] == "")?(""):($_POST["tmpGUID"]);
-		echo json_encode(array($msg_object));
-	}
-	else
-	{echo '%err%КОД: '.$res['errCode'].' '.$TLP_obj->mistakes[$res['errCode']];}
+		else
+		{echo '%err%КОД: '.$res['errCode'].' '.$TLP_obj->mistakes[$res['errCode']];}
+	} else {
+		echo '%err%Ошибка при отправке сообщения. Обратитесь в службу поддержки';	
+	}	
 }
 elseif($action == 'resend_msg') //TODO
 {

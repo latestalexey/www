@@ -386,40 +386,27 @@ function initDocView(arDoc, sender, receiver) {
 		var old_hash = arDoc.docHeader.hash;
 		buildTmpDoc (arDoc, receiver);
 		var new_hash = arDoc.docHeader.hash;
-		var html_text = '';
-		if (parseFloat(arDoc.docHeader.sum) <= 0 ) {
-			html_text = 'Общая сумма заказа должна быть больше нуля...';
-		} else if ((old_hash === new_hash) && (arDoc.docHeader.status!='new')) {
-			html_text = 'Документ возможно отправить на согласование только при условии внесения в него изменений ...';
-		};
-		if (html_text.length) {
-			showTelebotInfo(html_text,'amaze',7000);	
+		if ((old_hash === new_hash) && (arDoc.docHeader.status!='new')) {
+			showTelebotInfo('Документ возможно отправить на согласование только при условии внесения в него изменений ...','amaze',7000);
 		} else {
+			var delID = (arDoc.docHeader.status === 'new') ? 1 : 0;
 			arDoc.docHeader.status = 'transmitted';
-			sendDoc(arDoc, (sender.id==smuser.id) ? receiver.name : sender.name);
+			sendDoc(arDoc, (sender.id==smuser.id) ? receiver.name : sender.name, delID);
 		};	
 	});
 	
 	//Подтвердить заказ
 	$('#order_view').on('click', '#confirm', function(){
 		buildTmpDoc (arDoc, receiver);
-		if (parseFloat(arDoc.docHeader.sum) > 0) {
-			arDoc.docHeader.status = 'confirmed';
-			sendDoc(arDoc, (sender.id==smuser.id) ? receiver.name : sender.name);	
-		} else {
-			showTelebotInfo('Общая сумма заказа должна быть больше нуля...','amaze', 5000);
-		};		
+		arDoc.docHeader.status = 'confirmed';
+		sendDoc(arDoc, (sender.id==smuser.id) ? receiver.name : sender.name, 0);	
 	});	
 	
 	//Отменить заказ
 	$('#order_view').on('click', '#cancel', function(){
 		buildTmpDoc (arDoc, receiver);
-		if (parseFloat(arDoc.docHeader.sum) > 0) {
-			arDoc.docHeader.status = 'canceled';
-			sendDoc(arDoc, (sender.id==smuser.id) ? receiver.name : sender.name);
-		} else {
-			showTelebotInfo('Общая сумма заказа должна быть больше нуля...','amaze', 5000);
-		}
+		arDoc.docHeader.status = 'canceled';
+		sendDoc(arDoc, (sender.id==smuser.id) ? receiver.name : sender.name, 0);
 	});	
 	
 	//Отправить заказ на согласование
@@ -427,51 +414,33 @@ function initDocView(arDoc, sender, receiver) {
 		var old_hash = arDoc.docHeader.hash;
 		buildTmpDoc (arDoc, receiver);
 		var new_hash = arDoc.docHeader.hash;
-		var html_text = '';
-		if (parseFloat(arDoc.docHeader.sum) <= 0 ) {
-			html_text = 'Общая сумма заказа должна быть больше нуля...';
-		} else if (old_hash === new_hash) {
-			html_text = 'Документ возможно отправить на согласование только при условии внесения в него изменений ...';
-		};
-		if (html_text.length) {
-			showTelebotInfo(html_text,'amaze',7000);	
+		if (old_hash === new_hash) {
+			showTelebotInfo('Документ возможно отправить на согласование только при условии внесения в него изменений ...','amaze',7000);				
 		} else {
 			arDoc.docHeader.status = 'agreement';
-			sendDoc(arDoc, (sender.id==smuser.id) ? receiver.name : sender.name);
+			sendDoc(arDoc, (sender.id==smuser.id) ? receiver.name : sender.name, 0);
 		};
 	});	
 	
 	//Заказ готов к отгрузке
 	$('#order_view').on('click', '#ship', function(){
 		buildTmpDoc (arDoc, receiver);
-		if (parseFloat(arDoc.docHeader.sum) > 0) {
-			arDoc.docHeader.status = 'shipped';
-			sendDoc(arDoc, (sender.id==smuser.id) ? receiver.name : sender.name);
-		} else {
-			showTelebotInfo('Общая сумма заказа должна быть больше нуля...','amaze', 5000);
-		};
+		arDoc.docHeader.status = 'shipped';
+		sendDoc(arDoc, (sender.id==smuser.id) ? receiver.name : sender.name, 0);
 	});	
 	
 	//Принять заказ в обработку
 	$('#order_view').on('click', '#process', function(){
 		buildTmpDoc (arDoc, receiver);
-		if (parseFloat(arDoc.docHeader.sum) > 0) {
-			arDoc.docHeader.status = 'processed';
-			sendDoc(arDoc, (sender.id==smuser.id) ? receiver.name : sender.name);
-		} else {
-			showTelebotInfo('Общая сумма заказа должна быть больше нуля...','amaze', 5000);
-		};
+		arDoc.docHeader.status = 'processed';
+		sendDoc(arDoc, (sender.id==smuser.id) ? receiver.name : sender.name, 0);
 	});	
 	
 	//Заказ выполнен
 	$('#order_view').on('click', '#complete', function(){
 		buildTmpDoc (arDoc, receiver);
-		if (parseFloat(arDoc.docHeader.sum) > 0) {
-			arDoc.docHeader.status = 'closed';
-			sendDoc(arDoc, (sender.id==smuser.id) ? receiver.name : sender.name);
-		} else {
-			showTelebotInfo('Общая сумма заказа должна быть больше нуля...','amaze', 5000);
-		};
+		arDoc.docHeader.status = 'closed';
+		sendDoc(arDoc, (sender.id==smuser.id) ? receiver.name : sender.name, 0);
 	});	
 	
 
@@ -867,6 +836,7 @@ function initDocView(arDoc, sender, receiver) {
 	
 	//Загрузка позиций каталога из xls-файла
 	$('#order_view').on('click', '#upl_xls' ,function() {
+		$('#order_view #xls_upl').uploadifive('clearQueue');
 		$(this).siblings('#uploadifive-xls_upl').children().last().click();
 	});	
 	$(function() {	
@@ -890,7 +860,13 @@ function initDocView(arDoc, sender, receiver) {
 				$('.dark-tooltip').hide();
 			},
 			'onUploadComplete' : function(file, data) {
-				var arPos = JSON.parse(data);
+				var arPos = [];
+				try {
+					arPos = JSON.parse(data);
+				} catch (e) {
+					arPos = [];
+					console.log(e);
+				};			
 				if (arPos.length && (arPos[0].length == 3)) {
 					delete arPos[0];
 					var  article_str = '';
@@ -1019,8 +995,7 @@ var delay = (function(){
 
 function sendDoc (message, receiver, delID) {
 	docid = message.docHeader.id;
-	var clearID = delID || 0;
-	if (clearID) { message.docHeader.id='' };
+	if (delID) { message.docHeader.id='' };
 	var xhr = new XMLHttpRequest();
 	var body =	'action=send_msg' +
 				'&message=' + encodeURIComponent(JSON.stringify(message)) +
@@ -1040,7 +1015,7 @@ function sendDoc (message, receiver, delID) {
 			var obj = $('#order_li .order[data-order-id='+docid+']');
 			$('.col_4', obj).text(number_format(message.docHeader.sum, 2, '.', ' '));	
 			$('.col_5', obj).text(docStatus[message.docHeader.status]);		
-			if (clearID) {
+			if (delID) {
 				obj.attr('id', new_Doc[0].ID).attr('data-order-id', new_Doc[0].ID).removeClass('new');
 				$.post('/my/ajax/order.php', {action: 'Documents_delSentDoc', message_id: docid, receiver: receiver});
 			};

@@ -962,8 +962,8 @@ div#UserDocList .UserDocItem:hover {
 	display: inline-block;
 }
 
-#uploadifive-xls_upl,
-.uploadifive-queue-item  {
+#uploadifive-xls_upl/*,.uploadifive-queue-item*/
+ {
 	display: none !important;
 }
 

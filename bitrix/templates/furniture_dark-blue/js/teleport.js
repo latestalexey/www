@@ -203,9 +203,9 @@ function expandRightPan() {
 
 
 function newsSound() {
-	var audio = new Audio(); 
+	/*var audio = new Audio(); 
 	audio.src = '/my/data/snd/new_msg.mp3'; 
-	audio.autoplay = true;
+	audio.autoplay = true;*/
 }	
 function htmlspecialchars(text) {
   return text
@@ -345,7 +345,7 @@ function messagesRequest() {
 					req_sender		= encodeString(rqobject.contact);
 					req_quantity	= rqobject.quantity;
 					req_prefix 		= (req_type == 'message')?('msg'):('ord');
-					var new_msg_obj = $('[data-usr-name='+req_sender+']').find(".new_" + req_prefix);
+					var new_msg_obj = $('[data-usr-name='+req_sender+']').first().find(".new_" + req_prefix);
 					if(req_quantity > 0 && new_msg_obj.length != 0) {
 						new_msg_obj.css("display", "block");
 						if(!(new_msg_obj.first().find('span').text() == req_quantity)) {
