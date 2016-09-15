@@ -36,7 +36,6 @@ if($mode=='')
 <script async type="text/javascript" src="<?=SITE_TEMPLATE_PATH?>/js/darktooltip.js"></script>
 <script async type="text/javascript" src="<?=SITE_TEMPLATE_PATH?>/js/defiant.min.js"></script>
 <script async type="text/javascript" src="//api-maps.yandex.ru/2.1/?lang=ru_RU"></script>
-<script async type="text/javascript" src="/my/js/cnt_mngr.js"></script>
 <script async type="text/javascript" src="/my/js/squad_mngr.js"></script>
 
 <div id="main_content">
