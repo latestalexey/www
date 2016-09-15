@@ -79,6 +79,7 @@ $(document).ready(function()
 		var id = obj.attr('data-order-id');
 		var sender = obj.attr('data-order-sender');
 		var receiver = obj.attr('data-order-receiver');
+		$('.modal_window').remove();
 		obj.hasClass('new') ? getTmpDocInfo(id, sender, receiver) : getDocInfo(id, sender, receiver);
 	});
 
@@ -199,7 +200,6 @@ function addNewDoc(docid, contact){
 			currencyId: message.docHeader.currencyId, 
 			hash: message.docHeader.hash
 		}, function(data) {
-		console.log(data);
 			if (data == 1) {
 				var docDate = getOrderDate(curDate);
 				$('#order_li').prepend(

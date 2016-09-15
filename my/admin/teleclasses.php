@@ -27,7 +27,8 @@ class CTSession
 			$fields[$key] = $val;
 		}
 		foreach($files as $key => $file) { 
-			$fields[$key] = '@'.$file['tmp_name'];
+				$fields[$key] = new CURLFile($file['tmp_name']);
+			//$fields[$key] = '@'.$file['tmp_name'];
 		}
 
 		$resource = curl_init();
@@ -74,6 +75,31 @@ class CTSession
 		return $body;
 	}
 	
+	function get($func) {
+		$sock = fsockopen("".$this->TLP_PREFIX."".$this->TLP_HOST, $this->TLP_PORT, $errno, $errstr, 30);
+		if (!$sock) die("$errstr ($errno)\n");
+
+		fwrite($sock, "GET /".$func." HTTP/1.0\r\n");
+		fwrite($sock, "Host: ".$this->TLP_HOST."\r\n");
+		fwrite($sock, "Content-type: application/json; charset=utf-8;\r\n");
+		fwrite($sock, "Content-length: " . strlen($str_data) . "\r\n");
+		fwrite($sock, "Cookie: ".$this->str_cookies."\r\n");
+		fwrite($sock, "\r\n");
+
+		$headers = "";
+		while ($str = trim(fgets($sock, 4096)))
+		$headers .= "$str\n";
+		//echo "\n";
+
+		$body = "";
+		while (!feof($sock)){
+			$body .= fread($sock, 4096);
+		}
+		fclose($sock);
+
+		return $body;
+	}
+
 	function filepost($func) {
 		$str_data = '';
 		$sock = fsockopen("".$this->TLP_PREFIX."".$this->TLP_HOST, $this->TLP_PORT, $errno, $errstr, 30);

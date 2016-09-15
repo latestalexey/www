@@ -736,6 +736,7 @@ function requestCntFileBrowser(arResult) {
 	});	
 	
 	if (contact == smuser.name) {
+		$('#cntfile_form').remove();
 		var html_str = 	
 				'<form id="cntfile_form" name="cntfile_form">' +	
 					'<div id="add_cntfile">' +
@@ -813,9 +814,8 @@ function requestCntFileBrowser(arResult) {
 			'queueSizeLimit' : 10,
 			'simUploadLimit' : 0,
 			'itemTemplate' : file_html,
-			'formData': {'action': 'send_cnt_file'},
+			'formData': {'action': 'Files_Upload', 'Category': 'userFiles'},
 			'onAddQueueItem': function(file_obj) {
-				console.log(file_obj);
 				var file_name = file_obj.name;
 				var fileUrl = file_name, parts, ext = ( parts = file_name.split("/").pop().split(".") ).length > 1 ? parts.pop() : "";
 				var file_size = Math.round(file_obj.size/1024);
@@ -833,6 +833,7 @@ function requestCntFileBrowser(arResult) {
 				});
 			},
 			'onUploadComplete' : function(file, data) {
+				console.log(data);
 				$('#cnt-fileinfo').hide(100);
 				var ext = ( parts = file.name.split("/").pop().split(".") ).length > 1 ? parts.pop() : "";
 				var obj = {
@@ -855,7 +856,25 @@ function requestCntFileBrowser(arResult) {
 			}
 		});
 		$('#cnt_view').on('click', '#del-user-file', function(){
-			console.log('del');
+			var obj = $(this).parents('.upfile');
+			var xhr = new XMLHttpRequest();
+			var body =	'action=Files_Delete' +
+						'&file_id=' + obj.attr('id').replace('fn_','');
+
+			xhr.open("POST", '/my/ajax/action.php', true);
+			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+			xhr.onreadystatechange = function() 
+			{ 
+				if (xhr.readyState != 4) return;
+				
+				if(!(xhr.responseText.indexOf('%err%') == -1)) {
+					showError(xhr.responseText.replace('%err%',''));
+					return;
+				}
+				console.log(xhr.responseText)
+				obj.parent('.msg_file').remove();
+			}
+			xhr.send(body);
 		});
 	});	
 };

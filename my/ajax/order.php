@@ -101,8 +101,8 @@ elseif($action == 'Documents_addNew')
 elseif($action == 'Documents_GetLastId')
 {
 	$receiver = $_POST["receiver"];
-	$query = "SELECT message_id FROM t_documents";
-	if (strlen($receiver)) $query = $query . " WHERE receiver = '$receiver'";
+	$query = "SELECT message_id FROM t_documents WHERE sender = '$user'";
+	if (strlen($receiver)) $query = $query . " AND receiver = '$receiver'";
 	$query = $query . " order by message_id desc limit 1";
 	$result = mysql_query ($query) or die (mysql_error());
 	$docid = mysql_result ($result,0);
@@ -179,16 +179,8 @@ elseif($action == 'Positions_SaveErrors')
 	require_once 'PHPExcel.php';
 	$phpexcel = new PHPExcel();
 	$page = $phpexcel->setActiveSheetIndex(0); 
-	$page->getStyle('A1:C1')->getFont()->setBold(true);
-	$page->setCellValue("A1", "Артикул");
-	$page->setCellValue("B1", "Наименование");
-	$page->setCellValue("C1", "Количество");
-	$page->getColumnDimension('A')->setWidth(20);
-	$page->getColumnDimension('B')->setWidth(50);
-	$page->getColumnDimension('C')->setWidth(20);
 	foreach($arError as $key=>$order){
 		++$key;
-		$key = ($key == 1 ? 2 : ++$key);
 		$page->setCellValue('A'.$key, $order[0], PHPExcel_Cell_DataType::TYPE_STRING);
 		$page->setCellValueExplicit('B'.$key, $order[1], PHPExcel_Cell_DataType::TYPE_STRING);
 		$page->setCellValue('C'.$key, $order[2], PHPExcel_Cell_DataType::TYPE_STRING);
@@ -224,10 +216,7 @@ elseif($action == 'Documents_delSentDoc')
 	$receiver = $_POST["receiver"];
 	$query = "DELETE FROM t_documents WHERE message_id=$docid AND sender='$user' AND receiver = '$receiver'";
 	$result = mysql_query ($query) or die (mysql_error());
-}
-elseif($action == 'MD5_Get')
-{
-	$hash = $TLP_obj->telecall('MD5',array('input'=>$_POST['message']));	
-	echo $hash;
 };
+
+
 ?>

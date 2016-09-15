@@ -15,20 +15,13 @@ $(document).ready(function()
 {
 	$("#item_list").css("height", $(".main_pan").height() - $("#items_header").height());
 	$('#ext_filters').height($('#ext_pan').height() - $('#ext_pan_header').height() - $('#ext_pan_topblock').height() -30);
-	$('.up_pan .up_add_menu .menu_content').remove();
-	$('.up_pan .up_add_menu').append('<div class="menu_content">\
-											<div style="margin: 0px 10px;">\
-												<p id="cat_dwlnd">Скачать текущий каталог контакта</p>\
-												<p id="cat_copy" >Скопировать текущий каталог в "Мой каталог"</p>\
-												<p id="cat_update">Загрузить/обновить товары в "Моем каталоге"</p>\
-											</div></div>');
+	//$('.up_pan .up_add_menu').addClass('hidden').siblings('#contact_filter').css('top','-8px');
 	$('#contact_filter, #exp_filter').css('display','none');
 	$('#contact_filter, #exp_filter').off();
 	
 	$('#contact_filter').css('display','inline-block');
 	$('#contact_filter').text('Показать МОЙ КАТАЛОГ');
 	hideExtPan();
-	hideMenuItems();
 	
 	var contact	= getActiveContact();
 	if(contact.id == undefined)	{
@@ -54,7 +47,6 @@ $(document).ready(function()
 		e.stopPropagation();
 		hideModalWindow($('.modal_window'));
 		$('.modal_back').remove();	
-		hideMenuItems();
 		if(!$('#contact_filter').hasClass('ext_selected')) {
 			getMyCatalogItems();
 		}
@@ -272,11 +264,12 @@ $(document).ready(function()
 			);
 			$.post('/my/ajax/action.php', { action: "getPersonInfo", "contact": smuser.name, "adds": "json" }, function(data) {
 				var arUser = JSON.parse(data);
-				if (arUser.catalog_shared == 1) {
+				var isShared = arUser.catalog_shared || 0;
+				if (isShared == 1) {
 					$('.teleport_links .share_link').addClass('active');
 					getSharedCatalog(smuser.name);
 				} else 
-				if (arUser.catalog_shared == 2)  {
+				if (isShared == 2)  {
 					$('.teleport_links .share_link').addClass('active');
 					$('.teleport_links .public_link').addClass('active');
 					getSharedCatalog(smuser.name);
@@ -286,10 +279,11 @@ $(document).ready(function()
 		} else {
 			$.post('/my/ajax/action.php', { action: "getPersonInfo", "contact": contact.name, "adds": "json" }, function(data) {
 				var arUser = JSON.parse(data);
-				if (arUser.catalog_shared == 2) {
+				var isShared = arUser.catalog_shared || 0;
+				if (isShared == 2) {
 					getSharedCatalog(contact.name);
-				} else if (arUser.catalog_shared == 0) {
-					showTelebotInfo('Извините, но в настоящее время выбранный контакт не открыл доступ для скачивания своего каталога.','',5000);
+				} else if (isShared == 0) {
+					showTelebotInfo('В настоящее время выбранный контакт не открыл доступ для скачивания своего каталога.','',5000);
 					return;
 				};
 				showModalWindow($('#download_cat'));
@@ -297,7 +291,7 @@ $(document).ready(function()
 		};
 		
 		function getDownloadButtons(contact){
-			var href = window.location.protocol+'//'+window.location.hostname+'/Catalog_GetSharedCatalog?contact='+contact+'&catalog_type=';
+			var href = 'https://wbs.e-teleport.ru/Catalog_GetSharedCatalog?contact='+contact+'&catalog_type=';
 			$('#main_content').append(
 					'<div id="download_cat" class="modal_window">' +
 						'<div class="close_line"><div class="clw"><img src="/include/close_window.svg"/></div></div>' +
@@ -324,7 +318,7 @@ $(document).ready(function()
 		
 		function getSharedCatalog(contact){
 			$('#download_cat .link-block').remove();
-			var href = window.location.protocol+'//'+window.location.hostname+'/Catalog_GetSharedCatalog?contact='+contact+'&catalog_type=';
+			var href = 'https://wbs.e-teleport.ru/Catalog_GetSharedCatalog?contact='+contact+'&catalog_type=';
 			$('#download_cat').append( 
 				'<div class="link-block">' +
 					'<span>Ссылка на каталог в формате Teleport</span>' + 
@@ -363,8 +357,7 @@ $(document).ready(function()
 			if (shared_link_len && !public_link_len) {
 				catalog_shared = 1;
 			};
-			
-			$.post("/my/ajax/action.php", {"action": "setPersonInfo", "Request_JSON":{"catalog_shared":1}},  function(data){
+			$.post("/my/ajax/action.php", {"action": "setPersonInfo", "catalog_shared":catalog_shared},  function(data){
 				$('#download_cat .link-block').remove();
 				if (catalog_shared) {
 					getSharedCatalog(smuser.name);
@@ -556,15 +549,33 @@ $(document).ready(function()
 	});
 });
 
-function hideMenuItems(){
+function hideMenuItems(has_catalog){
+	$('#contact_filter').css('top','-8px');
+	$('.up_pan .up_add_menu').removeClass('hidden').children('.menu_content').remove();
 	var contact = getActiveContact();
+	var html_str = '';
 	if (contact.id == undefined) {
-		$('#cat_copy').hide(); 
-		$('#cat_update').show()
+		html_str = '<div class="menu_content">\
+						<div style="margin: 0px 10px;">\
+							<p id="cat_dwlnd">Скачать текущий каталог контакта</p>\
+							<p id="cat_update">Загрузить/обновить товары в "Моем каталоге"</p>\
+						</div>\
+					</div>';
 	} else {
-		$('#cat_copy').show(); 
-		$('#cat_update').hide()
+		if (!has_catalog) {
+			$('.up_pan .up_add_menu').addClass('hidden');
+			if ($('#m_catalog').hasClass('active')) { $('#contact_filter').css('top','4px'); };
+		} else {
+			html_str = '<div class="menu_content">\
+							<div style="margin: 0px 10px;">\
+								<p id="cat_dwlnd">Скачать текущий каталог контакта</p>\
+								<p id="cat_copy" >Скопировать текущий каталог в "Мой каталог"</p>\
+							</div>\
+						</div>';
+		};
 	};
+	$('.up_pan .up_add_menu').append(html_str);
+	
 };
 
 function CatCopy(update_params) {
@@ -661,6 +672,7 @@ function initContactItems(){
 			}
 			var arResult = jQuery.parseJSON(xhr.responseText);
 			if(!arResult.has_catalog) {
+				hideMenuItems(0);
 				if(contact.id == smuser.id) {
 					showTelebotInfo('У вас нет своего каталога. Чтобы узнать, как его завести ознакомтесь с\
 					<br>\
@@ -675,6 +687,7 @@ function initContactItems(){
 				}	
 			}
 			else { 
+				hideMenuItems(1);
 				if(!arResult.allow_stocks)
 				{
 					$('.col_4').remove();
@@ -685,10 +698,9 @@ function initContactItems(){
 				}
 				getSelectedContactItems(item_nom, items_filter);
 			}
-				
-		}		
+		}
 		xhr.send(body);
-	}	
+	}
 }
 function getSelectedContactItems(it_nom, it_filter) {
 	noItems = false;
@@ -1364,7 +1376,6 @@ function addItemToNewDoc(Item, contact) {
 			hash: message.docHeader.hash
 			}, 
 			function(data) {
-				//console.log(data);
 				getItemPosInfo();
 			}
 		);

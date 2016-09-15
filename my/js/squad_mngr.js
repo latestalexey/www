@@ -117,7 +117,7 @@ function addSquadManagerEvents(){
 		if($(this).prev('input').css('display') == 'none') {
 			$(this).css('border-radius', '0 5px 5px 0');
 			$(this).prev('input').css('display', 'inline-block');
-			$(this).prev('input').animate({'width': 300}, 300);
+			$(this).prev('input').animate({'width': 400}, 300);
 			$(this).prev('input').focus();
 			$(this).html('<svg class="transform_icon" fill="#777" height="32" viewBox="0 0 24 24" width="32" xmlns="http://www.w3.org/2000/svg">\
 						<path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path>\

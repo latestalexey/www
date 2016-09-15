@@ -579,8 +579,7 @@
 }
 
 #order_view .modal_window.item_sel {
-	left: 0;
-	margin-top: 53px;
+	left: 10px;
 	overflow: hidden !important;
 }
 
@@ -611,7 +610,6 @@
 /*           DocItems Table                 */
 #order_view  .order_positions {
 	width: 99%;
-    height: auto;
 	clear: both;
 	overflow: hidden;
 	overflow-x: auto;
@@ -790,6 +788,8 @@
 
 #order_view .order_item_list_content {
 	display: block;
+	width: 100% !important;
+	height: auto !important;
     font-family: 'Open Sans', Arial, Helvetica, sans-serif;
     font-weight: 600;
 }
@@ -799,7 +799,7 @@
 	border-left: 1px solid #ccc;
 	border-radius: 3px;
 	margin-bottom: 3px;
-	display: table;
+	display: flex;
 	width: 99.8% !important;
 }
 
@@ -834,6 +834,7 @@
 #order_view .order_positions .col_0 {
 	width: 40spx !important;
 	min-width: 40px !important;
+	max-width: 40px !important;
 }
 
 #order_view .order_positions .col_1 {
@@ -962,8 +963,8 @@ div#UserDocList .UserDocItem:hover {
 	display: inline-block;
 }
 
-#uploadifive-xls_upl/*,.uploadifive-queue-item*/
- {
+#uploadifive-xls_upl,
+#uploadifive-xls_upl-queue .uploadifive-queue-item  {
 	display: none !important;
 }
 
@@ -1034,4 +1035,8 @@ div#UserDocList .UserDocItem:hover {
     top: 0;
     left: 0;
 	background: rgba(249, 249, 249, 0.8);
+}
+
+#order_view .modal_window .slimScrollDiv {
+	border-left: 0;
 }

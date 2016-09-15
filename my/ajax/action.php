@@ -213,7 +213,7 @@ elseif($action == 'send_msg')
 	if (!empty($_FILES['Filedata'])) {
 	
 		$fileInfo = pathinfo($_FILES['Filedata']['tmp_name']);
-		$newName = $fileInfo['dirname']."\\".$_FILES['Filedata']['name'];
+		$newName = $fileInfo['dirname']."/".$_FILES['Filedata']['name'];
 		rename($_FILES['Filedata']['tmp_name'],$newName);
 		
 		$files[$fileInfo['extension'].'File']['tmp_name'] = $newName;
@@ -223,25 +223,21 @@ elseif($action == 'send_msg')
 	$res = $TLP_obj->datapost('Messages_Send', $arParam);
 
 	$res = json_decode($res, true);
-	if (array_key_exists("errCode",$res)) {
-		if($res['errCode'] === 0)
-		{
-			$msg_object = $res['retval'][0];
-			$tz_pos = stripos($msg_object['dt'],'+');
-			if(!$tz_pos === false) {
-				$msg_object['dt'] =substr($msg_object['dt'], 0, $tz_pos);
-			}
-			if($msg_object['msg_text'] == '') {
-				$msg_object['msg_text'] = htmlspecialchars($_POST["message"]);
-			}
-			$msg_object['tmpGUID'] = ($_POST["tmpGUID"] == "")?(""):($_POST["tmpGUID"]);
-			echo json_encode(array($msg_object));
+	if($res['errCode'] == 0)
+	{
+		$msg_object = $res['retval'][0];
+		$tz_pos = stripos($msg_object['dt'],'+');
+		if(!$tz_pos === false) {
+			$msg_object['dt'] =substr($msg_object['dt'], 0, $tz_pos);
 		}
-		else
-		{echo '%err%КОД: '.$res['errCode'].' '.$TLP_obj->mistakes[$res['errCode']];}
-	} else {
-		echo '%err%Ошибка при отправке сообщения. Обратитесь в службу поддержки';	
-	}	
+		if($msg_object['msg_text'] == '') {
+			$msg_object['msg_text'] = htmlspecialchars($_POST["message"]);
+		}
+		$msg_object['tmpGUID'] = ($_POST["tmpGUID"] == "")?(""):($_POST["tmpGUID"]);
+		echo json_encode(array($msg_object));
+	}
+	else
+	{echo '%err%КОД: '.$res['errCode'].' '.$TLP_obj->mistakes[$res['errCode']];}
 }
 elseif($action == 'resend_msg') //TODO
 {
@@ -1522,7 +1518,7 @@ elseif($action == 'setPersonInfo')
 		"allow_prices", "information", "deny_msgs", "deny_orders", "deny_files", "forward_to", "delivery_possible", "address", 
 		"address_GPS", "delivery_info", "company_INN", "company_KPP", "company_OGRN", "company_account", "company_BIK",
 		"company_bank", "company_coraccount", "company_chief", "company_buh", "company_phone", "company_activitytypes", "company_address", 
-		"company_logo", "photo");
+		"company_logo", "photo", "catalog_shared");
 
 	$arParam = array();
 	$photo_filename = "";
@@ -1643,7 +1639,34 @@ elseif($action == 'FindPersons')
 			echo $strPersons;
 		}	
 	}
-
-
+elseif($action == 'Files_Upload')
+	{
+		$arFnc = array();
+		foreach ($_POST as $key => $value) 
+		{
+			if(!($key == 'action'))
+				{$arFnc[$key] = $value;}
+		}	
+		$arParam = array('post'=>$arFnc);
+		$files = array();
+		
+		if (!empty($_FILES['Filedata'])) {
+		
+			$fileInfo = pathinfo($_FILES['Filedata']['tmp_name']);
+			$newName = $fileInfo['dirname']."/".$_FILES['Filedata']['name'];
+			rename($_FILES['Filedata']['tmp_name'],$newName);
+			
+			$files[$fileInfo['extension'].'File']['tmp_name'] = $newName;
+			$files[$fileInfo['extension'].'File']['filename'] = $_FILES['Filedata']['name'];
+		}	
+		$arParam['files'] = $files;
+		$res = $TLP_obj->datapost('files/load', $arParam);
+		print_r($res);
+	}
+elseif($action == 'Files_Delete')
+	{
+		$res = $TLP_obj->get('files/delete/'.$_POST['file_id'].'?format=json&Category=userFiles');
+		print_r($_POST['file_id']);
+	}
 
 ?>

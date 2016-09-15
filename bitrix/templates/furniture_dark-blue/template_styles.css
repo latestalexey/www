@@ -1192,7 +1192,7 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 }	
 
 .it_filter_value  .checkbox, .it_filter  .checkbox, .doc_filter_value  .checkbox  {
-    display: inline-block;
+    float: left;
     border: 1px solid #CCC;
     border-radius: 5px;
     margin: 0 10px 0 0;
@@ -1205,14 +1205,13 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 }
 
 .it_filter_value  .enum_name, .it_filter  .filter_name, .doc_filter_value  .enum_name {
-    display: inline-block;
+    float: left;
     vertical-align: bottom;
     height: 20px;
 	cursor: pointer;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-	width: 90%;
 }
 .it_category .it_filter, .it_category .it_filter_enum, .it_category .empty_cat{
 	display: none;
@@ -1793,10 +1792,11 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 }
 
 #order_view {
+	width: 96%;
 	height: 92%;
 	overflow: hidden;
-	position: relative;
-	top: -98%;
+	position: absolute;
+	top: 4%;
 	margin: 0 30px;
 	font-family: 'Open Sans', Arial, Helvetica, sans-serif;
 	font-weight: 600;
@@ -1806,7 +1806,7 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 	text-align: center;
 }
 .order_item_list {
-overflow: auto;
+	overflow: auto;
 }
 
 .order_header {

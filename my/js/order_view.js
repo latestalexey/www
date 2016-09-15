@@ -855,20 +855,22 @@ function initDocView(arDoc, sender, receiver) {
 			'onAddQueueItem': function() {	
 				$('#upl_xls').removeClass('success danger error');
 				var html_text = 'Пожалуйста, подождите.<br> Идет обработка документа.';
-				showTelebotInfo(html_text,"", 0);	
+				showTelebotInfo(html_text,"", 0);
 				$('#main_content').append('<div class="modal_bg"></div>');
 				$('.dark-tooltip').hide();
 			},
 			'onUploadComplete' : function(file, data) {
-				var arPos = [];
+				console.log(data);
 				try {
-					arPos = JSON.parse(data);
+					var arPos = JSON.parse(data);
 				} catch (e) {
-					arPos = [];
+					var arPos = [];
 					console.log(e);
-				};			
+				};
+				console.log(arPos);
 				if (arPos.length && (arPos[0].length == 3)) {
 					delete arPos[0];
+					console.log(arPos);
 					var  article_str = '';
 					arPos.forEach(function(val, key, arPos){
 						article_str = article_str + '"' + val[0] + '",';
@@ -887,7 +889,7 @@ function initDocView(arDoc, sender, receiver) {
 					xhr.open("POST", '/my/ajax/action.php');
 					xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 					xhr.onreadystatechange = function() { 
-						if (xhr.readyState != 4) return;	
+						if (xhr.readyState != 4) return;
 						if(!(xhr.responseText.indexOf('%err%') == -1)) {
 							showError(xhr.responseText.replace('%err%',''));
 							return;
@@ -949,7 +951,7 @@ function initDocView(arDoc, sender, receiver) {
 								$('#order_view #dialog').fadeOut(300);
 								if ($(this).hasClass('yes')) {
 									$.post('/my/ajax/order.php', { action: 'Positions_SaveErrors', arError: JSON.stringify(arErr), filename: file.name}, function(fname){
-										var html_text = 'Скачать файл с незагруженными позициями можно по <a href="/my/ajax/order.php?action=Positions_DownloadErrors&filename='+fname+'" target=_blank>ссылке</a>';
+										var html_text = 'Скачать файл с незагруженными позициями можно по <a href="/my/ajax/order.php?action=Positions_DownloadErrors&filename='+fname+'" target=_blank>cсылке</a>';
 										showTelebotInfo(html_text,"", 0);
 										$('#telebot_msg').on('click', 'a', function(){
 											hideTelebotInfo();
@@ -1171,7 +1173,7 @@ function setOrderItemListContentHeight(){
 	h = h>0 ? h : 0;
 	$('#order_view .order_positions .order_item_list_content').slimScroll({height: h, size: '7px', disableFadeOut: false});
 	$('#order_view .order_positions .slimScrollDiv').height(h);
-	$('#order_view .order_positions .order_item_list_content').height(h);
+	$('#order_view .order_positions .order_item_list_content').css('max-height',h);
 	
 	$('#order_view .order_positions .item_list_header td').each(function(i){
 		var headerWidth = $(this).width() || 0;
@@ -1184,7 +1186,7 @@ function setOrderItemListContentHeight(){
 
 $(window).resize(function() {
 	if ($('#order_view').length) {
-		setOrderItemListContentHeight();
+		setTimeout("setOrderItemListContentHeight()",200);
 	}
 });
 
@@ -1212,7 +1214,6 @@ function showPosList(obj, contact){
 				return;
 			};
 			var item = JSON.parse(xhr.responseText);	
-			console.log(xhr.responseText);
 			if (item.catalog.length) {	
 				var html_str = '';	
 				$.each(item.catalog, function(key, item){
@@ -1223,9 +1224,10 @@ function showPosList(obj, contact){
 				?
 				$('.modal_window.item_sel .items_short').html(html_str)
 				:
-				obj.closest('.item.input_row').append('<div class="modal_window item_sel"><div class="items_short">'+html_str+'</div></div>');
+				obj.closest('.order_item_list_head').append('<div class="modal_window item_sel"><div class="items_short">'+html_str+'</div></div>');
 				$('.modal_window.item_sel').slideDown(100);
-				$('.modal_window.item_sel').width($('.input_row .col_1_2').width()).css('left', $('.item.input_row .col_0').width()+30);
+				console.log($('.input_row .col_1_2'));
+				$('.modal_window.item_sel').width($('.input_row .col_1_2')[0].clientWidth+$('.input_row .col_0')[0].clientWidth-18);
 				setTimeout(function(){
 					var item_sel_height = (item.catalog.length*43>300) ? 300 :  item.catalog.length*43;
 					$('.modal_window.item_sel').height(item_sel_height);
