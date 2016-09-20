@@ -25,7 +25,7 @@ else {
 ?>	
 <div id="back-window"> <!--min-height: 650px; -->
 	<div id="big_logo"></div>
-	<div style="margin: 50px 0 0 0; text-align: center;">
+	<div style="margin: 20px 0 0 0; text-align: center;">
 		<img src="/include/teleport_header.png">
 		<div style="font-size: 22px; margin-top: 20px; text-align: center; color: #0e9487;">Clients Environment Optimization</div>
 		<hr>
