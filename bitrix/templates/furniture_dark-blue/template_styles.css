@@ -53,12 +53,35 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 	z-index: 9998;
 }
 /*login*/
-#back-window {min-height: 650px; width: 100%; position: absolute; top: 0px; left: 0px;}
-.regs {background-color: #607D8B; opacity: 0.8; z-index: 20;}
+#back-window {width: 100%; position: absolute; top: 0px; left: 0px; text-align:center;} /*min-height: 650px; */
+/*.regs {background-color: #607D8B; opacity: 0.8; z-index: 20;}
 .usl {background-color: transparent; background-image: url(/include/back.svg); background-repeat:repeat;}
+*/
 
-#login-window, #restore-window {position: relative; top: 150px; left: 0px; margin: 0 auto 0 auto; width: 300px;}
+#login-window, #restore-window {position: fixed; top: 5px; right: 5px; margin: 0 auto 0 auto; width: 300px;}
 /*#logincontent {width: 300px; }*/
+
+
+#all_search_button {
+	position: absolute; top: 2px; right: 2px; background-color: #FFF; cursor: pointer;
+}
+#all_search_button:hover {
+	background-color: #0e9487;
+}
+#all_search_button svg:hover {
+	fill: #FFF;
+}
+.block_menu {
+	display: inline-block;
+	min-width: 280px;
+	cursor: pointer;
+	border-radius: 5px;
+	padding: 10px;
+}
+.block_menu:hover {
+	background-color: #0e9487;
+	color:#FFF;
+}
 
 .checkbox {
 	border: 1px solid #777;
@@ -77,7 +100,13 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 	background-image: url(/include/checked.svg);
 }
 /*Confirmation*/
-#confirmation {text-align: center; color: #FFFFFF; padding-top: 70px; min-height: 650px;}
+#confirmation {text-align: center; color: #FFFFFF; padding-top: 70px; min-height: 650px;
+    position: absolute; top: 0; left: 0;
+	background-color: #607D8B; opacity: 0.8; z-index: 20;
+    width: 100%;
+    height: 100%;
+    z-index: 900;
+	}
 #confirmation a {color: #FFFFFF; text-decoration: underline;}
 #confirmation a:hover, #confirmation_g a:hover {color: #FF6E53; text-decoration: underline;}
 
@@ -181,6 +210,7 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 .submitbutton {background-color: transparent; border: 0px; font-weight: bold; font-size: 14px; border-bottom: 3px solid #26A69A; color: #26A69A; cursor: pointer;}
 
 #logo {width: 40px; height: 40px; float:left; background-image: url(/include/logo64.png); background-repeat: no-repeat; background-size: contain; margin: 5px 0 5px 10px;}
+#big_logo {width: 128px; height: 128px; position:absolute; background-image: url(/include/logo128.png); background-repeat: no-repeat; background-size: contain; margin: 5px 0 5px 10px;}
 
 #login_block {height: 43px; float: right;	margin: 5px 10px 5px 0; cursor: pointer;}
 #login_image {text-align:center;}
@@ -200,6 +230,11 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 .reg_error_field {border: 1px solid #FF0000;}
 .header_text {text-align: center; color: #444;}
 
+#regsubmit { 
+	padding: 10px 30px;
+    font-weight: 600;
+	color: #777;
+}	
 #main_content{
 	/*background-color: #CFD8DC;*/
 	background-color: #607D8B;
