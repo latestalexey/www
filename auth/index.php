@@ -27,8 +27,8 @@ else {
 	<div id="big_logo"></div>
 	<div style="margin: 20px 0 0 0; text-align: center;">
 		<img src="/include/teleport_header.png">
-		<div style="font-size: 22px; margin-top: 20px; text-align: center; color: #0e9487;">Clients Environment Optimization</div>
-		<hr>
+		<div style="font-size: 24px; margin-top: 20px; text-align: center; color: #0e9487; font-family: 'Open sans';">Clients Environment Optimization</div>
+		<hr style="width: 950px; border: 1px solid #ff6600;">
 	</div>
 	<div style="margin: 20px 0 0 0;">
 		<div style="font-size: 22px; margin-top: 7px; text-align: center; color: #FF6600; font-family: 'Open sans'; font-weight: 600;">Товары от производителей и импортеров по оптовым ценам</div>
