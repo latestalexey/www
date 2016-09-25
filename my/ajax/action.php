@@ -1386,16 +1386,16 @@ elseif($action == 'getPersonInfo')
 			
 			
 			<div id="buttons" class="cnt_headline">
-				<div id="cnt_info_docs" style="display: inline-block; min-width: 150px; margin: 0 46px 0 0;" class="menu_button">Файлы профиля</div>
+				<div id="cnt_info_docs" style="display: inline-block; margin: 0 33px 0 5px;" class="menu_button">Файлы профиля</div>
 				<?if($arResult['user_status'] == 'saler') {?>
-					<div id="cnt_info_add" style="display: inline-block; min-width: 150px; margin: 0 46px 0 0;" class="menu_button">Доставка</div>
+					<div id="cnt_info_add" style="display: inline-block; margin: 0 33px 0 0;" class="menu_button">Доставка</div>
 				<?}?>	
 				<?if ($mySettings) {?>	
-					<div id="cnt_info_settings" style="display: inline-block; min-width: 150px; margin: 0;" class="menu_button">Настройки</div>
+					<div id="cnt_info_settings" style="display: inline-block; margin: 0;" class="menu_button">Настройки</div>
 				<?}?>
 			</div>
 			<?if ($mySettings) {?>	
-				<div id="cnt_info_save" style="display: none; min-width: 150px; margin: 15px 0 0 0;" class="menu_button">Сохранить</div>
+				<div id="cnt_info_save" style="display: none; margin: 15px 5px 0 5px;" class="menu_button">Сохранить</div>
 			<?}?>
 						
 		<?}

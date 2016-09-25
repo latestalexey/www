@@ -1373,7 +1373,9 @@ function removeCurrentContact() {
 function MyUserLogout() {
 	var xhr = new XMLHttpRequest();
 	var body =	'action=logout';
-	
+	$('#content').append('<div id="back-window">\
+				<img src="/include/wait.gif">\
+				</div>');
 	if(typeof(Storage) !== "undefined") {
 		sessionStorage.clear();
 		localStorage.removeItem('tlpGreeting');

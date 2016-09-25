@@ -560,7 +560,7 @@ $(document).ready(function() {
 				'<div style="margin-top: 5px;">' +
 					'<input class="cnt_inp" type="text" placeholder="Введите e-mail нового контакта" name="new_cntname" value=""/>' +
 					'<div class="reg_error" style="display: none; padding-top: 10px;"></div>' +
-					'<div class="search_result" data-last-value=""></div>' +
+					'<div class="search_result" data-last-value="" style="display: none;"></div>' +
 				'</div>' + 
 				'<div style="font-size: 13px; font-weight: 600; margin: 10px 0 3px 0;">Сообщение для контакта</div>' + 
 				'<div><textarea id="new_cntmsg">'+smuser.fullname+' предлагает вам присоединиться к списку своих контактов в системе TELEPORT.</textarea></div>' +

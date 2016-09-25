@@ -30,7 +30,7 @@ else {
 	<div class="close_line" style="<?=$cl_style;?>"><div class="clw"><img src="/include/close_window.svg"/></div></div>
 	<div id="logincontent">
 		<div id="main_form">
-			<div class="header">Войти в Ваш личный кабинет</div>
+			<div class="header">Войти в личный кабинет</div>
 			<form id="login_form" method="post" action="#">
 				<input id="email" class="loginfields" type="text" name="email" value="<?=$arPass[0];?>" placeholder="e-mail (электронная почта)"/>
 				<input id="password" class="loginfields" style="margin-top: 20px;" type="password" name="password" value="" placeholder="Пароль"/>
