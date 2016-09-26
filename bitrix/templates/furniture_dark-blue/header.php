@@ -42,6 +42,8 @@ else
 <script type="text/javascript" src="<?=SITE_TEMPLATE_PATH?>/js/jquery.js"></script>
 <script type="text/javascript" src="<?=SITE_TEMPLATE_PATH?>/js/slimscroll.js"></script>
 <script type="text/javascript" src="<?=SITE_TEMPLATE_PATH?>/js/jquery-ui.js"></script>
+<script type="text/javascript" src="<?=SITE_TEMPLATE_PATH?>/js/jquery.inputmask.js"></script>
+
 </head>
 
 <body>

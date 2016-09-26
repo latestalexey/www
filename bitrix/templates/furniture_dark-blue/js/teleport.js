@@ -436,7 +436,7 @@ function ContactInfoView(name) {
 			var str_html = strwindow + xhr.responseText;
 			$('#cnt_view').append(str_html);
 			showModalWindow($('#cnt_view'));
-			
+			$("#cnt_view #inf_phone").inputmask("+7(999) 999-99-99");
 			$('#cnt_view #cnt_photo').on('click',function(e){
 				if($(e.target).parents().is('#add_photo')) {
 					e.stopPropagation();
@@ -1373,9 +1373,7 @@ function removeCurrentContact() {
 function MyUserLogout() {
 	var xhr = new XMLHttpRequest();
 	var body =	'action=logout';
-	$('#content').append('<div id="back-window">\
-				<img src="/include/wait.gif">\
-				</div>');
+	
 	if(typeof(Storage) !== "undefined") {
 		sessionStorage.clear();
 		localStorage.removeItem('tlpGreeting');
