@@ -30,8 +30,7 @@ $(document).ready(function(e)
 	$('.up_pan .up_add_menu .menu_content').remove();
 	$('.up_pan .up_add_menu').append('<div class="menu_content">\
 											<div style="margin: 0px 10px;">\
-												<p id="search_msg_files" onclick="">Показать все файлы в сообщениях контакта</p>\
-												<p id="search_msg_myfiles" onclick ="">Показать мои файлы в сообщениях контакта</p>\
+												<p id="search_msg_files" onclick="">Показать файлы в сообщениях контакта</p>\
 											</div></div>');
 	$('#contact_filter, #exp_filter').css('display','none');
 	$('#contact_filter, #exp_filter').off();
