@@ -101,8 +101,8 @@ elseif($action == 'Documents_addNew')
 elseif($action == 'Documents_GetLastId')
 {
 	$receiver = $_POST["receiver"];
-	$query = "SELECT message_id FROM t_documents WHERE sender = '$user'";
-	if (strlen($receiver)) $query = $query . " AND receiver = '$receiver'";
+	$query = "SELECT message_id FROM t_documents";
+	if (strlen($receiver)) $query = $query . " WHERE receiver = '$receiver'";
 	$query = $query . " order by message_id desc limit 1";
 	$result = mysql_query ($query) or die (mysql_error());
 	$docid = mysql_result ($result,0);
@@ -142,13 +142,10 @@ elseif($action == 'Documents_GetById')
 elseif($action == 'Documents_getItemPosInfo')
 {	
 	$receiver = $_POST["receiver"];
-	$query = "SELECT message  FROM t_documents WHERE sender='$user' and receiver = '$receiver'";
+	$query = "SELECT message FROM t_documents WHERE sender='$user' and receiver = '$receiver' order by message_id desc limit 1";
 	$result = mysql_query ($query) or die (mysql_error());
-	$data = array();
-	while($row=mysql_fetch_assoc($result)) {
-		array_push($data, json_decode($row['message']));
-	};
-	echo json_encode_cyr($data);
+	$data = mysql_result ($result,0);
+	echo $data;
 }
 elseif($action == 'upl_pos_from_xls')
 {

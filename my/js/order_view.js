@@ -611,7 +611,7 @@ function initDocView(arDoc, sender, receiver) {
 	//Выпадающий список позиций
 	$('#order_view .order_positions .input_col').keydown(function(e) {	
 		var obj = $(this);
-		var item_sel = obj.closest('.input_row').children('.modal_window.item_sel');
+		var item_sel = $('.modal_window.item_sel');
 		if(e.which == 38 && item_sel.length) {			
 			$('.item:not(:first-child).selected', item_sel).removeClass('selected').prev().addClass('selected');
 			var position = $('.item.selected', item_sel).position().top;
@@ -996,6 +996,9 @@ var delay = (function(){
 })();
 
 function sendDoc (message, receiver, delID) {
+	$('#order_view').append('<div class="modal_bg" style="width:100%; height:100%; z-index:9999;">\
+								<div style="position:absolute; top:40%; width:100%; text-align:center;"><img src="/include/wait.gif"><br>Отправка документа</div>\
+							</div>');
 	docid = message.docHeader.id;
 	if (delID) { message.docHeader.id='' };
 	var xhr = new XMLHttpRequest();
@@ -1007,17 +1010,20 @@ function sendDoc (message, receiver, delID) {
 	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 	xhr.onreadystatechange = function() 
 	{ 
+		$('#order_view').remove('.modal_bg');
 		if (xhr.readyState != 4) return;
 		if(!(xhr.responseText.indexOf('%err%') == -1)) {
 			showError(xhr.responseText.replace('%err%',''));
 			return;
 		};	
 		var new_Doc = JSON.parse(xhr.responseText);
-		if (new_Doc.length) {
+		if (new_Doc[0].ID.length) {
+			var doc_num = JSON.parse(new_Doc[0].msg_text).docHeader.num;
 			var obj = $('#order_li .order[data-order-id='+docid+']');
 			$('.col_4', obj).text(number_format(message.docHeader.sum, 2, '.', ' '));	
 			$('.col_5', obj).text(docStatus[message.docHeader.status]);		
 			if (delID) {
+				$('.col_1', obj).text(doc_num);
 				obj.attr('id', new_Doc[0].ID).attr('data-order-id', new_Doc[0].ID).removeClass('new');
 				$.post('/my/ajax/order.php', {action: 'Documents_delSentDoc', message_id: docid, receiver: receiver});
 			};
@@ -1191,19 +1197,18 @@ $(window).resize(function() {
 });
 
 function showPosList(obj, contact){
-	console.log(obj.val());
 	if(!(contact == undefined)){
 		var arr_fld = ['*'];
-		it_filter = [{"mode": "item", "name":"name", "operation":"LIKE", "value": +obj.val()}];
+		var it_filter = [{"mode": "item", "group": "OR", "name":"name", "operation":"LIKE", "value": obj.val()},
+					 {"mode": "item", "group": "OR", "name":"article", "operation":"LIKE", "value": obj.val()}];		 
 		var xhr = new XMLHttpRequest();
-		var body =	'action=catalog_get' +
+		var body =  'action=catalog_get' +
 					'&adds=json' +
 					'&contact=' + encodeURIComponent(contact) +
-					'&filters=' + encodeURIComponent(JSON.stringify(it_filter)) +
 					'&fields=' + encodeURIComponent(JSON.stringify(arr_fld)) +
+					'&filters=' + encodeURIComponent(JSON.stringify(it_filter)) +
 					'&limit=30' + 
-					'&nom=1';
-
+					'&nom=1';		
 		xhr.open("POST", '/my/ajax/action.php', true);
 		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 		xhr.onreadystatechange = function() { 
@@ -1226,10 +1231,9 @@ function showPosList(obj, contact){
 				:
 				obj.closest('.order_item_list_head').append('<div class="modal_window item_sel"><div class="items_short">'+html_str+'</div></div>');
 				$('.modal_window.item_sel').slideDown(100);
-				console.log($('.input_row .col_1_2'));
 				$('.modal_window.item_sel').width($('.input_row .col_1_2')[0].clientWidth+$('.input_row .col_0')[0].clientWidth-18);
 				setTimeout(function(){
-					var item_sel_height = (item.catalog.length*43>300) ? 300 :  item.catalog.length*43;
+					var item_sel_height = (item.catalog.length*43>300) ? 300 :  item.catalog.length*50;
 					$('.modal_window.item_sel').height(item_sel_height);
 					var h = $('.modal_window.item_sel').height();
 					$('.modal_window.item_sel .items_short').slimScroll({height: h, size: '7px', disableFadeOut: false});				

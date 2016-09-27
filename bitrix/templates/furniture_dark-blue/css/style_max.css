@@ -586,6 +586,7 @@
 #order_view .order_positions  .modal_window .items_short,
 #order_view .modal_window .items_short .item,
 #order_view .modal_window.item_sel .col_2 {
+	width: 99% !important;
     border-right:0;
 	text-align: left;
 	box-shadow: none;
@@ -1039,4 +1040,160 @@ div#UserDocList .UserDocItem:hover {
 
 #order_view .modal_window .slimScrollDiv {
 	border-left: 0;
+}
+
+#detail_info_window  {
+	position: relative;
+}
+
+#detail_info_window  .fa-pencil-square-o {
+	cursor: pointer; 
+	margin-left: 15px; 
+	font-size: 36px; 
+	color: #777;
+	line-height: 40px;
+}
+
+#detail_info_window  .fa-pencil-square-o:hover {
+	color: #26A69A;
+}
+
+#detail_info_window .item_detail_block_edit {
+	width: 740px;
+	height: 400px;
+	position: absolute;
+	top: 45px;
+	padding: 5px;
+	background: #f4f4f4;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+}
+
+#detail_info_window .item_detail_block_edit  .close {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    text-align: center;
+    border: 1px solid transparent;
+    cursor: pointer;
+    border-radius: 12px;
+}
+
+#detail_info_window .item_detail_block_edit  .close:hover {
+    border: 1px solid #777;
+}
+
+#detail_info_window .item_detail_block_edit  .right-column .button  {
+	left: 0;
+	padding: 5px 15px;
+}
+
+#detail_info_window .item_detail_block_edit  .right-column .button.catalog  {
+	margin-right: 30px;
+}
+
+#detail_info_window .item_detail_block_edit  .right-column .button.active  {
+	border-color: #26A69A !important;
+	background: #26A69A !important; 
+	color: #fff;
+}
+
+#detail_info_window .item_detail_block_edit  .right-column .catalog-block,
+#detail_info_window .item_detail_block_edit  .right-column .properties-block {
+	height: 180px;
+	border: 1px solid #ccc;
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+#detail_info_window .item_detail_block_edit  .button.save-item-detail  {
+	left: 0;
+	padding: 10px 30px;
+	font-weight: 600;
+	display: block;
+    clear: both;
+    width: 120px;
+    margin: 0 auto;
+}
+
+#detail_info_window .item_detail_block_edit .item-photo {
+	width: 270px;
+	height: 250px;
+	background-position: top center;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+#detail_info_window  .item_detail_block_edit .im_it_line {
+    position: absolute;
+    top: -10px;
+    left: 10px;
+}
+
+#detail_info_window  .item_detail_block_edit .im_it_line div {
+    display: inline-block;
+}
+
+#detail_info_window .item_detail_block_edit .left-column,
+#detail_info_window .item_detail_block_edit .right-column {
+	float: left;
+	position: relative;
+	padding: 15px;
+	box-sizing: border-box;
+	margin-bottom: 15px;
+}
+
+#detail_info_window .item_detail_block_edit .left-column {
+	width: 300px;
+	min-height: 1px;
+}
+
+#detail_info_window .item_detail_block_edit .right-column {
+	width: 440px;
+	text-align: left;
+}
+
+#detail_info_window .item_detail_block_edit .item-catalog,
+#detail_info_window .item_detail_block_edit .item-prop {
+	padding: 10px 0;
+	text-align: left;
+}
+
+#detail_info_window .item_detail_block_edit input,
+#detail_info_window .item_detail_block_edit textarea {
+	padding: 5px 10px;
+	border: 1px solid #ccc;
+	border-radius: 3px;
+	width: 200px;
+
+}
+
+#detail_info_window .item_detail_block_edit textarea {
+	resize: none;
+	height: 60px;
+}
+
+#detail_info_window .item_detail_block_edit .item-catalog span,
+#detail_info_window .item_detail_block_edit .item-prop .name {
+	display: inline-block;
+	font-size: 14px;
+	font-weight: 600;
+	width: 150px;
+	vertical-align: middle;
+	text-align: right;
+	padding-right: 15px;
+}
+
+#detail_info_window .item_detail_block_edit .item-catalog .description {
+	vertical-align: top;
+}
+
+#it_cart.empty {
+	display: none;
+}
+
+.item_detail_block .fa-pencil-square-o,
+.detailed-info-block .fa-pencil-square-o {
+	display: none;
 }

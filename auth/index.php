@@ -226,7 +226,7 @@ function  getPageSize(){
 	$('#forget').click(function(e) {
 		$('#login-window').hide();
 		$.get('/auth/forget.php', function(result) {
-				$('.modal_back').append(result);
+				$('#content').append(result);
 				$('#restore_form #email').val($('#login_form #email').val());
 			});
 	});

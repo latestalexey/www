@@ -15,16 +15,12 @@ $(document).ready(function()
 {
 	$("#item_list").css("height", $(".main_pan").height() - $("#items_header").height());
 	$('#ext_filters').height($('#ext_pan').height() - $('#ext_pan_header').height() - $('#ext_pan_topblock').height() -30);
-	if ($('#m_catalog.active').length) {
-		$('#contact_filter').css('top','-8px');
-	};
 	$('#contact_filter, #exp_filter').css('display','none');
 	$('#contact_filter, #exp_filter').off();
 	
 	$('#contact_filter').css('display','inline-block');
 	$('#contact_filter').text('Показать МОЙ КАТАЛОГ');
 	hideExtPan();
-	hideMenuItems();
 	
 	var contact	= getActiveContact();
 	if(contact.id == undefined)	{
@@ -50,7 +46,6 @@ $(document).ready(function()
 		e.stopPropagation();
 		hideModalWindow($('.modal_window'));
 		$('.modal_back').remove();	
-		hideMenuItems();
 		if(!$('#contact_filter').hasClass('ext_selected')) {
 			getMyCatalogItems();
 		}
@@ -199,6 +194,7 @@ $(document).ready(function()
 	});
 	$('#item_li').on('click', '.item_block .item_photo, .item_block .item_block_zoom', function(e) {
 		e.stopPropagation();
+		$('#detail_info_window .item_detail_block_edit').remove();
 		var obj = $(this).parent().parent().parent().parent();//$(this).parents().find('.item_block').has(this);
 		getItemInfo(obj);
 	});
@@ -206,6 +202,7 @@ $(document).ready(function()
 	//all types
 	$('#item_li').on('click','.cart .cart_order', function(e) {
 		e.stopPropagation();
+		$("#it_cart").removeClass('empty');
 		var it_cor = $(this).offset();
 		var cart_cor = $('#it_cart svg').offset();
 		var cart_clone = $(this).clone();
@@ -248,6 +245,7 @@ $(document).ready(function()
 	});
 	$('#item_li').on('click','#detail_info_window .clw', function(e) {	
 		e.stopPropagation();
+		$('#detail_info_window .item_detail_block_edit').remove();
 		$('#detail_info_window').remove();
 		$('.item_sign').remove();
 	});
@@ -285,12 +283,9 @@ $(document).ready(function()
 				var arUser = JSON.parse(data);
 				var isShared = arUser.catalog_shared || 0;
 				if (isShared == 2) {
-					getDownloadButtons(contact.name);
 					getSharedCatalog(contact.name);
-				} else if (isShared == 1) {
-					getDownloadButtons(contact.name);
-				}else if (isShared == 0) {
-					showTelebotInfo('Извините, но в настоящее время выбранный контакт не открыл доступ для скачивания своего каталога.','',5000);
+				} else if (isShared == 0) {
+					showTelebotInfo('В настоящее время выбранный контакт не открыл доступ для скачивания своего каталога.','',5000);
 					return;
 				};
 				showModalWindow($('#download_cat'));
@@ -298,7 +293,7 @@ $(document).ready(function()
 		};
 		
 		function getDownloadButtons(contact){
-			var href = window.location.protocol+'//'+window.location.hostname+'/Catalog_GetSharedCatalog?contact='+contact+'&catalog_type=';
+			var href = 'https://wbs.e-teleport.ru/Catalog_GetSharedCatalog?contact='+contact+'&catalog_type=';
 			$('#main_content').append(
 					'<div id="download_cat" class="modal_window">' +
 						'<div class="close_line"><div class="clw"><img src="/include/close_window.svg"/></div></div>' +
@@ -325,7 +320,7 @@ $(document).ready(function()
 		
 		function getSharedCatalog(contact){
 			$('#download_cat .link-block').remove();
-			var href = window.location.protocol+'//'+window.location.hostname+'/Catalog_GetSharedCatalog?contact='+contact+'&catalog_type=';
+			var href = 'https://wbs.e-teleport.ru/Catalog_GetSharedCatalog?contact='+contact+'&catalog_type=';
 			$('#download_cat').append( 
 				'<div class="link-block">' +
 					'<span>Ссылка на каталог в формате Teleport</span>' + 
@@ -365,22 +360,23 @@ $(document).ready(function()
 				catalog_shared = 1;
 			};
 			
-			$.post("/my/ajax/action.php", {"action": "setPersonInfo", "catalog_shared": catalog_shared},  function(data){
+			$.post("/my/ajax/action.php", {"action": "setPersonInfo", "Request_JSON":{"catalog_shared":1}},  function(data){
 				$('#download_cat .link-block').remove();
 				if (catalog_shared) {
 					getSharedCatalog(smuser.name);
 				};
 				$('.teleport_links button').attr('disabled', false);
+				console.log(data);
 			});
 		});
-	});
-	
-	$('#main_content').on('click', '#download_cat input', function() {
-		$(this).select();
-	});
-	
-	$('#main_content').on('click', '#download_cat .button',function() {
-		//hideModalWindow($('#download_cat'));
+		
+		$('#download_cat').on('click', 'input', function() {
+			$(this).select();
+		});
+
+		$('#download_cat').on('click', '.button',function() {
+			//hideModalWindow($('#download_cat'));
+		});	
 	});
 	
 	$('.my_body').on('click', '#cat_update',function() {
@@ -541,12 +537,7 @@ $(document).ready(function()
 		});
 	});
 	
-	$('#it_cart').on('click', '.show-docs', function(){
-		$(this).toggleClass('active fa-chevron-up fa-chevron-down');
-		$('#UserDocList').slideToggle(100);
-	});
-	
-	$('#items_header #it_rule_pan').on('click', '#UserDocList .UserDocItem', function(){
+	$('#items_header').on('click', '#it_cart', function(){
 		var userDocId = $(this).attr('data-doc-id');
 		var receiver = getActiveContact();
 		localStorage.setItem("userDocId", userDocId);
@@ -554,48 +545,180 @@ $(document).ready(function()
 		localStorage.setItem("receiver", receiver.name);
 		window.location.href = window.location.protocol + '//' + window.location.host+'/my/index.php?mode=orders';	
 	});
-});
-
-function hideMenuItems(){
-	$('.up_pan .up_add_menu .menu_content').remove();
-	$('.up_pan .up_add_menu').addClass('hidden');
-	var contact = getActiveContact();
-	if (contact.id == undefined) {
-		$('.up_pan .up_add_menu').removeClass('hidden');
-		$('.up_pan .up_add_menu').append('<div class="menu_content">\
-											<div style="margin: 0px 10px;">\
-												<p id="cat_dwlnd">Скачать текущий каталог контакта</p>\
-												<p id="cat_update">Загрузить/обновить товары в "Моем каталоге"</p>\
-											</div></div>');
-	} else {
+	
+	$('#item_list').on('click', '#detail_info_window .fa-pencil-square-o', function(){
+		$('.item_detail_block_edit').remove();
+		var item_id = $(this).parents('#detail_info_window').attr('data-detail-id');
+		var arr_fld = ['*'];
+		var arr_props = ['*'];
+		var arr_filter = [{"mode": "item", "name":"id", "operation":"=", "value": item_id}];
 		var xhr = new XMLHttpRequest();
-		var body =	'action=catalog_getQuantity' +
-					'&contact=' + encodeURIComponent(contact.name);
+		var body =	'action=catalog_getItem' +
+					'&adds=json' +
+					'&contact=' + encodeURIComponent(smuser.name) +
+					'&fields=' + encodeURIComponent(JSON.stringify(arr_fld)) +
+					'&properties=' + encodeURIComponent(JSON.stringify(arr_props)) +
+					'&filters=' + encodeURIComponent(JSON.stringify(arr_filter)) +
+					'&limit=1' + 
+					'&nom=1';
+
 		xhr.open("POST", '/my/ajax/action.php', true);
 		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-		xhr.onreadystatechange = function() { 
+		xhr.onreadystatechange = function() 
+		{ 
 			if (xhr.readyState != 4) return;
+			
 			if(!(xhr.responseText.indexOf('%err%') == -1)) {
 				showError(xhr.responseText.replace('%err%',''));
 				return;
 			}
-			var itemsQty = xhr.responseText || 0;
-			if (itemsQty>0) {
-				$('.up_pan .up_add_menu').removeClass('hidden');
-				$('#contact_filter').css('top','-8px');
-				$('.up_pan .up_add_menu').append('<div class="menu_content">\
-											<div style="margin: 0px 10px;">\
-												<p id="cat_dwlnd">Скачать текущий каталог контакта</p>\
-												<p id="cat_copy" >Скопировать текущий каталог в "Мой каталог"</p>\
-											</div></div>');
-			} else {
-				if ($('#m_catalog.active').length) {
-					$('#contact_filter').css('top','4px');
-				};
-			}		
-		};	
+			console.log(JSON.parse(xhr.responseText));
+			var arItem = JSON.parse(xhr.responseText);
+			var html_props = '';
+			$.each(arItem['properties'][item_id], function(key, value){
+				html_props = html_props + '<div class="item-prop"><span class="name">'+value.property_name+'</span><input value='+value.property_value+'></div>'
+			});
+			var html_str = '<div class="item_detail_block_edit">' +
+								'<div class="close" style="float: right;"><img src="/include/close_window.svg"></div>' +
+								'<h2>Редактирование карточки товара</h2>' +
+								'<div class="left-column">' +
+									'<div class="im_it_line">' +
+										'<div id="add_item_photo" class="active_icon">' +
+											'<form action="/my/ajax/upload.php" method="POST" enctype="multipart/form-data" name="fs_form">' +
+												'<svg fill="#CCCCCC" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">' +
+													'<defs>' +
+														'<path d="M24 24H0V0h24v24z" id="a"></path>' +
+													'</defs>' +
+													'<clipPath id="b">' +
+														'<use overflow="visible" xlink:href="#a"></use>' +
+													'</clipPath>' +
+													'<path clip-path="url(#b)" d="M3 4V1h2v3h3v2H5v3H3V6H0V4h3zm3 6V7h3V4h7l1.83 2H21c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H5c-1.1 0-2-.9-2-2V10h3zm7 9c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-3.2-5c0 1.77 1.43 3.2 3.2 3.2s3.2-1.43 3.2-3.2-1.43-3.2-3.2-3.2-3.2 1.43-3.2 3.2z"></path>' +
+												'</svg>' +								
+												'<input type="hidden" name="operID" value="">' +
+												'<input type="hidden" name="usrname" value="">' +
+												'<input type="hidden" name="usrid" value="">' +
+												'<input type="file" name="filename" value="" style="display: none;">' +
+												'<input type="submit" style="display: none;">' +
+											'</form>' +
+										'</div>' +
+										'<div id="clear_item_photo" class="active_icon">' +
+											'<svg fill="#CCCCCC" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">' +
+												'<path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path>' +
+												'<path d="M0 0h24v24H0z" fill="none"></path>' +
+											'</svg>' +
+										'</div>' +		
+									'</div>' +
+									'<div class="item-photo" style="background-image: url(https://sstest.e-teleport.ru/Catalog_Pics/'+arItem['pictures'][item_id][0].file_id+');"></div>' +
+								'</div>' +
+								'<div class="right-column">' +
+									'<div class="button catalog active">Общая информация</div><div class="button properties">Характеристики</div>' +
+									'<div class="catalog-block">' +
+										'<div class="container">' +
+											'<div class="item-catalog"><span class="name">Наименование</span><input value='+arItem['catalog'][0].name+'></div>' +
+											'<div class="item-catalog"><span class="barcode">Штрихкод</span><input value='+arItem['catalog'][0].barcode+'></div>' +
+											'<div class="item-catalog"><span class="description">Описание</span><textarea>'+arItem['catalog'][0].description+'</textarea></div>' +
+										'</div>' +	
+									'</div>' +
+									'<div class="properties-block hidden"><div class="container">'+html_props+'</div></div>' +
+								'</div>' +	
+								'<div class="button save-item-detail">Сохранить</div>' +
+							'</div>';
+			$('#detail_info_window').append(html_str);
+			var w = ($('#detail_info_window').width()-$('#detail_info_window .item_detail_block_edit').width())/2;
+			$('#detail_info_window .item_detail_block_edit').css('left',w);
+			$('#detail_info_window .item_detail_block_edit').css('max-height',$('#detail_info_window').height()-60);
+			$('#detail_info_window .item_detail_block_edit .container').slimScroll({height: '180px', size: '7px', disableFadeOut: false});
+		}
 		xhr.send(body);
+	});
+	
+	$('#item_list').on('click', '.item_detail_block_edit .save-item-detail', function(e){
+		var xhr = new XMLHttpRequest();
+		var body =	'action=Catalog_AddItems' +
+					'&cleanBeforeLoading=true' +
+					'&Items=' + encodeURIComponent(JSON.stringify([{"article":"555555","price":20}]));
+
+		xhr.open("POST", '/my/ajax/action.php', true);
+		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+		xhr.onreadystatechange = function() 
+		{ 
+			if (xhr.readyState != 4) return;
+			
+			if(!(xhr.responseText.indexOf('%err%') == -1)) {
+				showError(xhr.responseText.replace('%err%',''));
+				return;
+			}
+			console.log(xhr.responseText);
+		}
+		xhr.send(body);
+	});
+	
+	
+	
+	$('#item_list').on('click', '#detail_info_window .item_detail_block_edit .right-column .button', function(){
+		if ($(this).hasClass('active')) {
+			return
+		};
+		$('.item_detail_block_edit .right-column .button').removeClass('active');
+		if ($(this).hasClass('catalog')) {
+			$(this).addClass('active').siblings('.catalog-block').removeClass('hidden');
+			$('.item_detail_block_edit .properties-block').addClass('hidden');
+		};
+		if ($(this).hasClass('properties')) {
+			$(this).addClass('active').siblings('.properties-block').removeClass('hidden');
+			$('.item_detail_block_edit .catalog-block').addClass('hidden');
+		};
+	});
+	
+	$('#item_list').on('click', '#detail_info_window .item_detail_block_edit .close', function(){
+		$(this).parents('.item_detail_block_edit').remove();
+	});
+	
+	$('#item_list').on('click', '#detail_info_window .item_detail_block_edit #clear_item_photo', function(e){
+		console.log($(e.target).parents('#clear_item_photo').length);
+		$('#detail_info_window .item_detail_block_edit .item-photo').css('background-image', 'url(../include/no_photo.png)');	
+	});
+	/*
+	$('#detail_info_window .item_detail_block_edit').on('click', '.item-photo', function(e){
+		if($(e.target).parents().is('#add_item_photo')) {
+			e.stopPropagation();
+			var fform = document.forms['fs_form'];
+			fform['filename'].click();
+
+			if($('#cnt_view #cnt_info_save').css('display') == 'none') {
+				$('#cnt_view #cnt_info_save').css('display','block');
+			}
+		};
+	});*/
+});
+
+function hideMenuItems(has_catalog){
+	$('#contact_filter').css('top','-8px');
+	$('.up_pan .up_add_menu').removeClass('hidden').children('.menu_content').remove();
+	var contact = getActiveContact();
+	var html_str = '';
+	if (contact.id == undefined) {
+		html_str = '<div class="menu_content">\
+						<div style="margin: 0px 10px;">\
+							<p id="cat_dwlnd">Скачать текущий каталог контакта</p>\
+							<p id="cat_update">Загрузить/обновить товары в "Моем каталоге"</p>\
+						</div>\
+					</div>';
+	} else {
+		if (!has_catalog) {
+			$('.up_pan .up_add_menu').addClass('hidden');
+			if ($('#m_catalog').hasClass('active')) { $('#contact_filter').css('top','4px'); };
+		} else {
+			html_str = '<div class="menu_content">\
+							<div style="margin: 0px 10px;">\
+								<p id="cat_dwlnd">Скачать текущий каталог контакта</p>\
+								<p id="cat_copy" >Скопировать текущий каталог в "Мой каталог"</p>\
+							</div>\
+						</div>';
+		};
 	};
+	$('.up_pan .up_add_menu').append(html_str);
+	
 };
 
 function CatCopy(update_params) {
@@ -692,6 +815,7 @@ function initContactItems(){
 			}
 			var arResult = jQuery.parseJSON(xhr.responseText);
 			if(!arResult.has_catalog) {
+				hideMenuItems(0);
 				if(contact.id == smuser.id) {
 					showTelebotInfo('У вас нет своего каталога. Чтобы узнать, как его завести ознакомтесь с\
 					<br>\
@@ -706,6 +830,7 @@ function initContactItems(){
 				}	
 			}
 			else { 
+				hideMenuItems(1);
 				if(!arResult.allow_stocks)
 				{
 					$('.col_4').remove();
@@ -716,10 +841,9 @@ function initContactItems(){
 				}
 				getSelectedContactItems(item_nom, items_filter);
 			}
-				
-		}		
+		}
 		xhr.send(body);
-	}	
+	}
 }
 function getSelectedContactItems(it_nom, it_filter) {
 	noItems = false;
@@ -1402,21 +1526,21 @@ function addItemToNewDoc(Item, contact) {
 };
 
 function getItemPosInfo() {
+	$('#it_cart').addClass('empty');
 	var contact = getActiveContact();
 	if (contact.id != undefined) {
 		$.post('/my/ajax/order.php', {action: 'Documents_getItemPosInfo', receiver: contact.name}, function(data){
-			var UserDocs = JSON.parse(data);
-			var UserDocsQty = UserDocs.length;
-			var UserItemsQty = 0;
-			var html_str = '';
-			$.each(UserDocs, function(key, val){	
-				UserItemsQty = UserItemsQty*1 + val.docTable.length*1;
-				var DocDate = getOrderDate(new Date(val.docHeader.date));	 	
-				html_str = html_str + '<div class="UserDocItem" data-doc-id='+val.docHeader.id+' data-doc-owner='+val.docHeader.owner+'>Заказ №'+(++key)+' от '+DocDate.day+'-'+DocDate.month+'-'+DocDate.year+'</div>';		
-			}); 
-			$('#it_cart .info').html('Выбрано <span>'+UserItemsQty+'</span> позиций в <span>'+UserDocsQty+'</span> заказах ' + (UserDocsQty ? '<span class="show-docs fa fa-chevron-down"></span>' : ''));	
-			$('#UserDocList').remove();
-			$('#items_header #it_rule_pan').append('<div id="UserDocList">'+html_str+'</div>');		
+			try {
+				var UserDocs = JSON.parse(data);
+				var UserItemsQty = UserDocs.docTable.length*1;		
+				$('#it_cart .info').html('Позиций:&nbsp<span>'+UserItemsQty+'</span>&nbsp');	
+				$('#it_cart').attr('data-doc-id', UserDocs.docHeader.id);
+				$('#it_cart').removeClass('empty');
+			}
+			catch(e) {
+				$('#it_cart').attr('data-doc-id', 0);
+				console.log('no_orders');
+			};	
 		})	
 	}	
 };

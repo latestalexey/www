@@ -14,7 +14,7 @@ body
 	font: normal 14px Arial, Helvetica, sans-serif;
 }
 .empty_body  {
-	background-image: url(/include/teleport.jpg);
+	/*background-image: url(/include/teleport.jpg);*/
 	background-color: #AAC9D7;
     background-repeat: no-repeat;
     background-size: cover;
