@@ -30,7 +30,7 @@ $(document).ready(function(e)
 	$('.up_pan .up_add_menu .menu_content').remove();
 	$('.up_pan .up_add_menu').append('<div class="menu_content">\
 											<div style="margin: 0px 10px;">\
-												<p id="search_msg_files" onclick="">Показать файлы в сообщениях контакта</p>\
+												<p id="search_msg_files" onclick="">Показать все файлы в сообщениях контакта</p>\
 											</div></div>');
 	$('#contact_filter, #exp_filter').css('display','none');
 	$('#contact_filter, #exp_filter').off();
@@ -628,10 +628,10 @@ $(document).ready(function(e)
 		$("#mess_list").css("height", $(".main_pan").height()-$("#mess_send").height()-18);
 	});
 
-	$('.my_body').off('click', '#search_msg_files, #search_msg_myfiles');
+	$('.my_body').off('click', '#search_msg_files');
 	$('.my_body').off('click', '#download_doclist');
 	
-	$('.my_body').on('click', '#search_msg_files, #search_msg_myfiles', function(e) {
+	$('.my_body').on('click', '#search_msg_files', function(e) {
 		e.stopPropagation();
 		showAllFiles = ($(this).attr('id') == 'search_msg_files') ? true : false;
 		hideModalWindow($('#active_menu'));
@@ -652,12 +652,10 @@ function SearchFiles() {
 	var	filestatus = (showAllFiles) ? '*' : 'sent'; 
 	var contact	= getActiveContact();
 	var xhr = new XMLHttpRequest();
-	var body =	'action=files_getList' +
+	var body =	'action=filesList' +
 				'&adds=json' +
 				'&contact=' + encodeURIComponent(contact.name) +
-				'&status=' + filestatus +
-				'&limit=0' +
-				'&nom=1';					
+				'&Category=messages';					
 	xhr.open("POST", '/my/ajax/action.php', true);
 	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 	xhr.onreadystatechange = function() 
@@ -669,11 +667,11 @@ function SearchFiles() {
 			return;
 		}
 		var arResult = jQuery.parseJSON(xhr.responseText);
-		requestFileBrowser(arResult.result);
+		requestFileBrowser(arResult);
 	}				
 	xhr.send(body);	
 };
-
+/*
 function requestFileBrowser(arResult) {	
 	$('#ext_pan_header_content').html('');
 	$('#ext_pan_content').html('');	
@@ -685,7 +683,6 @@ function requestFileBrowser(arResult) {
 	$('#ext_pan_content').append('<div class="scrollist"></div>');	
 	var files_html = '';
 	$(arResult).each(function(){
-		
 		files_html = files_html + '<div class="msg_file" style="padding: 0px 0 10px 0;">' + addFileToList($(this), true) + '</div>';
 	});	
 	$('#ext_pan_content .scrollist').append(files_html);
@@ -711,7 +708,46 @@ function requestFileBrowser(arResult) {
 		
 	});
 };
+*/
 
+function requestFileBrowser(arResult) {	
+	$('#ext_pan_header_content').html('');
+	$('#ext_pan_content').html('');	
+	$('#ext_pan_content').off();
+	
+	var caption = (showAllFiles) ? 'Все файлы контакта' : 'Мои файлы у контакта';
+	$('#ext_pan_header_content').append(
+		'<div style="text-align: center; padding: 13px 10px; color: #777; font-weight: 800; border-bottom: 1px solid #CCC;">'+caption+'</div>');
+	$('#ext_pan_content').append('<div class="scrollist"></div>');	
+	var files_html = '';
+	$(arResult).each(function(){
+		var file = $(this);
+		console.log(file[0]);
+		files_html = files_html + '<div class="msg_file" style="padding: 0px 0 10px 0;">' + addFileToExtPanList(file[0], true) + '</div>';
+	});	
+	$('#ext_pan_content .scrollist').append(files_html);
+	showExtPan();
+	$('#ext_pan_content').height($('#ext_pan').height()-$('#ext_pan_header_content').height());
+	$('#ext_pan_content .scrollist').slimScroll({height: 'auto', size: '7px', disableFadeOut: false});		
+	$('#ext_pan_content').on('click','.image_file .close_line svg',function(e) {	
+		var obj = $(this).parent().parent();
+		obj.toggleClass('close_image');
+		if(obj.hasClass('close_image')) {
+			var im_svg = '<svg fill="#000000" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">'+
+				'<path d="M7 10l5 5 5-5z"/>'+
+				'<path d="M0 0h24v24H0z" fill="none"/>'+
+				'</svg>';
+		}
+		else {
+			var im_svg = '<svg fill="#000000" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">'+
+				'<path d="M7 14l5-5 5 5z"/>'+
+				'<path d="M0 0h24v24H0z" fill="none"/>'+
+				'</svg>';
+		}
+		$(this).replaceWith($(im_svg));
+		
+	});
+};
 
 //messages
 function saveCntMessagesCash(key, cash_object) {
@@ -825,6 +861,45 @@ function addFileToList(obj, hide_image) {
 	}
 	var str_html = '<div class="upfile" id="fn_'+obj.attr('ID') + '" data-furl="'+file_url+'"><a target="_blank" href="'+file_url+'"><div class="file_icon">'+att_svg+'</div></a>'+
 		'<div class="file_block"><a target="_blank" href="'+file_url+'"><p class="filename">' + obj.attr('fname') + '</p></a>'+
+			'<p class="file_info">'+file_size+file_met+' '+file_type+'</p></div>'+
+		'<a target="_blank" href="'+file_url+'"><div class="cloud help_icon"><div class="help_info">Скачать файл</div>'+cloud_svg+'</div></a>'+ img_str +
+					'</div>';
+
+	return str_html;
+}
+
+
+function addFileToExtPanList(obj, hide_image) {
+	var file_size = Math.round(obj.file_size/1024);
+	var file_idat = getFileType(obj.file_extention);
+	var file_type = file_idat.type;
+	var att_svg = file_idat.svg;
+	var file_url = '/my/ajax/files.php?a=detail&i='+obj.file_id;//+'&fn='+encodeURIComponent(obj.attr('fname'));//$(this).attr('furl');//'http://localhost:15671/Files/'+obj.attr('ID');
+	if(obj.has_preview == 'true') {
+		var pvfile_url = '/my/ajax/files.php?a=prev&i='+obj.file_id;//+'&fn='+encodeURIComponent(obj.attr('fname'));//$(this).attr('furl');
+	}
+	else {
+		var pvfile_url = '/my/ajax/files.php?a=detail&i='+obj.file_id;//+'&fn='+encodeURIComponent(obj.attr('fname'));//$(this).attr('furl');
+	}
+	var file_met = "KB";
+	if(file_size > 1024) { 
+		file_size = Math.round(file_size/1024);
+		file_met = "MB";
+	}
+	var img_str = "";	
+	var hide_class = (hide_image)?(' close_image'):('');
+	if(file_idat.img) {
+		img_str = '<div class="image_file'+hide_class+'">' +
+		'<div class="close_line">'+
+		'<svg fill="#000000" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">'+
+		'<path d="M7 10l5 5 5-5z"/>'+
+		'<path d="M0 0h24v24H0z" fill="none"/>'+
+		'</svg></div>'+
+		'<img src="'+pvfile_url+'"/>'+
+		'</div>';
+	}
+	var str_html = '<div class="upfile" id="fn_'+obj.file_id + '" data-furl="'+file_url+'"><a target="_blank" href="'+file_url+'"><div class="file_icon">'+att_svg+'</div></a>'+
+		'<div class="file_block"><a target="_blank" href="'+file_url+'"><p class="filename">' + obj.file_name + '</p></a>'+
 			'<p class="file_info">'+file_size+file_met+' '+file_type+'</p></div>'+
 		'<a target="_blank" href="'+file_url+'"><div class="cloud help_icon"><div class="help_info">Скачать файл</div>'+cloud_svg+'</div></a>'+ img_str +
 					'</div>';

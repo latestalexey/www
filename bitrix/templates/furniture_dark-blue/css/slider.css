@@ -1,4 +1,4 @@
-#splash-window {
+#splash-window, #slide-window {
 	background-color: #3E4757;
 	left: 50%;
 	position: absolute;
@@ -6,8 +6,19 @@
 	top: 20px; 
 	transform: translate(-50%);
 	width: 800px;	
+	height: 550px;
 }
-
+/*#slide-window {
+	background-color: #3E4757;
+	
+	height: 550px;
+	left: 50%;
+	overflow: hidden;
+	position: absolute;
+	top: 10;
+	transform: translate(-50%);
+	width: 800px;
+}*/
 #splash-window .modal-window {
 	background-color: #FBFBFB; 
 	border: 1px solid #CCC; 
@@ -24,6 +35,9 @@
 	box-shadow: 1px 1px 3px #FFF;
 	-moz-box-shadow: 1px 1px 3px #FFF;
 	-webkit-box-shadow: 1px 1px 3px #FFF;
+	position: absolute;
+	right: 5px;
+	bottom: 5px;
 }
 #splash-window  .menu_button:hover, #slide-window .menu_button:hover {
 	box-shadow: 1px 1px 9px #FFF;
@@ -31,19 +45,9 @@
 	-webkit-box-shadow: 1px 1px 9px #FFF;
 }
 
-#slide-window {
-	background-color: #3E4757;
-	padding: 20px;
-	min-height: 570px;
-	left: 50%;
-	overflow: hidden;
-	position: absolute;
-	top: 10;
-	transform: translate(-50%);
-	width: 800px;
-}
+
 .slide_monitor {
-	height: 400px;
+	height: 350px;
 	width: 800px;
 	overflow: hidden;
 }
@@ -59,7 +63,7 @@
 }
 .slide img{
 	width: 800px;
-	height: 400px;
+	height: 350px;
 }
 .slider-nav {
 	background-color: #3E4757;
@@ -94,12 +98,13 @@
 	border: none;
 	cursor: pointer;
 	display: block;
-	float: left;
 	height: 64px;
 	opacity: 0.3;
 	text-indent: -9999em;
 	width: 64px;
-	margin: 0 0 10px 20px;
+	position: absolute;
+	left: 5px;
+	bottom: 5px;
 }
 
 .nav-prev{
@@ -124,19 +129,11 @@
 	text-align: center;
 }
 
-.slider-nav .menu_button{
-	float: right;
-	font-size: 16px;
-	font-weight: 400;
-	margin-top: 25px;
-	margin-right: 14px;
-	min-width: 170px;
-}
-
-#splash-window button{
+#splash-window button, #slide-window button{
 	font-size: 16px;
 	font-weight: 400;
 	margin-top: 10px;
 	margin-bottom: 14px;
 	margin-right: 14px;
+	min-width: 280px;
 }

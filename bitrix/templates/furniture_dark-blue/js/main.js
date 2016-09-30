@@ -931,7 +931,7 @@ function showGreeting() {
 	var modal_obj = $('<div id="splash-window" class="modal_window">\
 		<div style="text-align: center;"><img style="height: 250px;" src="/my/invite/rover.png" alt="" /></div>\
 		<span><p>Рады приветствовать вас и вашу команду в Системе Teleport !</p></span>\
-		<p style="text-align: center;">Teleport – позволяет выйти за пределы привычного способа взаимодействия с клиентами и партнерами. Совместная работа в Teleport становится проще, технологичнее и эффективнее.</p>\
+		<p style="text-align: center;">Совместная работа в Teleport становится проще, технологичнее и эффективнее.</p>\
 		<p style="text-align: center;">За технологией Clients Environment Optimization (CEO) - наше с вами развитие !</p>\
 		<p>Teleport  постоянно развивается вместе с вами.  Полностью одинакового бизнеса не бывает. Поэтому мы очень внимательно относимся к пожеланиям и потребностям каждого нашего пользователя.  Рады будем ответить на ваши вопросы, порекомендовать вам наилучшее использование Teleport в вашем бизнесе и создать вместе с вами дополнительный необходимый вам функционал.</p>\
 		<p style="text-align: center;">Постоянное сотрудничество и развитие – это залог нашего с вами успеха !</p>\
@@ -973,9 +973,9 @@ function showGreeting() {
 				</div></div>\
 				<div class="slider-nav">\
 					<p>' + slides_descr[i][0] + '</p>\
+				</div>\
 					<button class="nav-prev"></button>\
 					<button class="menu_button" id="slide-details">'+slide_details[0]+'</button>\
-				</div>\
 			</div>');
 		
 		$('.nav-prev').css("visibility", "hidden");
