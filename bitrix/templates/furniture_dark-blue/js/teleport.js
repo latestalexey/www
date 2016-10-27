@@ -334,11 +334,21 @@ function messagesRequest() {
 			var cur_contact = getActiveContact();
 			var cur_menu = $(".topmenu li.active").attr('id');
 			var needSnd = false;
+			
+			var notify_messages = 0;
+			var notify_orders = 0;
+			var notify_requests = 0;
+			var notify_title = "";
+			var notify_text = "";
+			
 			arResult.forEach(function(rqobject, key){
 				var req_type 		= rqobject.type;
 				var req_quantity	= 0;
 
 				if(req_type == 'request') {
+					if($('#cnt_short_invite').find('[data-usr-name='+encodeString(rqobject.contact)+']').length == 0) {
+						notifyInformation("Приглашение от \n" + rqobject.contact, rqobject.info);  
+					}
 					showContactRequests(rqobject.contact, rqobject.info);
 				}
 				else {
@@ -350,7 +360,24 @@ function messagesRequest() {
 						new_msg_obj.css("display", "block");
 						if(!(new_msg_obj.first().find('span').text() == req_quantity)) {
 							new_msg_obj.html("<span>" + req_quantity + "</span>");
+							
+							if(req_type == 'message') {	notify_messages = notify_messages + req_quantity;} 
+							else { notify_orders = notify_orders + req_quantity;}
 
+							if(notify_text == "") {
+								notify_title = getContactInfo(rqobject.contact).fullname;
+								notify_text = (req_type == 'message')?("Получено новое сообщение"+"\n"+"Всего новых ("+req_quantity+")"):("Оформлен заказ"+"\n"+"Всего новых ("+req_quantity+")");
+							} else {
+								notify_title = "Teleport";
+								notify_text = "";
+								if(notify_messages != 0) {
+									notify_text = notify_text + "Получено "+notify_messages+" новых сообщений. \n";
+								}	
+								if(notify_orders != 0) {
+									notify_text = notify_text + "Оформлено "+notify_orders+" новых заказов. \n";
+								}	
+							}
+							
 							moveContactRecentTop($('[data-usr-name='+req_sender+']').attr('data-usr-id'));
 							needSnd = true;
 						}
@@ -362,6 +389,10 @@ function messagesRequest() {
 					}	
 				}	
 			});
+			if(notify_text != "") {
+				notifyInformation(notify_title, notify_text);  
+			}
+
 			if(needSnd) {
 				newsSound();
 			}
@@ -1121,7 +1152,7 @@ function addContactRequests(name, msg, result) {
 	}
 }
 function showContactRequests(name, msg) {
-	if($('#rqst_window').find('[data-contact-name='+encodeString(name)+']').length != 0) {
+	if($('#cnt_short_invite').find('[data-usr-name='+encodeString(name)+']').length != 0) {
 		return;
 	}
 	req_name = encodeString(name);

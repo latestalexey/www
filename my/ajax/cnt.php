@@ -69,47 +69,47 @@ $res = $TLP_obj->telecall('Contacts_Get', $arFnc);
 	}
 //}
 krsort($lastContacts);
-if(!(array_key_exists('Канал общих контактов', $arGroups)))
+/*if(!(array_key_exists('Канал общих контактов', $arGroups)))
 {
 	$arGr = array();
 	$arGr['group'] = 'Канал общих контактов';
 	$arGr['groupinfo'] = 'General channel (unsorted)';
 	$arGr['sortnum'] = -15;
 	$arGroups['Канал общих контактов'] = $arGr;
-}
-if(!(array_key_exists('Канал личных контактов', $arGroups)))
+}*/
+/*if(!(array_key_exists('Канал личных контактов', $arGroups)))
 {
 	$arGr = array();
 	$arGr['group'] = 'Канал личных контактов';
 	$arGr['groupinfo'] = 'Personal contacts channel';
 	$arGr['sortnum'] = -12;
 	$arGroups['Канал личных контактов'] = $arGr;
-}
+}*/
 
-if(!(array_key_exists('Канал приглашенных контактов', $arGroups)))
+/*if(!(array_key_exists('Канал приглашенных контактов', $arGroups)))
 {
 	$arGr = array();
 	$arGr['group'] = 'Канал приглашенных контактов';
 	$arGr['groupinfo'] = 'Invited contacts channel';
 	$arGr['sortnum'] = -10;
 	$arGroups['Канал приглашенных контактов'] = $arGr;
-}
-if(!(array_key_exists('Канал Teleport', $arGroups)))
+}*/
+/*if(!(array_key_exists('Канал Teleport', $arGroups)))
 {
 	$arGr = array();
 	$arGr['group'] = 'Команда Teleport';
 	$arGr['groupinfo'] = 'Teleport channel';
 	$arGr['sortnum'] = 990;
 	$arGroups['Команда Teleport'] = $arGr;
-}
-if(!(array_key_exists('Канал заблокированных контактов', $arGroups)))
+}*/
+/*if(!(array_key_exists('Канал заблокированных контактов', $arGroups)))
 {
 	$arGr = array();
 	$arGr['group'] = 'Канал заблокированных контактов';
 	$arGr['groupinfo'] = 'Blocked contacts channel';
 	$arGr['sortnum'] = 999;
 	$arGroups['Канал заблокированных контактов'] = $arGr;
-}
+}*/
 uasort($arGroups, 'arSortByNum');
 /*else
 {
@@ -211,14 +211,14 @@ uasort($arGroups, 'arSortByNum');
 						$drop = ' tl_droppable';
 					}
 					
-					if(count($lastContacts) > 9) {
+					//if(count($lastContacts) > 9) {
 						$gr_class = "close_list";
 						$cnt_display = "none";
-					}
+					/*}
 					else {
 						$gr_class = "";
 						$cnt_display = "block";
-					}
+					}*/
 				?>
 				
 				<div class="group_block">

@@ -177,7 +177,7 @@ $(document).ready(function() {
 	$("#contacts").on('click',".search_button", function(e) {
 		e.stopPropagation();
 		if($(this).prev('input').css('display') == 'none') {
-			$('#tlp_slogan').css('display', 'none');
+			//$('#tlp_slogan').css('display', 'none');
 			$(this).css('border-radius', '0 5px 5px 0');
 			$(this).prev('input').css('display', 'inline-block');
 			$(this).prev('input').animate({'width': 200}, 300);
@@ -188,7 +188,7 @@ $(document).ready(function() {
 					</svg>');
 		}
 		else {
-			$('#tlp_slogan').css('display', 'inline-block');
+			//$('#tlp_slogan').css('display', 'inline-block');
 			$(this).css('border-radius', '5px');
 			$(this).prev('input').css('display', 'none');
 			$(this).prev('input').css('width', 10);
@@ -897,6 +897,27 @@ function showTelebotInfo(msg, emojion, timeout) {
 		setTimeout(hideTelebotInfo, timeout);
 	}
 }
+
+
+
+function notifyInformation(title, message) {
+	if ('Notification' in window) {
+		Notification.requestPermission( newMessage );	
+		function newMessage(permission) {
+			if( permission != "granted" ) return false;
+			var notify = new Notification(title, {
+				tag : "new-alert",
+				body : message,
+				icon : "/include/logo64.png",
+			});
+			function closeNotify() {
+				notify.close();
+			}
+			setTimeout(closeNotify, 10000);
+		};
+	}	
+}
+
 function hideTelebotInfo() {
 	$('#telebot_info').remove();
 }

@@ -108,12 +108,21 @@ elseif($action == 'Documents_GetLastId')
 	$docid = mysql_result ($result,0);
 	echo $docid;
 }
+elseif($action == 'Documents_GetUserLastDocId')
+{
+	$receiver = $_POST["receiver"];
+	$query = "SELECT message_id FROM t_documents WHERE sender='$user' and receiver = '$receiver' order by message_id desc limit 1";
+	$result = mysql_query ($query) or die (mysql_error());
+	$docid = mysql_result ($result,0);
+	echo $docid;
+}
 elseif($action == 'Documents_GetList')
 {
 	$filters = json_decode($_POST["filters"]);
-	$query = "SELECT message_id, sender, receiver, type, status, date, num, sum, currencyId, hash FROM t_documents WHERE sender = '$user'";
+	$query = "SELECT message_id, sender, receiver, type, status, date, num, sum, currencyId, hash FROM t_documents WHERE 1 = 1";
 	foreach($filters as $key=>$filter) {
-		$query = $query . " AND ".$filter->name." ".$filter->operation." '".$filter->value."'";
+		$query = $query . " AND ".$filter->name." ".$filter->operation;
+		$query = ($filter->operation == "IN") ?  $query ." (".$filter->value.")" :  $query ." '".$filter->value."'";
 	};
 	$result = mysql_query ($query) or die (mysql_error());
 	$data = array();

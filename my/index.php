@@ -19,7 +19,7 @@ if($_GET["add"]=='nps')
 
 $mode = $_GET["mode"];
 if($mode=='')
-	$mode = 'messages';
+	$mode = 'catalog';
 ?>
 <title>TELEPORT. Личный портал</title>
 <link href="<?=SITE_TEMPLATE_PATH?>/css/slider.css" rel="stylesheet" type="text/css">
@@ -39,7 +39,10 @@ if($mode=='')
 <script async type="text/javascript" src="/my/js/squad_mngr.js"></script>
 
 <div id="main_content">
-	<a href="/"><div id="logo"></div></a>
+	<a href="/">
+		<div id="logo"></div>
+		<div id="tlp_slogan">Teleport</div>				
+	</a>
 		<div id="login_block">
 			<table style="border-spacing: 0; min-width: 215px;">
 				<tr>
@@ -70,7 +73,7 @@ if($mode=='')
 			<div id="cnt_bar" class="pan_bar" style="left: 303px;">
 				<
 			</div>
-			<h3 style="margin: 5px 0; position: relative; min-height: 36px;">
+			<h3 style="margin: 0; padding: 5px 0; position: relative; min-height: 36px; background-color: #ECEFF1;">
 				<div class="search_box">
 					<input style="display:none; width: 10px;" id="search_inp" class="search_inp" type="text" placeholder="Поиск контакта">
 					<div class="search_button">
@@ -95,7 +98,6 @@ if($mode=='')
 						</div>
 					</div>
 				</div>
-				<div id="tlp_slogan">Teleport</div>				
 			</h3>
 			<div id="contacts_menu"></div>
 			<div id="my_contacts">

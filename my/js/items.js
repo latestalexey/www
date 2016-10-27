@@ -366,7 +366,6 @@ $(document).ready(function()
 					getSharedCatalog(smuser.name);
 				};
 				$('.teleport_links button').attr('disabled', false);
-				console.log(data);
 			});
 		});
 		
@@ -572,7 +571,6 @@ $(document).ready(function()
 				showError(xhr.responseText.replace('%err%',''));
 				return;
 			}
-			console.log(JSON.parse(xhr.responseText));
 			var arItem = JSON.parse(xhr.responseText);
 			var html_props = '';
 			$.each(arItem['properties'][item_id], function(key, value){
@@ -648,7 +646,6 @@ $(document).ready(function()
 				showError(xhr.responseText.replace('%err%',''));
 				return;
 			}
-			console.log(xhr.responseText);
 		}
 		xhr.send(body);
 	});
@@ -814,7 +811,7 @@ function initContactItems(){
 				return;
 			}
 			var arResult = jQuery.parseJSON(xhr.responseText);
-			if(!arResult.has_catalog) {
+			/*if(!arResult.has_catalog) {
 				hideMenuItems(0);
 				if(contact.id == smuser.id) {
 					showTelebotInfo('У вас нет своего каталога. Чтобы узнать, как его завести ознакомтесь с\
@@ -829,7 +826,7 @@ function initContactItems(){
 					showTelebotInfo('У "' + contact.fullname + '" нет товаров в каталоге, выберите другой контакт','',0);
 				}	
 			}
-			else { 
+			else { */
 				hideMenuItems(1);
 				if(!arResult.allow_stocks)
 				{
@@ -840,7 +837,7 @@ function initContactItems(){
 					$('.col_3').remove();
 				}
 				getSelectedContactItems(item_nom, items_filter);
-			}
+			//}
 		}
 		xhr.send(body);
 	}
@@ -1050,6 +1047,7 @@ function getItemInfo(obj) {
 				showError(xhr.responseText.replace('%err%',''));
 				return;
 			}
+			console.log(xhr.responseText);
 			modal_obj.find('#detail_item_info').html(xhr.responseText);
 
 			if(modal_obj.offset().top < obj.offset().top && $('#item_list #detail_info_window').length > 0) {
@@ -1458,7 +1456,7 @@ function getItemInfoForDoc(obj) {
 				sum:sum, 
 				props:[]
 			};
-			$.post('/my/ajax/order.php', { action: 'Documents_GetLastId', receiver: contact.name }, function(data) {
+			$.post('/my/ajax/order.php', { action: 'Documents_GetUserLastDocId', receiver: contact.name }, function(data) {
 				(data) ? addItemToExistDoc(Item, contact.name) : addItemToNewDoc(Item, contact.name);
 			});	
 		}		
@@ -1533,13 +1531,12 @@ function getItemPosInfo() {
 			try {
 				var UserDocs = JSON.parse(data);
 				var UserItemsQty = UserDocs.docTable.length*1;		
+				$('#it_cart').removeClass('empty');
 				$('#it_cart .info').html('Позиций:&nbsp<span>'+UserItemsQty+'</span>&nbsp');	
 				$('#it_cart').attr('data-doc-id', UserDocs.docHeader.id);
-				$('#it_cart').removeClass('empty');
 			}
 			catch(e) {
 				$('#it_cart').attr('data-doc-id', 0);
-				console.log('no_orders');
 			};	
 		})	
 	}	

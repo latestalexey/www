@@ -328,7 +328,7 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 .menu_icon .menu_content,.leftmenu_icon .leftmenu_content {
 	display: none;
 }	
-.leftmenu_icon {position: absolute; top: 0px; left: 5px; border-radius: 5px; border: 1px solid #777;}
+.leftmenu_icon {position: absolute; top: 5px; left: 5px; border-radius: 5px; border: 1px solid #777;}
 .leftmenu_icon:hover {background-color: #26A69A; cursor: pointer; border-color: #26A69A;}
 .leftmenu_icon:hover  svg{fill: #FFF;}
 .transform_icon {
@@ -338,7 +338,7 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
     -o-transform: rotate(45deg); 
 	transform: rotate(45deg);
 }
-#tlp_slogan {position: absolute; top: 1px; left: 50px; color: #FF6E52; display: inline-block; font-size: 23px; font-weight: 800;}
+#tlp_slogan {position: absolute; top: 10px; left: 60px; color: #ff6600; display: inline-block; font-size: 23px; font-weight: 800;}
 .search_box {
 	/*position: relative;
     top: -13px;
@@ -802,12 +802,26 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 	/*padding-bottom: 12px;*/
 	}
 .message_tmpline {
-	/*background-color: #FAF8BF;*/
-	background-image: url(/my/data/svg/barometer.svg);
-    background-repeat: no-repeat;
-    background-position-y: center;
-    background-position-x: 45px;
+	background-image: url(/my/data/svg/time.svg);
 }
+.message_status {
+	position: absolute;
+    height: 18px;
+    width: 18px;
+    top: 3px;
+    right: 3px;
+    background-repeat: no-repeat;
+}	
+.message_sent {
+	background-image: url(/my/data/svg/done.svg);
+}
+.message_delivered {
+	background-image: url(/my/data/svg/done_all.svg);
+}
+.message_viewed {
+	background-image: url(/my/data/svg/viewed.svg);
+}
+
 .msg_divider {
     position: absolute;
     border-top: 1px solid #e8e8e8;
@@ -860,18 +874,20 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 	font-family: 'Open Sans', Arial, Helvetica, sans-serif;
 	font-size: 14px;
 	font-weight: 400;
-	padding: 3px 5px 3px 70px;
+	padding: 3px 25px 3px 70px;
 	position: relative;
 	top: -15px;
 	overflow: hidden;
 }
 
 .message_text pre {font-family: 'Open Sans', Arial, Helvetica, sans-serif;}
+.message_text pre a {color: #26A69A; text-decoration: underline;}
+
 .msg_addblock {
 	position: absolute;
     top: 0px;
     display: none;
-    right: 5px;
+    right: 25px;
 }
 .msg_selected {
 	border: 1px solid #26A69A; 
@@ -1228,7 +1244,8 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 }	
 
 .it_filter_value  .checkbox, .it_filter  .checkbox, .doc_filter_value  .checkbox  {
-    float: left;
+    /*float: left;*/
+	display: inline-block;
     border: 1px solid #CCC;
     border-radius: 5px;
     margin: 0 10px 0 0;
@@ -1241,8 +1258,9 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 }
 
 .it_filter_value  .enum_name, .it_filter  .filter_name, .doc_filter_value  .enum_name {
-    float: left;
-    vertical-align: bottom;
+    /*float: left;*/
+	display: inline-block;
+    vertical-align: sub;
     height: 20px;
 	cursor: pointer;
     overflow: hidden;

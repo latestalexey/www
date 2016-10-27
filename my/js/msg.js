@@ -972,10 +972,23 @@ function addMessageToList(arResult, mode) {
 			var status_text = '';
 			var resend_text = '';
 			var txtNode = msg_object.msg_text;
-			var str_temp = '';
 			
+			var nodeReg = /((http|https):\/\/)|(www.)/i;
+			var nodePos = txtNode.search(nodeReg);
+			if(nodePos >= 0) {
+				var tmpNodeText = txtNode.substr(nodePos);
+				var lastPos = tmpNodeText.search(" ");
+				var hrefText = (lastPos >= 0)?tmpNodeText.substr(0, lastPos):tmpNodeText;
+				var new_hrefText = (/:\/\//.exec(hrefText) === null ? "http://" + hrefText : hrefText);
+				var new_hrefText = "<a target=\"_blank\" href=\""+ new_hrefText + "\">" + hrefText + "</a>";
+				txtNode = txtNode.replace(hrefText, new_hrefText);
+			}	
+			
+			var str_temp = '';
 			if(!(msg_object.tmp_msg == undefined) || msg_object.tmp_msg == 'true' || msg_object.tmp_msg) {
 				str_temp = ' message_tmpline';
+			} else if(msg_object.from == smuser.name) {
+				str_temp = ' message_'+msg_object.status;
 			}
 
 			//date_inf
@@ -1016,9 +1029,10 @@ function addMessageToList(arResult, mode) {
 				status_text = '<div class="msg_status" title="Статус сообщения">'+ arStatus[msg_object.status] +'</div>';
 			}
 			
-			var msg_ubody = '<div class="message_text'+str_temp+'">' +
+			var msg_ubody = '<div class="message_text">' +
 							'<div class="msg_time">'+getTimeStringFromDate(msg_date)+'</div><pre>'+txtNode+'</pre>' + files_html +
 							'<div class="msg_addblock">' + resend_text + status_text + '</div>' +
+							'<div class="message_status'+str_temp+'"></div>' +
 						'</div>'+
 						'<div class="msg_submenu">'+
 							'<svg fill="#777" height="18" viewBox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg">'+
