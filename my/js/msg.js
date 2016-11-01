@@ -795,39 +795,67 @@ function resizeMsgBox() {
 	}	
 
 }
+function messagesSetViewed(arr_id) {
+	if(arr_id.length > 0) {
+		var xhr = new XMLHttpRequest();
+		var body =	'action=Messages_SetViewed' +
+						'&id_list=' + encodeURIComponent(JSON.stringify(arr_id));
 
-function messagesGetNewStatus(name)
+			xhr.open("POST", '/my/ajax/action.php', true);
+			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+			xhr.onreadystatechange = function() 
+			{ 
+				if (xhr.readyState != 4) return;
+				
+				if(!(xhr.responseText.indexOf('%err%') == -1)) {
+					showError(xhr.responseText.replace('%err%',''));
+					return;
+				}
+			}
+			xhr.send(body);
+	}	
+
+}
+
+function messagesGetNewStatus()
 {
 	var arStatus = {'new': 'Новый',
 		'sent': 'Отправлено',
 		'delivered': 'Доставлено',
-		'processed': 'Обработано',
-		'confirmed': 'Подтверждено',
 		'viewed': 'Просмотрено'};
+	var msg_obj = $('#msg_li .send_message_line[data-ms-status!="viewed"]'); 
+	var arr_id = [];
+	msg_obj.each(function(key, msg){
+		arr_id.push($(msg).attr('id').replace('msg_',''));
+	});
+	if(arr_id.length > 0) {
+		var xhr = new XMLHttpRequest();
+		var body =	'action=Messages_StatusGet' +
+						'&id_list=' + encodeURIComponent(JSON.stringify(arr_id));
 
-	var xhr = new XMLHttpRequest();
-	var body =	'action=getNewStatus' +
-					'&message_type=text'+
-					'&rtype=json'+
-					'&contact=' + encodeURIComponent(name);
-
-		xhr.open("POST", '/my/ajax/action.php', true);
-		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-		xhr.onreadystatechange = function() 
-		{ 
-			if (xhr.readyState != 4) return;
-			
-			if(!(xhr.responseText.indexOf('%err%') == -1)) {
-				showError(xhr.responseText.replace('%err%',''));
-				return;
+			xhr.open("POST", '/my/ajax/action.php', true);
+			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+			xhr.onreadystatechange = function() 
+			{ 
+				if (xhr.readyState != 4) return;
+				
+				if(!(xhr.responseText.indexOf('%err%') == -1)) {
+					showError(xhr.responseText.replace('%err%',''));
+					return;
+				}
+				var arResult = $.parseJSON(xhr.responseText);
+				var msg_list = arResult.result;
+				arResult.forEach(function(rqobject, key){
+					var txt_obj = $('#msg_'+rqobject.message_id+' .message_text .msg_status');
+					var cur_status = $('#msg_'+rqobject.message_id).attr('data-ms-status');
+					if(txt_obj.text() != arStatus[rqobject.status]) {
+						$('#msg_'+rqobject.message_id+' .message_text .message_status').removeClass('message_'+cur_status).addClass('message_'+rqobject.status);
+						txt_obj.text(arStatus[rqobject.status]);
+					}	
+				});
 			}
-			var arResult = $.parseJSON(xhr.responseText);
-			var msg_list = arResult.result;
-			msg_list.forEach(function(rqobject, key){
-				$('#msg_'+rqobject.ID+' .message_text .msg_status').text(arStatus[rqobject.status]);
-			});
-		}
-		xhr.send(body);
+			xhr.send(body);
+	}	
 }
 
 function addFileToList(obj, hide_image) {
@@ -965,6 +993,9 @@ function addMessageToList(arResult, mode) {
 		var first_cnt  = "";
 		var first_date  = "";
 		var last_date	= "";
+		
+		var viewed_id = [];
+
 		arResult.forEach(function(msg_object, key){
 			var files_html = '';
 			var html_date = '';
@@ -985,10 +1016,16 @@ function addMessageToList(arResult, mode) {
 			}	
 			
 			var str_temp = '';
+			var msg_status_data = '';
+			var msg_sent_class = '';
 			if(!(msg_object.tmp_msg == undefined) || msg_object.tmp_msg == 'true' || msg_object.tmp_msg) {
 				str_temp = ' message_tmpline';
 			} else if(msg_object.from == smuser.name) {
 				str_temp = ' message_'+msg_object.status;
+				msg_status_data = 'data-ms-status="'+msg_object.status+'"';
+				msg_sent_class = ' send_message_line';
+			} else if(msg_object.status != "viewed"){
+				viewed_id.push(msg_object.ID);
 			}
 
 			//date_inf
@@ -1044,7 +1081,7 @@ function addMessageToList(arResult, mode) {
 			//creating message
 			var msg_html = "";
 			if ($("div").is('#' + 'msg_'+ msg_object.ID)) {
-				msg_html = '<div id="msg_'+ msg_object.ID+ '" class="message_line" data-ms-inf="'+msg_object.from+'">' + html_cnt + msg_ubody;
+				msg_html = '<div id="msg_'+ msg_object.ID+ '" class="message_line'+msg_sent_class+'" data-ms-inf="'+msg_object.from+'" '+msg_status_data+'>' + html_cnt + msg_ubody;
 
 				var addInfo = (($('#' + 'msg_'+ msg_object.ID).find('#msg_inf').length != 0) || (!files_html==''));
 				$('#' + 'msg_'+ msg_object.ID).replaceWith(msg_html);
@@ -1053,7 +1090,7 @@ function addMessageToList(arResult, mode) {
 				}
 			}
 			else if ((!msg_object.tmpGUID == '') && $("div").is('#' + 'msg_'+ msg_object.tmpGUID)) {
-				msg_html = '<div id="msg_'+ msg_object.ID+ '" class="message_line" data-ms-inf="'+msg_object.from+'">' + html_cnt + msg_ubody;
+				msg_html = '<div id="msg_'+ msg_object.ID+ '" class="message_line'+msg_sent_class+'" data-ms-inf="'+msg_object.from+'" '+msg_status_data+'>' + html_cnt + msg_ubody;
 
 				var addInfo = (($('#' + 'msg_'+ msg_object.tmpGUID).find('#msg_inf').length != 0) || (!files_html==''));
 				$('#' + 'msg_'+ msg_object.tmpGUID).replaceWith(msg_html);
@@ -1062,7 +1099,7 @@ function addMessageToList(arResult, mode) {
 				}
 			}
 			else {
-				msg_html = '<div id="msg_'+ msg_object.ID+ '" class="message_line" data-ms-inf="'+msg_object.from+'">';
+				msg_html = '<div id="msg_'+ msg_object.ID+ '" class="message_line'+msg_sent_class+'" data-ms-inf="'+msg_object.from+'" '+msg_status_data+'>';
 				if((prev_cnt == '' && prev_date == '') || (prev_date != html_date)) {
 					if (mode == 'end' && first_cnt == '' && last_msg_cnt == msg_object.from && files_html=='') {
 						msg_html = html_date + msg_html;
@@ -1098,7 +1135,8 @@ function addMessageToList(arResult, mode) {
 					$(obj).remove();
 				}
 			}
-		}	
+		}
+		messagesSetViewed(viewed_id);
 }
 function showMessages(contact, arMsg, mode, isBegining)
 {

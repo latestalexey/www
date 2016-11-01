@@ -1493,25 +1493,46 @@ elseif($action == 'changePassword')
 		echo '%err%'.$TLP_obj->mistakes[$res['return']];
 	}
 }
-elseif($action == 'getNewStatus')
+elseif($action == 'Messages_StatusGet')
 {
 	$arFnc = array();
 	foreach ($_POST as $key => $value) 
 	{
-		if(!($key == 'action' || $key=='adds'))
+		if($key == 'id_list') {
+			$arFnc[$key] = json_decode($value,true);
+		} else if(!($key == 'action' || $key=='adds'))
 			{$arFnc[$key] = $value;}
 	}	
-	$res = $TLP_obj->telecall('Messages_GetNewStatus', $arFnc);
+	$res = $TLP_obj->telecall('Messages_StatusGet', $arFnc);
 	if($res['errCode'] == 0)
 	{
-		echo $res['return'];
+		echo json_encode($res);
 	}
 	else
 	{
 		echo '%err%'.$TLP_obj->mistakes[$res['errCode']];
 	}
 }
-
+elseif($action == 'Messages_SetViewed')
+{
+	$arFnc = array();
+	foreach ($_POST as $key => $value) 
+	{
+		if($key == 'id_list') {
+			$arFnc[$key] = json_decode($value,true);
+		} else if(!($key == 'action' || $key=='adds'))
+			{$arFnc[$key] = $value;}
+	}	
+	$res = $TLP_obj->telecall('Messages_SetViewed', $arFnc);
+	if($res == 0)
+	{
+		echo $res;
+	}
+	else
+	{
+		echo '%err%'.$TLP_obj->mistakes[$res];
+	}
+}
 elseif($action == 'setPersonInfo')
 {
 	$arPermitted = array("user_name", "user_fullname", "phone", "company", "duplicate_messages", "public_contact", "allow_stocks", 

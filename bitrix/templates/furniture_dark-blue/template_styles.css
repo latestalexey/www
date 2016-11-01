@@ -2073,7 +2073,8 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 
 #detail_photo {
 	position: absolute;
-	top: 10px; 
+	top: 10px;
+	padding: 2px;
 }
 
 #item_detail_info {

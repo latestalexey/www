@@ -1524,7 +1524,7 @@ function addItemToNewDoc(Item, contact) {
 };
 
 function getItemPosInfo() {
-	$('#it_cart').addClass('empty');
+	//$('#it_cart').addClass('empty');
 	var contact = getActiveContact();
 	if (contact.id != undefined) {
 		$.post('/my/ajax/order.php', {action: 'Documents_getItemPosInfo', receiver: contact.name}, function(data){

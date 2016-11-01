@@ -1,3 +1,6 @@
+var doc_title = document.title;
+var changeTitle = null;
+
 //General functions
 function  getPageSize(){
 	   var xScroll, yScroll;
@@ -340,6 +343,7 @@ function messagesRequest() {
 			var notify_requests = 0;
 			var notify_title = "";
 			var notify_text = "";
+			var all_notifies = 0;
 			
 			arResult.forEach(function(rqobject, key){
 				var req_type 		= rqobject.type;
@@ -350,11 +354,14 @@ function messagesRequest() {
 						notifyInformation("Приглашение от \n" + rqobject.contact, rqobject.info);  
 					}
 					showContactRequests(rqobject.contact, rqobject.info);
+					all_notifies = all_notifies + 1;
 				}
 				else {
 					req_sender		= encodeString(rqobject.contact);
 					req_quantity	= rqobject.quantity;
 					req_prefix 		= (req_type == 'message')?('msg'):('ord');
+					all_notifies 	= all_notifies + req_quantity;
+					
 					var new_msg_obj = $('[data-usr-name='+req_sender+']').first().find(".new_" + req_prefix);
 					if(req_quantity > 0 && new_msg_obj.length != 0) {
 						new_msg_obj.css("display", "block");
@@ -377,7 +384,7 @@ function messagesRequest() {
 									notify_text = notify_text + "Оформлено "+notify_orders+" новых заказов. \n";
 								}	
 							}
-							
+									
 							moveContactRecentTop($('[data-usr-name='+req_sender+']').attr('data-usr-id'));
 							needSnd = true;
 						}
@@ -390,15 +397,31 @@ function messagesRequest() {
 				}	
 			});
 			if(notify_text != "") {
+				var notify_q = notify_messages + notify_orders;
 				notifyInformation(notify_title, notify_text);  
+				changeTitle = setInterval(
+					function(){
+						(document.title === doc_title) ? document.title='(' + all_notifies + ') Новое уведомление' : document.title=doc_title;
+						}, 1000);
+			}
+			
+			if(all_notifies != 0) {
+				clearInterval(changeTitle);
+				changeTitle = setInterval(
+					function(){
+						(document.title === doc_title) ? document.title='(' + all_notifies + ') Новое уведомление' : document.title=doc_title;
+						}, 1000);
+			} else {
+				clearInterval(changeTitle);
+				document.title = doc_title;
 			}
 
 			if(needSnd) {
 				newsSound();
 			}
-			/*if(cur_menu == 'm_messages' && !(cur_contact.name == undefined)) {
-				messagesGetNewStatus(cur_contact.name);
-			}*/	
+			if(cur_menu == 'm_messages' && !(cur_contact.name == undefined)) {
+				messagesGetNewStatus();
+			}	
 		}
 		xhr.send(body);
 }
