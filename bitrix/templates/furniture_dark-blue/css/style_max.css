@@ -1197,3 +1197,94 @@ div#UserDocList .UserDocItem:hover {
 .detailed-info-block .fa-pencil-square-o {
 	display: none;
 }
+
+#ext_pan_content .scrollist .showmore {
+	padding: 10px 0;
+    width: 300px;
+    left: 0;
+    text-align: center;
+    font-weight: 600;
+}
+
+
+#pastedImageBlock {
+	display: none;
+	width: 760px;
+	max-height: 480px;
+	position: absolute;
+	bottom: 100px;
+	left: 50%;
+    margin-left: -270px;
+    background: #fff;
+    z-index: 999;
+	border: 1px solid #CCC;
+	padding: 4px;
+	box-shadow: 2px 2px 4px #777777;
+	text-align: center;
+}
+
+#pastedImage {
+	display: block;
+	margin: 0 auto;
+	position: relative;
+	max-width: 740px;
+	max-height: 420px;
+	height: auto;
+	z-index: 1;
+}
+
+#pastedImageBlock .buttons {
+	width: 100%;
+	margin: 15px auto;
+}
+
+#pastedImageBlock .button {
+	left: 0;
+	padding: 7px 15px;
+}
+
+.order_headline .add-file-to-doc {
+	padding: 5px 15px;
+}
+
+.order_headline #doc-filename {
+    display: inline-block;
+    vertical-align: bottom;
+	margin-left: 100px;
+}
+
+#doc-filename .msg_file {
+    padding: 5px 15px;
+	min-width: 120px;
+}
+
+#doc-filename .del_file .cloud {
+    top: -5px;
+    right: -10px;
+}
+
+#doc-filename .del_file .cloud svg {
+    width: 24px;
+}
+
+#doc-filename .file_icon {
+	top: -2px;
+    left: 0;
+}
+
+#doc-filename .file_icon svg {
+	width: 24px;
+    height: 24px;
+}
+
+#doc-filename .file_block {
+	margin-right: 30px;
+}
+
+#doc-filename .file_block .filename {
+	padding: 0 30px;
+}
+
+#doc-filename .file_block .file_info {
+	padding: 0;
+}

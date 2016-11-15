@@ -8,7 +8,13 @@ require_once($_SERVER["DOCUMENT_ROOT"]."/my/admin/before.php");
 ?>
 <script type="text/javascript" src="/my/js/msg.js"></script>
 <div id="mess_list" class="mess_list">
-	<div id="msg_li" data-cnt-id="">
+	<div id="msg_li" data-cnt-id=""></div>
+	<div id="pastedImageBlock">
+		<img id="pastedImage">
+		<div class="buttons">
+			<div class="button send">Отправить</div>
+			<div class="button cancel">Отменить</div>
+		</div>	
 	</div>
 </div>
 <div id="mess_send" class="mess_send">
@@ -31,7 +37,7 @@ require_once($_SERVER["DOCUMENT_ROOT"]."/my/admin/before.php");
 						</div></div>
 					</td>
 					<td>
-						<textarea id="msgBox" class="message_box" placeholder="Введите сообщение"></textarea>
+						<textarea id="msgBox" class="message_box" placeholder="Введите сообщение или нажмите ctrl+v для вставки изображения"></textarea>
 					</td>
 					<td style="width: 45px;">
 						<div id="send_msg">
