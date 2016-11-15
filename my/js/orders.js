@@ -170,7 +170,7 @@ function addNewDoc(docid, contact){
 			"num":"",
 			"hash":"0000",
 			"sum":0.00,
-			"currencyId":"RUR",
+			"currencyId":"RUB",
 			"comment":"",
 			"props":[]
 		},

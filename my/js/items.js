@@ -1486,7 +1486,7 @@ function addItemToNewDoc(Item, contact) {
 				"num":"",
 				"hash":"00001234",
 				"sum":Item.sum,
-				"currencyId":"RUR",
+				"currencyId":"RUB",
 				"comment":"",
 				"props":[]
 			},
