@@ -979,6 +979,10 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 .image_file {height: 250px; text-align: center;}
 .image_file img{height: 226px;}
 
+#msg_li .image_file img:hover {
+	cursor: url('/my/data/svg/zoom_in.svg'), pointer;
+}
+
 .close_image {height: 24px;}
 .close_image img{display: none;}
 
@@ -2073,8 +2077,11 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 
 #detail_photo {
 	position: absolute;
-	top: 10px;
-	padding: 2px;
+	top: 0px;
+	padding: 0px;
+	z-index: 9999;
+	width: 100%;
+	text-align: center;
 }
 
 #item_detail_info {

@@ -128,10 +128,11 @@ function showModalWindow(obj) {
 		}	
 		$(this).parent().parent().hide(100);
 		$(this).parent().parent().remove();
+		$('#detail_photo').remove();
 		//RB
 		hideCtxChannelMenu($('#ctx-channel-menu'));
-		hideSelectedList();
-		hideContactMoveList();
+		//hideSelectedList();
+		//hideContactMoveList();
 		//RB
 		
 	});
@@ -519,13 +520,13 @@ function ContactInfoView(name) {
 					if(orig_width == '' || orig_height == '')
 					{return;}*/
 					
-					var strPhoto = '<div class="modal_back back_curt"></div><div id="detail_photo" class="modal_window">' +
+					var strPhoto = '<div class="modal_back back_curt"></div><div id="detail_photo"><div class="modal_window" style="display: inline-block;">' +
 						'<div class="close_line"><div class="clw"><img src="/include/close_window.svg"/></div></div>'+
 						'<img src="'+$(this).find('img').attr('src')+'" style="max-height: 600px;"/>'+
-						'</div>';
+						'</div></div>';
 					$('#main_content').append(strPhoto);
 					$('#detail_photo img').css('max-height', $('#content').height() - 80);
-					$('#detail_photo').css('left', ($('#content').width() - $('#detail_photo').width())/2);
+					//$('#detail_photo').css('left', ($('#content').width() - $('#detail_photo').width())/2);
 					showModalWindow($('#detail_photo'));
 				}
 			});
@@ -552,13 +553,13 @@ function ContactInfoView(name) {
 					}
 				}
 				else {
-					var strPhoto = '<div class="modal_back back_curt"></div><div id="detail_photo" class="modal_window">' +
+					var strPhoto = '<div class="modal_back back_curt"></div><div id="detail_photo"><div class="modal_window" style="display: inline-block;">' +
 						'<div class="close_line"><div class="clw"><img src="/include/close_window.svg"/></div></div>'+
 						'<img src="'+$(this).find('img').attr('src')+'" style="max-height: 600px;"/>'+
-						'</div>';
+						'</div></div>';
 					$('#main_content').append(strPhoto);
 					$('#detail_photo img').css('max-height', $('#content').height() - 80);
-					$('#detail_photo').css('left', ($('#content').width() - $('#detail_photo').width())/2);
+					//$('#detail_photo').css('left', ($('#content').width() - $('#detail_photo').width())/2);
 					showModalWindow($('#detail_photo'));
 				}
 			});

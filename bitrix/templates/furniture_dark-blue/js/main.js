@@ -27,6 +27,7 @@ $(document).ready(function() {
 			$('.modal_window').hide();
 			$('.modal_window').remove();
 			$('.modal_back').remove();
+			$('#detail_photo').remove();
 			$('.cnt_info').not($(e.target).children()).hide();
 			$('.msg_selected').removeClass('msg_selected');
 			//$('.trans_svg').toggleClass('transform_icon');
@@ -218,7 +219,7 @@ $(document).ready(function() {
 		$('#cnt_list').slimScroll({height: 'auto', size: '7px', disableFadeOut: true});
 		
 		$("#mess_list").css("height", $(".main_pan").height()-$("#mess_send").height()-18);
-		$("#mess_list").css("maxWidth", $(".workspace").width()-$("#contacts").width()-$("#ext_pan").width()-2);
+		$("#mess_list").css("maxWidth", $(".workspace").width()-$("#contacts").width()-$("#ext_pan").width()-4);
 		$('#msgBoxdiv').width($('#msgBox').width());
 		
 		$("#item_list").css("height", $(".main_pan").height() - $("#items_header").height());
