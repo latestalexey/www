@@ -36,7 +36,7 @@ else {
 				<input id="password" class="loginfields" style="margin-top: 20px;" type="password" name="password" value="" placeholder="Пароль"/>
 				<input id="autolog" type="hidden" name="autolog" value="<?=$autoLogin;?>"/> 
 				<p style="text-align: right; float: right; margin-top: 10px; font-size: 15px; padding-top: 2px;"><a id="forget">забыли пароль?</a></p>
-				<div id="noremember" style="margin-top: 10px;"><div class="checkbox"></div><span>Запомнить меня</span></div>
+				<div id="noremember" style="margin-top: 10px;"><div class="checkbox checkbox_clicked"></div><span>Запомнить меня</span></div>
 				<p id="reg_error" style="text-align: right;"></p>
 				<input type="submit" name="sbt" value="OK" style="display:none;"/>
 				<div style="margin-top:30px; text-align: center;">
