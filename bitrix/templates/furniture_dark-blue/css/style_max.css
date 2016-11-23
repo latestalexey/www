@@ -1063,6 +1063,8 @@ div#UserDocList .UserDocItem:hover {
 	height: 400px;
 	position: absolute;
 	top: 45px;
+	left: 50%;
+    margin-left: -370px;
 	padding: 5px;
 	background: #f4f4f4;
 	border: 1px solid #ccc;
@@ -1287,4 +1289,35 @@ div#UserDocList .UserDocItem:hover {
 
 #doc-filename .file_block .file_info {
 	padding: 0;
+}
+
+
+.item_block_name_allows span {
+    position: relative;
+    float: right;
+}
+
+.item_block.action:before,
+.item_block.action + #detail_info_window:before {
+	content: url('../img/action.png');
+	display: block;
+	position: absolute;
+	left: 0;
+	top: 0;
+	z-index: 9999;
+}
+
+.item_block.action .item_price {
+	color: #d20000;
+}
+
+.item_block.action .item_price span {
+	text-decoration: line-through;
+}
+
+#item_li .block_view {
+	display: flex;
+    align-items: stretch;
+    flex-wrap: wrap;
+    justify-content: center;
 }

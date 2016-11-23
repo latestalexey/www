@@ -41,6 +41,7 @@ $res = $TLP_obj->telecall('Contacts_Get', $arFnc);
 		$arCnt['membergroupfullname'] = $cnt["membergroupfullname"];
 		$arCnt['sortnum'] = $cnt["sortnum"];
 		$arCnt['activedate'] = ($cnt["activedate"] == '0001-01-01T00:00:00.0000000')?(''):($cnt["activedate"]);
+		$arCnt['photo_id'] = $cnt["photo_id"];
 		$arCnt['photo'] = ($cnt["photo_id"] == '')?(''):('/my/ajax/files.php?a=prev&i='.$cnt["photo_id"]);
 
 		$arContacts[$group][$name] = $arCnt;
@@ -145,7 +146,7 @@ uasort($arGroups, 'arSortByNum');
 							}
 						?>
 							
-							<div id="lst_<?=$cnt['user_id']?>" class="<?=$cnt_classname;?>" data-usr-id="<?=$cnt['user_id']?>" data-usr-name="<?=$cnt['name']?>" data-usr-fullname="<?=$usr_fullname?>" data-usr-activedate="<?=$cnt['activedate'];?>" data-usr-index="<?=mb_strtolower($cnt['name'],'UTF-8').'_ins_'.mb_strtolower($cnt['fullname'],'UTF-8')?>">
+							<div id="lst_<?=$cnt['user_id']?>" class="<?=$cnt_classname;?>" data-usr-id="<?=$cnt['user_id']?>" data-usr-name="<?=$cnt['name']?>" data-usr-fullname="<?=$usr_fullname?>" data-photo-id="<?=$cnt['photo_id']?>" data-usr-activedate="<?=$cnt['activedate'];?>" data-usr-index="<?=mb_strtolower($cnt['name'],'UTF-8').'_ins_'.mb_strtolower($cnt['fullname'],'UTF-8')?>">
 								<p class="cnt_info active_icon"><?include($_SERVER["DOCUMENT_ROOT"]."/my/data/svg/expand_more.svg");?></p>
 								<table style="border-spacing: 0;">
 									<tr>
@@ -266,7 +267,7 @@ uasort($arGroups, 'arSortByNum');
 							
 						?>
 							
-							<div id="cnt_<?=$cnt['user_id']?>" class="<?=$cnt_classname;?><?=$drag;?><?=$drop;?>" data-usr-id="<?=$cnt['user_id']?>" data-usr-name="<?=$cnt['name']?>" data-usr-fullname="<?=$usr_fullname?>" data-group="<?=mb_strtolower($cnt['group'], 'UTF-8');?>" data-group-name="<?=$cnt['group'];?>" data-usr-activedate="<?=$cnt['activedate'];?>" data-usr-index="<?=mb_strtolower($cnt['name'],'UTF-8').'_ins_'.mb_strtolower($cnt['fullname'],'UTF-8')?>">
+							<div id="cnt_<?=$cnt['user_id']?>" class="<?=$cnt_classname;?><?=$drag;?><?=$drop;?>" data-usr-id="<?=$cnt['user_id']?>" data-usr-name="<?=$cnt['name']?>" data-usr-fullname="<?=$usr_fullname?>" data-photo-id="<?=$cnt['photo_id']?>" data-group="<?=mb_strtolower($cnt['group'], 'UTF-8');?>" data-group-name="<?=$cnt['group'];?>" data-usr-activedate="<?=$cnt['activedate'];?>" data-usr-index="<?=mb_strtolower($cnt['name'],'UTF-8').'_ins_'.mb_strtolower($cnt['fullname'],'UTF-8')?>">
 								<p class="cnt_info active_icon"><?include($_SERVER["DOCUMENT_ROOT"]."/my/data/svg/expand_more.svg");?></p>
 								<table style="border-spacing: 0;">
 									<tr>

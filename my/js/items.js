@@ -73,7 +73,6 @@ $(document).ready(function()
 
 		item_nom = 1;
 		$('#item_li').html('');
-		showTelebotInfo('Формирую каталог товаров','',0);
 		getSelectedContactItems(item_nom, items_filter);
 		
 	});
@@ -763,7 +762,7 @@ function resizeItemInfo() {
 function resizeSearching(inact) {
 	var pan_width = $('#it_rule_pan').width();
 	var mode_width = $('#vwmode_pan').width();
-	if(pan_width <= 700) {
+	/*if(pan_width <= 700) {
 		$('#it_cart .info').width(75);
 	}
 	else if(pan_width <= 886) {
@@ -771,13 +770,13 @@ function resizeSearching(inact) {
 	}
 	else {
 		$('#it_cart .info').width('');
-	}
+	}*/
 	if(pan_width <= 700) {
 		$('#it_search_inp').width(75);
 	}	
 	else {
-		var it_cart_width = $('#it_cart').width();
-		var usf_width = pan_width - mode_width - it_cart_width - 225;
+		//var it_cart_width = $('#it_cart').width();
+		var usf_width = pan_width - mode_width - 225; //- it_cart_width
 		usf_width = usf_width*0.6;
 		usf_width = (usf_width <= 100)?100:usf_width;
 		usf_width = (($('#it_search_inp').is(':focus') || $('#it_search_inp').val() != '')&& usf_width>150)?usf_width:150;
@@ -811,9 +810,12 @@ function initContactItems(){
 				return;
 			}
 			var arResult = jQuery.parseJSON(xhr.responseText);
-			/*if(!arResult.has_catalog) {
+			if(!arResult.has_catalog) {
 				hideMenuItems(0);
-				if(contact.id == smuser.id) {
+				hideTelebotInfo();
+				$('#item_li').addClass('no_catalog');
+
+				/*if(contact.id == smuser.id) {
 					showTelebotInfo('У вас нет своего каталога. Чтобы узнать, как его завести ознакомтесь с\
 					<br>\
 					<a href="https://e-teleport.ru/o-produkte" target="_blank">\
@@ -821,12 +823,10 @@ function initContactItems(){
 					</a>\
 					<br>\
 					или выберите нужный контакт в списке, остальное я сделаю сам.','',0);
-				}
-				else {
-					showTelebotInfo('У "' + contact.fullname + '" нет товаров в каталоге, выберите другой контакт','',0);
-				}	
+				}*/
 			}
-			else { */
+			else {
+				$('#item_li').removeClass('no_catalog');
 				hideMenuItems(1);
 				if(!arResult.allow_stocks)
 				{
@@ -836,16 +836,39 @@ function initContactItems(){
 				{
 					$('.col_3').remove();
 				}
-				getSelectedContactItems(item_nom, items_filter);
-			//}
+			}
+			getSelectedContactItems(item_nom, items_filter);
 		}
 		xhr.send(body);
 	}
 }
 function getSelectedContactItems(it_nom, it_filter) {
-	noItems = false;
 	var contact	= getActiveContact();
 	if(contact.id == undefined)	{ contact = smuser;	}
+	
+	if($('#item_li').hasClass('no_catalog')) {
+		var str = '<div style="width: 100%;">\
+			<div style="margin-top: 50px;">\
+				<img style="max-height: 300px;" src="/my/ajax/files.php?i='+contact.photo_id+'">\
+			</div>\
+			<div style="color: #4b5961; background-color: #FFF;">\
+				<h1 style="font-weight: 300; font-size: 36px; color: #4b5961; background-color: #FFF;">'+contact.fullname +' не выгружал свой каталог товаров в Телепорт.</h1>\
+				<p style="font-size: 20px;">\
+					Выберите другой контакт или перейдите в раздел \
+					<a href="/my/index.php?mode=messages&cnt='+contact.name+'" style="color: #26a69a; text-decoration: underline;">сообщений</a>\
+					, для общения с ним.\
+				</p>\
+			</div>\
+			</div>';
+		$('#item_li').html(str);
+		$('#it_cart .info').html('');
+		$('#it_cart .info').next('div').css('display','none');
+		$('#it_cart .info').prev('div').css('display','none');
+		return;
+	}	
+
+	showTelebotInfo('Формирую каталог товаров','',0);
+	noItems = false;
 
 	var list_type = $('.activevwmode').attr('data-ln');
 	$('#item_list_header').css('display', (list_type == 'list')?'block':'none');
@@ -873,10 +896,20 @@ function getSelectedContactItems(it_nom, it_filter) {
 				showError(xhr.responseText.replace('%err%',''));
 				return;
 			}
+			if(list_type == 'block') {
+				$('#item_li').addClass('block_view');
+			} else {
+				$('#item_li').removeClass('block_view');
+			}
+			var has_catalog = (it_nom == 1 && xhr.responseText == '' && it_filter == '')?(false):(true);
+			if(!has_catalog) {
+				$('.wait').remove();
+				return;
+			}
+			
 			if(it_nom == 1) {
 				$('#item_li').html('');
 			}
-
 			showItems(xhr.responseText);
 			if(contact == smuser) {
 				$('#item_li .cart').remove();
@@ -893,6 +926,7 @@ function getSelectedContactItems(it_nom, it_filter) {
 function getMyCatalogItems() {
 	$('#it_cart .info').html('');
 	$('#it_cart .info').next('div').css('display','none');
+	$('#it_cart .info').prev('div').css('display','none');
 
 	removeCurrentContact();
 	$('#contact_filter').addClass('ext_selected');
@@ -1163,11 +1197,9 @@ function compileFilter(getItems) {
 	showItemsTotalQuantity(items_filter);
 	item_nom = 1;
 	if(getItems) {
-		showTelebotInfo('Формирую каталог товаров','',0);
 		getSelectedContactItems(item_nom, items_filter);
 	} else if(vi_flag) {
 		vi_timeout = setTimeout(function viewItems() {
-			showTelebotInfo('Формирую каталог товаров','',0);
 			getSelectedContactItems(item_nom, items_filter);
 		},2000);
 	}
@@ -1532,7 +1564,7 @@ function getItemPosInfo() {
 				var UserDocs = JSON.parse(data);
 				var UserItemsQty = UserDocs.docTable.length*1;		
 				$('#it_cart').removeClass('empty');
-				$('#it_cart .info').html('Позиций:&nbsp<span>'+UserItemsQty+'</span>&nbsp');	
+				$('#it_cart .info').html('<span>'+UserItemsQty+'</span>');	
 				$('#it_cart').attr('data-doc-id', UserDocs.docHeader.id);
 			}
 			catch(e) {

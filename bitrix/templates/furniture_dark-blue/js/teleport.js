@@ -1362,12 +1362,12 @@ function getGroupHead(obj) {
 } 
 function getActiveContact() {
 	
-	var contact	= {id: $('.active_contact_inf').attr('data-usr-id'), name: $('.active_contact_inf').attr('data-usr-name'), fullname: $('.active_contact_inf').attr('data-usr-fullname')};
+	var contact	= {id: $('.active_contact_inf').attr('data-usr-id'), name: $('.active_contact_inf').attr('data-usr-name'), fullname: $('.active_contact_inf').attr('data-usr-fullname'), photo_id: $('.active_contact_inf').attr('data-photo-id')};
 	return contact;
 }
 function getContactInfo(name) {
 	if(name == '') {
-		var contact	= {'id': undefined, 'name': undefined, 'fullname': undefined};
+		var contact	= {'id': undefined, 'name': undefined, 'fullname': undefined, 'photo_id': undefined};
 		return contact;
 	}
 
@@ -1375,10 +1375,10 @@ function getContactInfo(name) {
 	
 	var obj = $('[data-usr-name='+fname+']');
 	if(obj.length == 0) {
-		var contact	= {'id': undefined, 'name': name, 'fullname': name};
+		var contact	= {'id': undefined, 'name': name, 'fullname': name, 'photo_id': ''};
 	}
 	else {
-		var contact	= {'id': obj.attr('data-usr-id'), 'name': obj.attr('data-usr-name'), 'fullname': obj.attr('data-usr-fullname')};
+		var contact	= {'id': obj.attr('data-usr-id'), 'name': obj.attr('data-usr-name'), 'fullname': obj.attr('data-usr-fullname'), 'photo_id': obj.attr('data-photo-id')};
 	}	
 	return contact;
 }

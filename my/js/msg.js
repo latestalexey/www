@@ -352,7 +352,7 @@ $(document).ready(function(e)
 		$('#msg_form').submit();
 	});
 
-	$('#msgBox').keyup(function(e) {
+	$('#msgBox').keyup(function(event) {
 		event.stopPropagation();
 		if($('#msgBox').hasClass('sending')) {
 			event.preventDefault();

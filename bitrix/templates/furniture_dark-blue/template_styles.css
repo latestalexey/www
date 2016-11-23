@@ -1397,16 +1397,27 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 	padding: 0;
 }
 #it_cart .info {
-	color: #26A69A;
+	/*color: #26A69A;
 	border-right: none;
     text-overflow: ellipsis;
     white-space: nowrap;
-    overflow: hidden;
+    overflow: hidden;*/
+    position: absolute;
+    border-radius: 70px;
+    min-width: 18px;
+    background-color: #ff6600;
+    color: #FFF;
+    top: 15px;
+    right: 20px;
+    text-align: center;
+    z-index: 500;
+    padding: 0px;
 }
 #it_cart .info span{
-	color: #000;
+	padding: 3px;
+	/*color: #000;
     font-size: 16px;
-    font-weight: 800;
+    font-weight: 800;*/
 }	
 
 

@@ -401,9 +401,10 @@ elseif($action == 'catalog_get')
 				elseif ($list_type == 'block') {
 					//block type
 					$im_count = (count($arPictures[$item["id"]])==0)?1:count($arPictures[$item["id"]]);
+					$action = $item["action"] ? ' action' : '';
 					$li_size = 150*$im_count;
 					$it_name = ($item["article"]=='')?$item["name"]:$item["article"].'<br>'.$item["name"];
-					$str = $str.'<div id="it_'.$item["id"].'" class="item_block" data-it-id="'.$item["id"].'">
+					$str = $str.'<div id="it_'.$item["id"].'" class="item_block'.$action.'" data-it-id="'.$item["id"].'">
 						<div class="item_block_info">
 							<div class="item_photo_list">
 								<div class="item_photo_li" style="width: '.$li_size.'px;" data-im-num="0" data-im-count="'.$im_count.'">';
@@ -447,11 +448,22 @@ elseif($action == 'catalog_get')
 							{
 								$strStocks = ($item["stock"]=='' || $item["stock"] == 0)?'Нет':number_format($item["stock"], 0, '.', ' ');
 								$str = $str.'<div class="item_block_name item_block_name_allows">На складе: <span>'.$strStocks.'</span></div>';
+								if($strStocks==='Нет' && strlen($item["receipt_date"])){
+									$date = date_parse($item["receipt_date"]);
+									$year = $date["year"];
+									$month = (strlen($date["month"])>1) ? $date["month"] : '0'.$date["month"];
+									$day = (strlen($date["day"])>1) ? $date["day"] : '0'.$date["day"];
+									$str = $str.'<div class="item_block_name item_block_name_allows help_icon"><div class="help_info">Дата ожидания на складе</div>Дата ожидания на складе: <span>'.$day.'-'.$month.'-'.$year.'</span></div>';
+								};								
 							}	
 							if($allow_prices)
 							{
 								$strPrice = ($item["price"]=='' || $item["price"] == 0)?'-':number_format($item["price"], 2, '.', ' ').' руб';
-								$str = $str.'<div class="item_block_name item_block_name_allows">Цена: <span>'.$strPrice.'</span></div>';
+								$str = $str.'<div class="item_block_name item_block_name_allows item_price">Цена: <span>'.$strPrice.'</span></div>';
+								if(strlen($action)){
+									$actionPrice = ($item["action_price"]=='' || $item["action_price"] == 0)?'-':number_format($item["action_price"], 2, '.', ' ').' руб';
+									$str = $str.'<div class="item_block_name item_block_name_allows item_action_price">Цена по акции: <span>'.$actionPrice.'</span></div>';
+								};
 							}	
 
 							$str = $str.'<div class="cart" data-cart-id="'.$item["id"].'">
@@ -921,7 +933,20 @@ elseif($action == 'getPersonInfo')
 	{
 		//$DOM = DOMDocument::loadXML($res["return"]);
 		//$arResult = downloadCntInfo($DOM);
-
+		$arFileds = array("uid");
+		
+		$arFnc['adds'] = 'json';
+		$arFnc['fields'] = $arFileds;
+		$arFnc['limit'] = 1;
+		$arFnc['nom'] = 1;
+		$resCatalog = $TLP_obj->telecall('Catalog_Get', $arFnc);
+		if($resCatalog['errCode'] == 0) {
+			if(count($resCatalog['return']['catalog']) == 0) {
+				$res["return"]["has_catalog"] = false;
+			} else {
+				$res["return"]["has_catalog"] = true;
+			}
+		}
 		if($adds=='json')
 		{
 			echo json_encode($res["return"]);
