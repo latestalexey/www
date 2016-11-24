@@ -281,12 +281,13 @@ $(document).ready(function()
 			$.post('/my/ajax/action.php', { action: "getPersonInfo", "contact": contact.name, "adds": "json" }, function(data) {
 				var arUser = JSON.parse(data);
 				var isShared = arUser.catalog_shared || 0;
-				if (isShared == 2) {
-					getSharedCatalog(contact.name);
-				} else if (isShared == 0) {
+				if (isShared == 0) {
 					showTelebotInfo('В настоящее время выбранный контакт не открыл доступ для скачивания своего каталога.','',5000);
 					return;
-				};
+				} else {
+					getDownloadButtons(contact.name);
+					getSharedCatalog(contact.name);
+				}
 				showModalWindow($('#download_cat'));
 			});
 		};
@@ -320,18 +321,38 @@ $(document).ready(function()
 		function getSharedCatalog(contact){
 			$('#download_cat .link-block').remove();
 			var href = 'https://wbs.e-teleport.ru/Catalog_GetSharedCatalog?contact='+contact+'&catalog_type=';
+			svg_dwnld = '<svg fill="#777" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">\
+						<path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>\
+						<path d="M0 0h24v24H0z" fill="none"/>\
+						</svg>';
+			svg_copy = '<svg fill="#777" height="22" viewBox="0 0 24 24" width="22" xmlns="http://www.w3.org/2000/svg">\
+						<path d="M0 0h24v24H0z" fill="none"/>\
+						<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>\
+						</svg>';
 			$('#download_cat').append( 
-				'<div class="link-block">' +
-					'<span>Ссылка на каталог в формате Teleport</span>' + 
-					'<input value='+href+'teleport readonly>' +
-					'<span>Ссылка на каталог в формате YML</span>' + 
-					'<input value='+href+'yandex readonly>' +
-					'<span>Ссылка на каталог в формате Bitrix</span>' + 
-					'<input value='+href+'bitrix readonly>' +
-					'<span>Ссылка на каталог в формате Excel</span>' + 
-					'<input value='+href+'excel readonly>' +
-				'</div>'
+				'<div class="link-block">\
+					<span>Ссылка на каталог в формате Teleport</span>\
+					<input value='+href+'teleport readonly>\
+					<div class="simple_button link_button link_copy help_icon">\
+					<div class="help_info">Скопировать ссылку в буфер обмена</div>'+svg_copy+'</div>\
+					<a href="'+href+'teleport"><div class="simple_button link_button link_download help_icon">\
+					<div class="help_info">Скачать каталог в формате Teleport</div>'+svg_dwnld+'</div></a>\
+					<span>Ссылка на каталог в формате YML</span>\
+					<input value='+href+'yandex readonly>\
+					<div class="simple_button link_button link_copy help_icon">\
+					<div class="help_info">Скопировать ссылку в буфер обмена</div>'+svg_copy+'</div>\
+					<a href="'+href+'yandex"><div class="simple_button link_button link_download help_icon">\
+					<div class="help_info">Скачать каталог в формате Яндекс</div>'+svg_dwnld+'</div></a>\
+				</div>'
 			);
+			/*'<span>Ссылка на каталог в формате Bitrix</span>' + 
+			'<input value='+href+'bitrix readonly>' +
+			'<div class="simple_button link_button link_copy">'+svg_copy+'</div>'+
+			'<a href="'+href+'bitrix"><div class="simple_button link_button link_download">'+svg_dwnld+'</div></a>'+
+			'<span>Ссылка на каталог в формате Excel</span>' + 
+			'<input value='+href+'excel readonly>' +
+			'<div class="simple_button link_button link_copy">'+svg_copy+'</div>'+
+			'<a href="'+href+'excel"><div class="simple_button link_button link_download">'+svg_dwnld+'</div></a>'+*/
 		};
 		
 		$('#download_cat').on('click', '.link_flag', function() {
@@ -358,8 +379,7 @@ $(document).ready(function()
 			if (shared_link_len && !public_link_len) {
 				catalog_shared = 1;
 			};
-			
-			$.post("/my/ajax/action.php", {"action": "setPersonInfo", "Request_JSON":{"catalog_shared":1}},  function(data){
+			$.post("/my/ajax/action.php", "action=setPersonInfo&adds=html&name=" + encodeURIComponent(smuser.name) + "&catalog_shared="+catalog_shared,  function(data){
 				$('#download_cat .link-block').remove();
 				if (catalog_shared) {
 					getSharedCatalog(smuser.name);

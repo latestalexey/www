@@ -2358,6 +2358,24 @@ width: 278px;
 	border: 1px solid #CCC;
 }
 
+.link_button {
+	position: absolute; 
+	display: inline-block; 
+	min-width: 0; 
+}
+.link_download {
+	right: 5px;
+}
+
+.link_copy {
+	right: 35px;
+}
+/*.link_download:before {
+	content: url('/include/download.svg');
+}.link_copy:before {
+	content: url('/include/copy.svg');
+	right: 35px;
+}*/
 /*im1ages in lines
 .im_lines {width: 100%; min-height: 150px; margin-top: 5px;}
 .im_lines .image {float: left; height: 150px; width: 200px; overflow: hidden; text-align: center;}
