@@ -19,9 +19,13 @@ if($action == 'prev') {
 } elseif($action == 'pics') {
 	$url = '/Catalog_Pics/'.file_ID;
 
+} elseif($action == 'catalog') {
+	$url = '/Catalog_GetSharedCatalog?'.$file_ID;
+
 } else {
 	$url = 'files/'.$file_ID;
 }
+
 ob_end_clean();
 header_remove();
 

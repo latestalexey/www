@@ -256,7 +256,7 @@ $(document).ready(function()
 		$('.modal_back').remove();	
 		
 		if (contact.id == undefined) {
-			getDownloadButtons(smuser.name);
+			getDownloadButtons(smuser.name, 2);
 			$('#download_cat').append( 
 				'<div class="teleport_links">' +
 					'<button class="share_link link_flag"></button><div class="share_text">Поделиться ссылкой с моими контактами</div>' +
@@ -268,12 +268,12 @@ $(document).ready(function()
 				var isShared = arUser.catalog_shared || 0;
 				if (isShared == 1) {
 					$('.teleport_links .share_link').addClass('active');
-					getSharedCatalog(smuser.name);
+					getSharedCatalog(smuser.name, isShared);
 				} else 
 				if (isShared == 2)  {
 					$('.teleport_links .share_link').addClass('active');
 					$('.teleport_links .public_link').addClass('active');
-					getSharedCatalog(smuser.name);
+					getSharedCatalog(smuser.name, isShared);
 				};
 				showModalWindow($('#download_cat'));
 			});
@@ -285,31 +285,35 @@ $(document).ready(function()
 					showTelebotInfo('В настоящее время выбранный контакт не открыл доступ для скачивания своего каталога.','',5000);
 					return;
 				} else {
-					getDownloadButtons(contact.name);
-					getSharedCatalog(contact.name);
+					getDownloadButtons(contact.name, isShared);
+					getSharedCatalog(contact.name, isShared);
 				}
 				showModalWindow($('#download_cat'));
 			});
 		};
 		
-		function getDownloadButtons(contact){
-			var href = 'https://wbs.e-teleport.ru/Catalog_GetSharedCatalog?contact='+contact+'&catalog_type=';
+		function getDownloadButtons(contact, isShared){
+			if(isShared == 1) {
+				var href = window.location.protocol + '//' + window.location.host + '/my/ajax/files.php?a=catalog&i='+encodeURIComponent('contact='+contact+'&catalog_type=');
+			} else {
+				var href = 'https://wbs.e-teleport.ru/Catalog_GetSharedCatalog?contact='+contact+'&catalog_type=';
+			}	
 			$('#main_content').append(
 					'<div id="download_cat" class="modal_window">' +
 						'<div class="close_line"><div class="clw"><img src="/include/close_window.svg"/></div></div>' +
 						'<div class="teleport_buttons">' +
 							'<div class="header">Скачать каталог в формате:</div>' +
 							'<div id="teleport_btn">' +
-								'<a href="'+href+'teleport" target=_blank class="button" format-value=teleport>Teleport</a>' +
+								'<a target="_blank" href="'+href+'teleport" target=_blank class="button" format-value=teleport>Teleport</a>' +
 							'</div>' +	
 							'<div id="yml_btn">' +
-								'<a href="'+href+'yandex" target=_blank class="button" format-value=yandex>YML</a>' +
+								'<a target="_blank" href="'+href+'yandex" target=_blank class="button" format-value=yandex>Яндекс</a>' +
 							'</div>' +	
 							'<div id="bitrix_btn">' +
-								'<a href="'+href+'bitrix" target=_blank class="button" format-value=bitrix>Bitrix</a>' +
+								'<a target="_blank" href="'+href+'bitrix" target=_blank class="button" format-value=bitrix>Bitrix</a>' +
 							'</div>' +	
 							'<div id="excel_btn">' +
-								'<a href="'+href+'excel" target=_blank class="button" format-value=excel>Excel</a>' +						
+								'<a target="_blank" href="'+href+'excel" target=_blank class="button" format-value=excel>Excel</a>' +						
 							'</div>' +
 						'</div>' +
 						'' +
@@ -318,9 +322,13 @@ $(document).ready(function()
 			);
 		};
 		
-		function getSharedCatalog(contact){
+		function getSharedCatalog(contact, isShared){
 			$('#download_cat .link-block').remove();
-			var href = 'https://wbs.e-teleport.ru/Catalog_GetSharedCatalog?contact='+contact+'&catalog_type=';
+			if(isShared == 1) {
+				var href = window.location.protocol + '//' + window.location.host + '/my/ajax/files.php?a=catalog&i='+encodeURIComponent('contact='+contact+'&catalog_type=');
+			} else {
+				var href = 'https://wbs.e-teleport.ru/Catalog_GetSharedCatalog?contact='+contact+'&catalog_type=';
+			}	
 			svg_dwnld = '<svg fill="#777" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">\
 						<path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>\
 						<path d="M0 0h24v24H0z" fill="none"/>\
@@ -335,16 +343,17 @@ $(document).ready(function()
 					<input value='+href+'teleport readonly>\
 					<div class="simple_button link_button link_copy help_icon">\
 					<div class="help_info">Скопировать ссылку в буфер обмена</div>'+svg_copy+'</div>\
-					<a href="'+href+'teleport"><div class="simple_button link_button link_download help_icon">\
+					<a target="_blank" href="'+href+'teleport"><div class="simple_button link_button link_download help_icon">\
 					<div class="help_info">Скачать каталог в формате Teleport</div>'+svg_dwnld+'</div></a>\
-					<span>Ссылка на каталог в формате YML</span>\
+					<span>Ссылка на каталог в формате Яндекс</span>\
 					<input value='+href+'yandex readonly>\
 					<div class="simple_button link_button link_copy help_icon">\
 					<div class="help_info">Скопировать ссылку в буфер обмена</div>'+svg_copy+'</div>\
-					<a href="'+href+'yandex"><div class="simple_button link_button link_download help_icon">\
+					<a target="_blank" href="'+href+'yandex"><div class="simple_button link_button link_download help_icon">\
 					<div class="help_info">Скачать каталог в формате Яндекс</div>'+svg_dwnld+'</div></a>\
 				</div>'
 			);
+			//https://my.e-teleport.ru/my/ajax/files.php?a=catalog&i=
 			/*'<span>Ссылка на каталог в формате Bitrix</span>' + 
 			'<input value='+href+'bitrix readonly>' +
 			'<div class="simple_button link_button link_copy">'+svg_copy+'</div>'+
@@ -382,7 +391,7 @@ $(document).ready(function()
 			$.post("/my/ajax/action.php", "action=setPersonInfo&adds=html&name=" + encodeURIComponent(smuser.name) + "&catalog_shared="+catalog_shared,  function(data){
 				$('#download_cat .link-block').remove();
 				if (catalog_shared) {
-					getSharedCatalog(smuser.name);
+					getSharedCatalog(smuser.name, catalog_shared);
 				};
 				$('.teleport_links button').attr('disabled', false);
 			});
@@ -894,7 +903,7 @@ function getSelectedContactItems(it_nom, it_filter) {
 	$('#item_list_header').css('display', (list_type == 'list')?'block':'none');
 	if(!(contact.id == undefined))
 	{
-		var arr_fld = ['id', 'article','name','price','stock','unit','currencyId','pictures'];
+		var arr_fld = ['id', 'article','name','price','stock','unit','currencyId','action','action_price','receipt_date','pictures'];
 		var xhr = new XMLHttpRequest();
 		var body =	'action=catalog_get' +
 					'&list_type='+ list_type +
