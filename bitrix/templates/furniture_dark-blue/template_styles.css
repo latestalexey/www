@@ -312,7 +312,7 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 	font-family: 'Open Sans', Arial, Helvetica, sans-serif;
 	z-index: 999;
 }
-.main_pan {float: right;	 width: 100%; height: 470px; overflow: hidden; background-image: url('/include/back.svg');}
+.main_pan {float: right;	 width: 100%; height: 470px; overflow: hidden; background-color: #FFF; /*background-image: url('/include/back.svg');*/}
 .right_pan {float: left; background-color: #FFFFFF;	height: 100%; width: 300px;	overflow: hidden; border-right: 1px solid #CCCCCC;}
 .left_pan {display: table;}
 .left_pan:after {
@@ -1515,10 +1515,6 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
     width: 98%;
     background-color: #FFF;
     border: 1px solid #000;
-    /*float: left;
-    min-height: 300px;
-	*/
-    background-color: #FBFBFB;
     border: 1px solid #CCCCCC;
     padding: 10px;
     border-radius: 5px;

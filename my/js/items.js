@@ -878,7 +878,7 @@ function getSelectedContactItems(it_nom, it_filter) {
 	if($('#item_li').hasClass('no_catalog')) {
 		var str = '<div style="width: 100%;">\
 			<div style="margin-top: 50px;">\
-				<img style="max-height: 300px;" src="/my/ajax/files.php?i='+contact.photo_id+'">\
+				<img style="max-height: 300px; border-radius: 50px;" src="/my/ajax/files.php?i='+contact.photo_id+'">\
 			</div>\
 			<div style="color: #4b5961; background-color: #FFF;">\
 				<h1 style="font-weight: 300; font-size: 36px; color: #4b5961; background-color: #FFF;">'+contact.fullname +' не выгружал свой каталог товаров в Телепорт.</h1>\
