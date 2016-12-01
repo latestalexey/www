@@ -1292,6 +1292,10 @@ div#UserDocList .UserDocItem:hover {
 }
 
 
+.item_block_name {
+    padding: 3px 0;
+}
+
 .item_block_name_allows span {
     position: relative;
     float: right;
@@ -1307,15 +1311,21 @@ div#UserDocList .UserDocItem:hover {
 	z-index: 9999;
 }
 
+.item.action .item_line .col_3,
 .item_block.action .item_price {
 	color: #d20000;
 }
 
-.item_block.action .item_price span {
+.item_line .col_3 {
+    width: 10%;
+    text-align: center;
+}
+
+.item_block.action .item_price.cross-out span {
 	text-decoration: line-through;
 }
 
-#item_li .block_view {
+#item_li.block_view {
 	display: flex;
     align-items: stretch;
     flex-wrap: wrap;

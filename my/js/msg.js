@@ -155,6 +155,9 @@ $(document).ready(function(e)
 		$('#cnt_list .cnt_check svg').css('display','none');
 		$('#send_msg').hide();
 		$("#mess_list").css("height", $(".main_pan").height()-$("#mess_send").height()-18);
+		if($('#usr-filename').length) {
+			$('#usr-filename .cloud').trigger('click');
+		};
 		msg_init();
 	}
 		

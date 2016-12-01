@@ -372,15 +372,31 @@ elseif($action == 'catalog_get')
 				
 				if($list_type == 'list') {
 					//list type
-					$str = $str.'<div id="it_'.$item["id"].'" class="item" data-it-id="'.$item["id"].'"><div class="item_content"><div class="item_line">';
+					$action = $item["action"] ? ' action' : '';
+					$str = $str.'<div id="it_'.$item["id"].'" class="item'.$action.'" data-it-id="'.$item["id"].'"><div class="item_content"><div class="item_line">';
 					$str = $str.'<div class="col_1">'.$item["article"].'</div><div class="col_2">'.$item["name"].'<p class="sub_info"><img src="/include/stdown.png"/></p></div>';
 					if($allow_prices)
 					{
-						$str = $str.'<div class="col_3">'.number_format($item["price"], 2, '.', ' ').'</div>';
+						$strPrice = ($item["price"]=='' || $item["price"] == 0)?'-':number_format($item["price"], 0, '.', ' ');
+						$actionPrice = ($item["action_price"]==='' || $item["action_price"] == 0)?'':number_format($item["action_price"], 0, '.', ' ');
+						if (strlen($action) && strlen($actionPrice)) {
+							$str = $str.'<div class="col_3">'.$actionPrice.'</div>';
+						} else {
+							$str = $str.'<div class="col_3">'.$strPrice.'</div>';
+						};
 					}	
 					if($allow_stocks)
 					{
-						$str = $str.'<div class="col_4">'.number_format($item["stock"], 0, '.', ' ').'</div>';
+						$strStocks = number_format($item["stock"], 0, '.', ' ');
+						if($strStocks==0 && strlen($item["receipt_date"]) && !strlen(stristr($item["receipt_date"],'0001-01-01T'))){
+							$date = date_parse($item["receipt_date"]);
+							$year = $date["year"];
+							$month = (strlen($date["month"])>1) ? $date["month"] : '0'.$date["month"];
+							$day = (strlen($date["day"])>1) ? $date["day"] : '0'.$date["day"];
+							$str = $str.'<div class="col_4">Ожидается: <span>'.$day.'-'.$month.'-'.$year.'</span></div>';
+						} else {
+							$str = $str.'<div class="col_4">'.$strStocks.'</div>';
+						};
 					}	
 					
 					$str = $str.'<div class="col_5"><div class="cart" data-cart-id="'.$item["id"].'">
@@ -447,22 +463,24 @@ elseif($action == 'catalog_get')
 							if($allow_stocks)
 							{
 								$strStocks = ($item["stock"]=='' || $item["stock"] == 0)?'Нет':number_format($item["stock"], 0, '.', ' ');
-								$str = $str.'<div class="item_block_name item_block_name_allows">На складе: <span>'.$strStocks.'</span></div>';
-								if($strStocks==='Нет' && strlen($item["receipt_date"])){
+								if($strStocks==='Нет' && strlen($item["receipt_date"]) && !strlen(stristr($item["receipt_date"],'0001-01-01T'))){
 									$date = date_parse($item["receipt_date"]);
 									$year = $date["year"];
 									$month = (strlen($date["month"])>1) ? $date["month"] : '0'.$date["month"];
 									$day = (strlen($date["day"])>1) ? $date["day"] : '0'.$date["day"];
-									$str = $str.'<div class="item_block_name item_block_name_allows help_icon"><div class="help_info">Дата ожидания на складе</div>Дата ожидания на складе: <span>'.$day.'-'.$month.'-'.$year.'</span></div>';
-								};								
+									$str = $str.'<div class="item_block_name item_block_name_allows">Ожидается: <span>'.$day.'-'.$month.'-'.$year.'</span></div>';
+								} else {
+									$str = $str.'<div class="item_block_name item_block_name_allows">На складе: <span>'.$strStocks.'</span></div>';
+								};													
 							}	
 							if($allow_prices)
 							{
 								$strPrice = ($item["price"]=='' || $item["price"] == 0)?'-':number_format($item["price"], 2, '.', ' ').' руб';
-								$str = $str.'<div class="item_block_name item_block_name_allows item_price">Цена: <span>'.$strPrice.'</span></div>';
-								if(strlen($action)){
-									$actionPrice = ($item["action_price"]=='' || $item["action_price"] == 0)?'-':number_format($item["action_price"], 2, '.', ' ').' руб';
-									$str = $str.'<div class="item_block_name item_block_name_allows item_action_price">Цена по акции: <span>'.$actionPrice.'</span></div>';
+								$actionPrice = ($item["action_price"]==='' || $item["action_price"] == 0)?'':number_format($item["action_price"], 2, '.', ' ').' руб';
+								$stroke = strlen($actionPrice) ? ' cross-out' : '';
+								$str = $str.'<div class="item_block_name item_block_name_allows item_price'.$stroke.'">Цена: <span>'.$strPrice.'</span></div>';
+								if (strlen($action) && strlen($actionPrice)) {
+									$str = $str.'<div class="item_block_name item_block_name_allows item_action_price"><span>'.$actionPrice.'</span></div>';
 								};
 							}	
 
