@@ -38,6 +38,8 @@ if($mode=='')
 <script async type="text/javascript" src="//api-maps.yandex.ru/2.1/?lang=ru_RU"></script>
 <script async type="text/javascript" src="/my/js/squad_mngr.js"></script>
 
+<!-- Yandex.Metrika counter --> <script type="text/javascript"> (function (d, w, c) { (w[c] = w[c] || []).push(function() { try { w.yaCounter41475039 = new Ya.Metrika({ id:41475039, clickmap:true, trackLinks:true, accurateTrackBounce:true, webvisor:true, trackHash:true }); } catch(e) { } }); var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () { n.parentNode.insertBefore(s, n); }; s.type = "text/javascript"; s.async = true; s.src = "https://mc.yandex.ru/metrika/watch.js"; if (w.opera == "[object Opera]") { d.addEventListener("DOMContentLoaded", f, false); } else { f(); } })(document, window, "yandex_metrika_callbacks"); </script> <noscript><div><img src="https://mc.yandex.ru/watch/41475039" style="position:absolute; left:-9999px;" alt="" /></div></noscript> <!-- /Yandex.Metrika counter -->
+
 <div id="main_content">
 	<a href="/">
 		<div id="logo"></div>
@@ -47,7 +49,7 @@ if($mode=='')
 			<table style="border-spacing: 0; min-width: 215px;">
 				<tr>
 					<td>
-						<div id="login_user" class="cnt_text" data-nps="<?=$need_pass;?>" data-usr-id="<?=$TLP_obj->user_info['id'];?>" data-usr-name="<?=$TLP_obj->user_info['name']?>" data-usr-fullname="<?=$username;?>" data-usr-index="<?=mb_strtolower($TLP_obj->user_info['name'],'UTF-8').'_ins_'.mb_strtolower($username,'UTF-8');?>">
+						<div id="login_user" class="cnt_text" data-nps="<?=$need_pass;?>" data-usr-id="<?=$TLP_obj->user_info['id'];?>" data-usr-name="<?=$TLP_obj->user_info['name']?>" data-usr-fullname="<?=$username;?>" data-photo-id="<?=$TLP_obj->user_info['photo_id'];?>" data-usr-index="<?=mb_strtolower($TLP_obj->user_info['name'],'UTF-8').'_ins_'.mb_strtolower($username,'UTF-8');?>">
 							<?=$username;?>											
 						</div>	
 						<!--<p class="cnt_add" style="font-size: 14px; color:#444; text-align: right;"><a id="my_logout" onclick="MyUserLogout()">Выход</a></p>-->
@@ -123,6 +125,13 @@ if($mode=='')
 		</div>
 		<div class="left_pan">
 			<div class="up_pan">
+				<div id="my_contacts_icon" class="active_icon" style="display: inline-block;">
+					<svg fill="#777" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg" style="position: relative; left: 35px;">
+						<path d="M0 0h24v24H0zm0 0h24v24H0zm0 0h24v24H0z" fill="none"></path>
+						<path d="M20 0H4v2h16V0zM4 24h16v-2H4v2zM20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-8 2.75c1.24 0 2.25 1.01 2.25 2.25s-1.01 2.25-2.25 2.25S9.75 10.24 9.75 9 10.76 6.75 12 6.75zM17 17H7v-1.5c0-1.67 3.33-2.5 5-2.5s5 .83 5 2.5V17z"></path>
+					</svg>
+					<div>Мои контакты</div>
+				</div>
 				<div id="cur_contact"></div>
 				<div id="contact_right_side_buttons">
 					<div id="contact_filter" class="simple_button" style="padding: 10px; font-weight: 600;">

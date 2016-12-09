@@ -60,7 +60,7 @@ if($vwmode == '') {
 			</div>
 			<div style="text-align: left; float: right;">
 				<div id="it_cart" class="active_icon help_icon" data-ln="cart">
-					<div class="simple_button" style="padding: 7px 10px 6px 10px;">Оформить заказ</div>
+					<div class="simple_button" style="padding: 7px 10px 6px 10px; margin: 0 12px;">Оформить заказ</div>
 					<div class="info"></div>					
 					<div style="height: 36px; min-width: 40px;">
 						<svg fill="#777" height="36" viewBox="0 0 24 24" width="36" xmlns="http://www.w3.org/2000/svg">
@@ -74,6 +74,7 @@ if($vwmode == '') {
 		</div>	
 	</div>
 </div>
+	<ul class="breadcrumbs"></ul>
 	<div id="item_list_header" class="item">
 		<div class="item_content_header">
 			<div class="item_line">

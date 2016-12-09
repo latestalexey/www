@@ -19,6 +19,8 @@ $lastContacts = array();
 
 $arFnc = array();
 $res = $TLP_obj->telecall('Contacts_Get', $arFnc);
+$first_name = '';
+$cnt_quantity = 0;
 //if($res["errCode"] == 0)
 //{
 	$today = new DateTime();
@@ -45,6 +47,11 @@ $res = $TLP_obj->telecall('Contacts_Get', $arFnc);
 		$arCnt['photo'] = ($cnt["photo_id"] == '')?(''):('/my/ajax/files.php?a=prev&i='.$cnt["photo_id"]);
 
 		$arContacts[$group][$name] = $arCnt;
+		
+		if(!($name == 'ceo' || $name == 'support' || $name == 'telebot')) {
+			$cnt_quantity = ++$cnt_quantity;
+			if($first_name == '') {	$first_name = $name; }
+		}
 		if(!(array_key_exists($group, $arGroups)))
 		{
 			$arGr = array();
@@ -69,6 +76,11 @@ $res = $TLP_obj->telecall('Contacts_Get', $arFnc);
 		}	
 	}
 //}
+if($cnt_quantity == 1 && $_GET["cnt"] == '' && $first_name != '') {
+	$get_cnt = $first_name;
+} else {
+	$get_cnt = $_GET["cnt"];
+}
 krsort($lastContacts);
 /*if(!(array_key_exists('Канал общих контактов', $arGroups)))
 {
@@ -137,7 +149,7 @@ uasort($arGroups, 'arSortByNum');
 							else {
 								$usr_fullname = $cnt['fullname']; }
 							
-							if($_GET["cnt"]==$cnt["name"]) {
+							if($get_cnt==$cnt["name"]) {
 								$cnt_classname = 'active_contact_inf';
 								$active_cnt = $cnt;
 							}
@@ -257,7 +269,7 @@ uasort($arGroups, 'arSortByNum');
 								$drag = ' tl_draggable';
 							}
 							
-							if(($_GET["cnt"]==$cnt["name"]) && ($active_cnt == '')) {
+							if(($get_cnt==$cnt["name"]) && ($active_cnt == '')) {
 								$cnt_classname = 'active_contact_inf';
 								$active_cnt = $cnt;
 							}

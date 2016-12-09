@@ -186,35 +186,7 @@ function  getPageSize(){
 						}
 				});
 				
-			/*var login_body = '{\
-				"UserName":"'+$('#email').val()+'",\
-				"Password":"e10adc3949ba59abbe56e057f20f883e"\
-				}';
-
-			var xhr = new XMLHttpRequest();
-			xhr.open("POST", 'https://sstest.e-teleport.ru/auth/credentials?ClientType=www&ClientVersion=1.0', true);
-			xhr.setRequestHeader('Content-Type', 'application/json');
-			xhr.onreadystatechange = function() 
-			{ 
-				if (xhr.readyState != 4) return;
-				console.log(xhr.responseText);	
-				console.log(xhr.getAllResponseHeaders());
-				var login_body1 = '';
-				var xhr1 = new XMLHttpRequest();
-				xhr1.open("POST", 'https://sstest.e-teleport.ru/Contacts_Get?format=json', true);
-				xhr1.setRequestHeader('Content-Type', 'application/json');
-				xhr1.withCredentials = true;
-				xhr1.onreadystatechange = function() 
-				{ 
-					if (xhr1.readyState != 4) return;
-					console.log(xhr1.responseText);	
-					console.log(xhr1.getAllResponseHeaders());
-				}
-				xhr1.send(login_body1);				
-			}		
-			xhr.send(login_body);*/
-
-				
+			
 	});
 
 	$('.close_line div, #back-button').click(function(e) {

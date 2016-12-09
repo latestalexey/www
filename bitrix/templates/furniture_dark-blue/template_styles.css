@@ -324,6 +324,13 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 	
 .up_pan {float: right; background-color: #ECEFF1; width: 100%;	height: 46px; position: relative;}
 
+#my_contacts_icon {
+	display: inline-block;
+    position: relative;
+    top: -5px;
+    border-right: solid 1px #777;
+    padding: 0 9px;
+}	
 /*contacts*/
 .menu_icon .menu_content,.leftmenu_icon .leftmenu_content {
 	display: none;

@@ -802,6 +802,10 @@ $(document).ready(function() {
 		});
 	});
 	
+	$("#my_contacts_icon").on('click', function(e) {
+		expandRightPan();
+	});
+	
 	if($('.active_contact_inf').length != 0) {
 		var h3_obj = $('.active_contact_inf').parent().prev('h3');
 		if(h3_obj.hasClass('close_list')) {
@@ -821,6 +825,14 @@ $(document).ready(function() {
 	setInterval(messagesRequest, 5000);
 	
 	showGreeting();
+	$("#my_contacts_icon").hide(0);
+	
+	if(!(getActiveContact().id == undefined) && ($(".topmenu li.active").attr('id') == 'm_catalog')) {
+		hideRightPan();
+	} else {
+		showRightPan();
+	}
+
 	/*if ($('#m_cnt_list .contact_inf').length < 5) {
 		setTimeout(function() {showTelebotInfo('Нажмите на значок "+" над списком контактов, чтобы пригласить в TELEPORT, своих партнеров и друзей для работы и общения.','',15000)}, 30000);
 	}*/	
@@ -867,7 +879,7 @@ function topMenu_action(id){
 		}
 	if(id == 'm_catalog' && dataURL['vwmode'] !== undefined) {
 		hurl = hurl + '&vwmode=' + dataURL['vwmode'];
-	}	
+	}
 	/*else if	(!(id == 'm_orders'))
 		{
 			url = '/my/sections/wpaper.php';
@@ -875,7 +887,19 @@ function topMenu_action(id){
 	*/	
 	if((window.location.protocol + '//' + window.location.host+hurl) != window.location.href) {	
 
-		$("#work_zone").load(url);
+		$("#work_zone").load(url, function(e) {
+			if(!(contact.id == undefined) && (id == 'm_catalog')) {
+				hideRightPan();
+				showExtPan();
+				$('#it_extsearch').addClass('ext_selected');
+				requestExtendedSearch();
+				resizeSearching(false);
+			} else {
+				showRightPan();
+				hideExtPan();
+				$('#it_extsearch').removeClass('ext_selected');
+			}
+		});
 		window.history.pushState(null, null, hurl);
 	}	
 }

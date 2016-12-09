@@ -1350,9 +1350,9 @@ function getSelectedContactMessages(start_date, limit)
 		xhr.send(body);
 	}
 	else {
-		//url = '/my/sections/wpaper.php';
-		//$("#mess_list").load(url);
-		showTelebotInfo('Выберите контакт, остальное сделаю я :)','pleased',0);
+		url = '/my/sections/wpaper.php';
+		$("#mess_list").load(url);
+		//showTelebotInfo('Выберите контакт, остальное сделаю я :)','pleased',0);
 		$("#msgBox").addClass('sending');
 
 	}

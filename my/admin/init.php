@@ -16,8 +16,11 @@ if($res)
 		$TLP_obj->user_info['id'] = get_GUID();
 		$TLP_obj->user_info['name'] = $user_info['user_name'];
 		$TLP_obj->user_info['fullname'] = $user_info['user_fullname'];
+		$TLP_obj->user_info['photo_id'] = '';
+		
 		if(!$res['return']['photo_id'] == '') {
 			$TLP_obj->user_info['photo'] = '/my/ajax/files.php?a=prev&i='.$user_info['photo_id'];
+			$TLP_obj->user_info['photo_id'] = $user_info['photo_id'];
 		}	
 		if(!$res['return']['company_logo'] == '') {
 			$TLP_obj->user_info['company_logo'] = '/my/ajax/files.php?a=prev&i='.$user_info['company_logo'];

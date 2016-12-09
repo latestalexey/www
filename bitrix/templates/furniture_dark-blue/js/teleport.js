@@ -185,24 +185,50 @@ function expandExtPan() {
 	//$("#mess_list").css("maxWidth", $(".workspace").width()-$("#contacts").width()-$("#ext_pan").width()-2);
 	$(window).trigger('resize');
 }
+
 function expandRightPan() {
 	if($("#contacts").width() > 0) {
-		$("#contacts").animate({width: 0},100);
-		$("#contacts .pan_bar").animate({left: 0},100, function() {
+		$("#contacts").animate({width: 0},300);
+		$("#contacts .pan_bar").animate({left: 0},300, function() {
 					//$("#mess_list").css("maxWidth", $(".workspace").width()-$("#contacts").width()-$("#ext_pan").width()-2);
 					$(window).trigger('resize');
 		});
 		$("#contacts .pan_bar").text('>');
+		$("#my_contacts_icon").show(300);
 	}
 	else {
-		$("#contacts").animate({width: 300},100);
-		$("#contacts .pan_bar").animate({left: 303},100, function() {
+		$("#contacts").animate({width: 300},300);
+		$("#contacts .pan_bar").animate({left: 303},300, function() {
 					//$("#mess_list").css("maxWidth", $(".workspace").width()-$("#contacts").width()-$("#ext_pan").width()-2);
 					$(window).trigger('resize');
 		});
 		$("#contacts .pan_bar").text('<');
+		$("#my_contacts_icon").hide(300);
 	}	
 }
+function hideRightPan() {
+	if($("#contacts").width() > 0) {
+		$("#contacts").animate({width: 0},300);
+		$("#contacts .pan_bar").animate({left: 0},300, function() {
+					//$("#mess_list").css("maxWidth", $(".workspace").width()-$("#contacts").width()-$("#ext_pan").width()-2);
+					$(window).trigger('resize');
+		});
+		$("#contacts .pan_bar").text('>');
+		$("#my_contacts_icon").show(300);
+	}	
+}
+function showRightPan() {
+	if($("#contacts").width() == 0) {
+		$("#contacts").animate({width: 300},300);
+		$("#contacts .pan_bar").animate({left: 303},300, function() {
+					//$("#mess_list").css("maxWidth", $(".workspace").width()-$("#contacts").width()-$("#ext_pan").width()-2);
+					$(window).trigger('resize');
+		});
+		$("#contacts .pan_bar").text('<');
+		$("#my_contacts_icon").hide(300);
+	}	
+}
+
 
 
 
@@ -1509,10 +1535,10 @@ function ChangeUserPassword(header) {
 function getMainUser() {
 	var obj = $('#login_user');
 	if(obj.length == 0) {
-		var contact	= {'id': undefined, 'name': name, 'fullname': name};
+		var contact	= {'id': undefined, 'name': undefined, 'fullname': undefined, 'photo_id': undefined};
 	}
 	else {
-		var contact	= {'id': obj.attr('data-usr-id'), 'name': obj.attr('data-usr-name'), 'fullname': obj.attr('data-usr-fullname')};
+		var contact	= {'id': obj.attr('data-usr-id'), 'name': obj.attr('data-usr-name'), 'fullname': obj.attr('data-usr-fullname'), 'photo_id': obj.attr('data-photo-id')};
 	}	
 	return contact;
 }

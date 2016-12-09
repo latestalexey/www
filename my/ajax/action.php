@@ -541,7 +541,7 @@ elseif($action == 'catalog_getItem')
 	{
 		if($adds=='json')
 		{
-			echo $res["return"];
+			echo json_encode($res["return"]);
 		}
 		else {
 			$winSizes = json_decode($_POST["sizes"], true);
@@ -750,30 +750,35 @@ elseif($action == 'Catalog_GetCategory')
 	$res = $TLP_obj->telecall('Catalog_GetCategory', $arFnc);
 	if($res['errCode'] == 0)
 	{
-		$arGroups = $res["return"];
-		$str = '<div id="ext_pan_topblock">
-					<div style="padding: 20px 0; text-align: center;">
-						<div id="it_counter" class="filter_button fb_active" style="margin-right: 10px;">Найдено товаров</div>
-						<div id="cancel_filters" class="filter_button">Сбросить всё</div>
-					</div>';
-						//<svg fill="#26A69A" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-						//	<path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path>
-						//	<path d="M0 0h24v24H0z" fill="none"></path>
-						//</svg>
-		if(count($arGroups) > 0) {
-			$str = $str.'<div id="it_toplevel">Выберите категорию товара</div></div><div id="ext_filters">';
-			foreach($arGroups as $key=>$item)
-			{
-				$parent_id = ($item['parent_id']=='')?('_zero_'):($item['parent_id']);
-				$clevel = ($item['parent_id']=='')?(' it_clevel'):('');
-				$str = $str.'<div class="it_category'.$clevel.'" data-itc-id ="'.$item['id'].'" data-itc-parentid ="'.$parent_id.'"  data-req-filters="0"><div class="cat_name">'.$item['name'].'</div></div>';
-			}
+		if($_POST['adds'] == 'json'){
+			echo json_encode($res["return"]);
 		}
 		else {
-			$str = $str.'</div><div id="ext_filters">';
-		}
-		$str = $str.'<div id="it_filters"></div></div>';
-		echo $str;
+			$arGroups = $res["return"];
+			$str = '<div id="ext_pan_topblock">
+						<div style="padding: 20px 0; text-align: center;">
+							<div id="it_counter" class="filter_button fb_active" style="margin-right: 10px;">Найдено товаров</div>
+							<div id="cancel_filters" class="filter_button">Сбросить всё</div>
+						</div>';
+							//<svg fill="#26A69A" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+							//	<path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path>
+							//	<path d="M0 0h24v24H0z" fill="none"></path>
+							//</svg>
+			if(count($arGroups) > 0) {
+				$str = $str.'<div id="it_toplevel">Выберите категорию товара</div></div><div id="ext_filters">';
+				foreach($arGroups as $key=>$item)
+				{
+					$parent_id = ($item['parent_id']=='')?('_zero_'):($item['parent_id']);
+					$clevel = ($item['parent_id']=='')?(' it_clevel'):('');
+					$str = $str.'<div class="it_category'.$clevel.'" data-itc-id ="'.$item['id'].'" data-itc-parentid ="'.$parent_id.'"  data-req-filters="0"><div class="cat_name">'.$item['name'].'</div></div>';
+				}
+			}
+			else {
+				$str = $str.'</div><div id="ext_filters">';
+			}
+			$str = $str.'<div id="it_filters"></div></div>';
+			echo $str;
+		}	
 	}	
 	else
 	{echo '%err%'.$TLP_obj->mistakes[$res['errCode']];}
@@ -1645,6 +1650,7 @@ elseif($action == 'setPersonInfo')
 			$TLP_obj->user_info['company_logo'] = '/my/ajax/files.php?a=prev&i='.$arResult['company_logo'];				// сервере TELEPORT
 			$TLP_obj->user_info['name'] = $arResult['user_name'];
 			$TLP_obj->user_info['fullname'] = $arResult['user_fullname'];
+			$TLP_obj->user_info['photo_id'] = $arResult['photo_id'];
 			$_SESSION["TLP_obj"] = serialize($TLP_obj);
 			echo json_encode(array("fullname"=>$TLP_obj->user_info['fullname'], "photo"=>$TLP_obj->user_info['photo'].'?'.mt_rand(), "company_logo"=>$TLP_obj->user_info['company_logo'].'?'.mt_rand()));
 			if($photo_filename != "") {
