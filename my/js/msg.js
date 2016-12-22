@@ -1053,6 +1053,7 @@ function addMessageToList(arResult, mode) {
 		
 		var last_msg = $('#msg_li .message_line').last();
 		var last_msg_cnt = last_msg.attr('data-ms-inf');
+		var last_msg_date = $('#msg_li .msg_date').last().parent();
 		
 		var prev_cnt 	= "";
 		var prev_date	= "";
@@ -1169,7 +1170,7 @@ function addMessageToList(arResult, mode) {
 			else {
 				msg_html = '<div id="msg_'+ msg_object.ID+ '" class="message_line'+msg_sent_class+'" data-ms-inf="'+msg_object.from+'" '+msg_status_data+'>';
 				if((prev_cnt == '' && prev_date == '') || (prev_date != html_date)) {
-					if (mode == 'end' && first_cnt == '' && last_msg_cnt == msg_object.from && files_html=='') {
+					if (mode == 'end' && first_cnt == '' && last_msg_cnt == msg_object.from && files_html=='' && str_msgdate == last_msg_date.attr("data-msg-date")) {
 						msg_html = html_date + msg_html;
 					} 
 					else {
@@ -1197,8 +1198,12 @@ function addMessageToList(arResult, mode) {
 				$("#msg_li").prepend(html_block);
 			}
 			else if(mode == 'end') {
-				$("#msg_li").append(html_block);
+				var date_duplicate = false;
 				if ($('[data-msg-date='+first_date+']').length != 0) {
+					date_duplicate = true;
+				}
+				$("#msg_li").append(html_block);
+				if(date_duplicate) {
 					var obj = $('[data-msg-date='+first_date+']')[$('[data-msg-date='+first_date+']').length-1];
 					$(obj).remove();
 				}

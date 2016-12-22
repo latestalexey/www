@@ -48,7 +48,7 @@ $cnt_quantity = 0;
 
 		$arContacts[$group][$name] = $arCnt;
 		
-		if(!($name == 'ceo' || $name == 'support' || $name == 'telebot')) {
+		if(!($name == 'ceo' || $name == 'support' || $name == 'telebot' || $cnt["sortnum"] == -5)) {
 			$cnt_quantity = ++$cnt_quantity;
 			if($first_name == '') {	$first_name = $name; }
 		}
