@@ -145,12 +145,12 @@ function showExtPan() {
 	$("#ext_pan").width(300);
 	$("#ext_pan .pan_bar").css('right', 303);
 	$("#ext_pan .pan_bar").text('>');
-	
+	$('#it_extsearch').addClass('ext_selected');
 	$("#ext_pan").css('display','block');
 	//$("#mess_list").css("maxWidth", $(".workspace").width()-$("#contacts").width()-$("#ext_pan").width()-2);
 	$(window).trigger('resize');
 }
-function hideExtPan() {
+function hideExtPan(saveContent) {
 	$("#ext_pan").css('display','none');
 	$("#ext_pan").width(0); 
 	$("#ext_pan .pan_bar").css('right', 0);
@@ -158,8 +158,10 @@ function hideExtPan() {
 	
 	//$("#mess_list").css("maxWidth", $(".workspace").width()-$("#contacts").width()-$("#ext_pan").width()-2);	
 	$('#it_extsearch').removeClass('ext_selected');
-	$('#ext_pan_header_content').html('');
-	$('#ext_pan_content').html('');
+	if (!saveContent) {
+		$('#ext_pan_header_content').html('');
+		$('#ext_pan_content').html('');
+	}
 	$('#ext_pan_content').off();
 	$(window).trigger('resize');
 }
@@ -185,11 +187,10 @@ function expandExtPan() {
 	//$("#mess_list").css("maxWidth", $(".workspace").width()-$("#contacts").width()-$("#ext_pan").width()-2);
 	$(window).trigger('resize');
 }
-
 function expandRightPan() {
 	if($("#contacts").width() > 0) {
-		$("#contacts").animate({width: 0},300);
-		$("#contacts .pan_bar").animate({left: 0},300, function() {
+		$("#contacts").animate({width: 0},200);
+		$("#contacts .pan_bar").animate({left: 0},200, function() {
 					//$("#mess_list").css("maxWidth", $(".workspace").width()-$("#contacts").width()-$("#ext_pan").width()-2);
 					$(window).trigger('resize');
 		});
@@ -197,35 +198,35 @@ function expandRightPan() {
 		$("#my_contacts_icon").show(300);
 	}
 	else {
-		$("#contacts").animate({width: 300},300);
-		$("#contacts .pan_bar").animate({left: 303},300, function() {
+		$("#contacts").animate({width: 300},200);
+		$("#contacts .pan_bar").animate({left: 303},200, function() {
 					//$("#mess_list").css("maxWidth", $(".workspace").width()-$("#contacts").width()-$("#ext_pan").width()-2);
 					$(window).trigger('resize');
 		});
 		$("#contacts .pan_bar").text('<');
-		$("#my_contacts_icon").hide(300);
+		$("#my_contacts_icon").hide(200);
 	}	
 }
 function hideRightPan() {
 	if($("#contacts").width() > 0) {
-		$("#contacts").animate({width: 0},300);
-		$("#contacts .pan_bar").animate({left: 0},300, function() {
+		$("#contacts").animate({width: 0},200);
+		$("#contacts .pan_bar").animate({left: 0},200, function() {
 					//$("#mess_list").css("maxWidth", $(".workspace").width()-$("#contacts").width()-$("#ext_pan").width()-2);
 					$(window).trigger('resize');
 		});
 		$("#contacts .pan_bar").text('>');
-		$("#my_contacts_icon").show(300);
+		$("#my_contacts_icon").show(200);
 	}	
 }
 function showRightPan() {
 	if($("#contacts").width() == 0) {
-		$("#contacts").animate({width: 300},300);
-		$("#contacts .pan_bar").animate({left: 303},300, function() {
+		$("#contacts").animate({width: 300},200);
+		$("#contacts .pan_bar").animate({left: 303},200, function() {
 					//$("#mess_list").css("maxWidth", $(".workspace").width()-$("#contacts").width()-$("#ext_pan").width()-2);
 					$(window).trigger('resize');
 		});
 		$("#contacts .pan_bar").text('<');
-		$("#my_contacts_icon").hide(300);
+		$("#my_contacts_icon").hide(200);
 	}	
 }
 

@@ -39,7 +39,7 @@ $(document).ready(function() {
 	});
 	$('#ext_pan_header .clw').click(function(e) {
 		e.stopPropagation();
-		hideExtPan();
+		hideExtPan($('#m_catalog').hasClass('active') ? true : false);
 	});
 	
 	$('#cnt_bar').on('click', function(e) {
@@ -879,7 +879,7 @@ function topMenu_action(id){
 		}
 	if(id == 'm_catalog' && dataURL['vwmode'] !== undefined) {
 		hurl = hurl + '&vwmode=' + dataURL['vwmode'];
-	}
+	}	
 	/*else if	(!(id == 'm_orders'))
 		{
 			url = '/my/sections/wpaper.php';

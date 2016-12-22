@@ -820,12 +820,13 @@ elseif($action == 'catalog_FiltersGet')
 		$arResult = $res["return"];
 		$str = '';
 		$filterCount = count($arResult);
-		$expanded = ($filterCount > 2)?(""):(" it_filter_expanded");
-		$display = ($filterCount > 2)?(""):(' style="display: block;"');
+		//$expanded = ($filterCount > 2)?(""):(" it_filter_expanded");
+		//$display = ($filterCount > 2)?(""):(' style="display: block;"');
+		$expanded = ($filterCount > 0)?(""):(" it_filter_expanded");
+		$display = ($filterCount > 0)?(' style="display: none;"'):(' style="display: block;"');
+		
 		foreach($arResult as $key=>$item)
 		{
-			//$parent_id = ($item['parent_id']=='')?('_zero_'):($item['parent_id']);
-			//$clevel = ($item['parent_id']=='')?(' it_clevel'):('');
 			if($item['filter_type'] == 'enum') {
 				$str = $str.'<div class="it_filter'.$expanded.'" data-filter-group-id ="'.$item['category_id'].'" data-filter-type ="'.$item['filter_type'].'" data-filter-name ="'.$item['filter_name'].'">';
 			} else {
@@ -863,10 +864,6 @@ elseif($action == 'catalog_FiltersGet')
 				</div>';
 				$str = $str.'</div>';
 			}
-		}
-		if($str == '') {
-			$dop_str = ($arFnc['category_id']=='')?'':' для выбранной категории товаров';
-			$str = '<div class="empty_cat">В каталоге нет настроенных расширенных фильтров'.$dop_str.'</div>';
 		}
 		echo $str;
 	}	

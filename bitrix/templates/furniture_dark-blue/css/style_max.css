@@ -1368,6 +1368,29 @@ div#UserDocList .UserDocItem:hover {
 	box-sizing: border-box;
 }
 
+#item_li .cat_block_pict {
+	display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.cat_block_pict div {
+	display: flex;
+	justify-content: center;
+    align-items: center;
+	width: 180px;
+	height: 180px;
+}
+
+.cat_block_pict img {
+	width: auto;
+	max-width: 180px;
+	height: auto;
+	max-height: 180px;
+	border-radius: 10px;
+}
+
 .cat_block_name {
     overflow: hidden;
     padding: 10px 5px;
@@ -1376,13 +1399,7 @@ div#UserDocList .UserDocItem:hover {
     text-align: center;
 }
 
-.cat_block_pict div {
-	display: inline-block;
-	width: 180px;
-	height: 180px;
-	background: #ddd;
-	margin: 3px;
-}
+
 
 .to-parent-cat {
 	display: none !important;
@@ -1397,6 +1414,10 @@ div#UserDocList .UserDocItem:hover {
 .item {
     width: 100%;
     padding: 3px 0;
+}
+
+#item_list {
+	margin-top: 3px;
 }
 
 .breadcrumbs {
@@ -1469,4 +1490,25 @@ div#UserDocList .UserDocItem:hover {
 .breadcrumbs .current::after,
 .breadcrumbs .current::before{
 	content: normal;
+}
+
+
+#ext_pan_content,
+#ext_filters {
+	position: relative;
+	height: 100%;
+	overflow: auto;
+}
+
+.wait {
+	display: flex;
+    align-items: center;
+    justify-content: center;
+	position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    text-align: center;
+	background: rgba(255, 255, 255, 0.7) !important;
+	z-index: 9999;
 }
