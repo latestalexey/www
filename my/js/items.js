@@ -49,6 +49,7 @@ $(document).ready(function()
 		$('.modal_back').remove();	
 		hideTelebotInfo();
 		if(!$('#contact_filter').hasClass('ext_selected')) {
+			$('.breadcrumbs').empty();
 			getMyCatalogItems();
 		}
 	});
@@ -772,13 +773,14 @@ $(document).ready(function()
 		if (!$('.breadcrumbs .breadcrumb.first').length) {
 			$('.breadcrumbs').prepend('<li class="breadcrumb first" data-catid="">Главная</div>');
 		};	
-		var cat_id = $(this).attr('data-catid');
-		var cat_name = $('.cat_name', this).text();
-		if ($('.breadcrumbs .current').attr('data-catid') != cat_id) {
+		if (!$('#item_li .cat.disabled').length) {
+			$('#item_li .cat').addClass('disabled');
+			var cat_id = $(this).attr('data-catid');
+			var cat_name = $('.cat_name', this).text();
+			getSelectedContactCategories(cat_id);
 			$('.breadcrumbs .breadcrumb.current').removeClass('current');
 			$('.breadcrumbs').append('<li class="breadcrumb current" data-catid="'+cat_id+'">'+cat_name+'</div>');
 		};
-		getSelectedContactCategories(cat_id);
 	});
 	
 	$('.breadcrumbs').on('click', '.breadcrumb', function(){
@@ -790,7 +792,6 @@ $(document).ready(function()
 			$(this).addClass('current').nextAll().remove();			
 		}
 	});
-
 });
 
 function hideMenuItems(has_catalog){
@@ -950,6 +951,7 @@ function initContactItems(){
 function getSelectedContactItems(it_nom, it_filter) {
 	var contact	= getActiveContact();
 	if(contact.id == undefined)	{ contact = smuser;	}
+	
 	if($('#item_li').hasClass('no_catalog')) {
 		var str = '<div style="width: 100%;">\
 			<div style="margin-top: 50px;">\
@@ -1050,6 +1052,7 @@ function getSelectedContactCategories(cat_id) {
 				return;
 			}
 			var arCategories = JSON.parse(xhr.responseText);
+			console.log(arCategories);
 			if (arCategories.length) {
 				var html_str = '';
 				if ($('#vwmode_pan .activevwmode').attr('data-ln') === 'block') {
@@ -1077,6 +1080,8 @@ function getSelectedContactCategories(cat_id) {
 				$('#item_list_header').css('display','none');
 				$('#item_li').html(html_str);
 			} else {
+				item_nom = 1;
+				$('#item_li').empty();
 				items_filter = [];
 				getItemPosInfo();
 				items_filter.push({"mode": "item", "group": "AND", "name":"category_id", "operation":"=", "value": cat_id});
@@ -1210,7 +1215,7 @@ function getItemInfo(obj) {
 		var edit_icon = (contact.id==smuser.id) ? '<div class="edit_item" style="float: right;"><i class="fa fa-pencil-square-o"></i></div>' : '';
 		modal_obj = $(  '<div id="detail_info_window" class="item_detail_block">' +
 						'<div class="clw" style="float: right;"><img src="/include/close_window.svg"/></div>' +
-						//edit_icon +
+						edit_icon +
 						'<div id="detail_item_info"></div>' +
 						'</div>'
 					);
