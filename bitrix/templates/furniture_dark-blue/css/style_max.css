@@ -1136,8 +1136,10 @@ div#UserDocList .UserDocItem:hover {
 
 #detail_info_window .item_detail_block_edit .item-photo img {
     border: 0 none;
-    width: 100%;
+    width: auto;
     height: auto;
+    max-width: 100%;
+    max-height: 100%;
 }
 
 #detail_info_window .item_detail_block_edit .item_image_input {
@@ -1511,4 +1513,9 @@ div#UserDocList .UserDocItem:hover {
     text-align: center;
 	background: rgba(255, 255, 255, 0.7) !important;
 	z-index: 9999;
+}
+
+
+.it_filter[data-filter-type=stocks] {
+	padding: 15px 15px 15px 20px;
 }
