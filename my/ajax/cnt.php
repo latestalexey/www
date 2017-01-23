@@ -37,6 +37,7 @@ $cnt_quantity = 0;
 		$arCnt['user_id'] = get_GUID();
 		$arCnt['group'] = $group;
 		$arCnt['name'] = $name;
+		$arCnt['alias'] = $cnt["alias"];;
 		$arCnt['fullname'] = $cnt["fullname"];
 		$arCnt['groupinfo'] = $cnt["groupinfo"];
 		$arCnt['membergroupname'] = $cnt["membergroupname"];
@@ -149,6 +150,12 @@ uasort($arGroups, 'arSortByNum');
 							else {
 								$usr_fullname = $cnt['fullname']; }
 							
+							if($cnt['alias']!=$cnt["name"]) {
+								$usr_aliasname = $cnt['alias'];
+							} else {
+								$usr_aliasname = $usr_fullname;
+							}
+							
 							if($get_cnt==$cnt["name"]) {
 								$cnt_classname = 'active_contact_inf';
 								$active_cnt = $cnt;
@@ -158,7 +165,7 @@ uasort($arGroups, 'arSortByNum');
 							}
 						?>
 							
-							<div id="lst_<?=$cnt['user_id']?>" class="<?=$cnt_classname;?>" data-usr-id="<?=$cnt['user_id']?>" data-usr-name="<?=$cnt['name']?>" data-usr-fullname="<?=$usr_fullname?>" data-photo-id="<?=$cnt['photo_id']?>" data-usr-activedate="<?=$cnt['activedate'];?>" data-usr-index="<?=mb_strtolower($cnt['name'],'UTF-8').'_ins_'.mb_strtolower($cnt['fullname'],'UTF-8')?>">
+							<div id="lst_<?=$cnt['user_id']?>" class="<?=$cnt_classname;?>" data-usr-id="<?=$cnt['user_id']?>" data-usr-name="<?=$cnt['name']?>" data-usr-fullname="<?=$usr_fullname?>" data-usr-alias="<?=$cnt['alias']?>" data-photo-id="<?=$cnt['photo_id']?>" data-usr-activedate="<?=$cnt['activedate'];?>" data-usr-index="<?=mb_strtolower($cnt['name'],'UTF-8').'_ins_'.mb_strtolower($cnt['fullname'],'UTF-8')?>">
 								<p class="cnt_info active_icon"><?include($_SERVER["DOCUMENT_ROOT"]."/my/data/svg/expand_more.svg");?></p>
 								<table style="border-spacing: 0;">
 									<tr>
@@ -181,7 +188,7 @@ uasort($arGroups, 'arSortByNum');
 										</td>
 										<td>
 											<div class="cnt_text">
-												<?echo $usr_fullname;?>
+												<?echo $usr_aliasname;?>
 											</div>	
 											<p class="cnt_add cnt_mail">
 												<?if(!($cnt["name"] == $usr_fullname)) {
@@ -260,6 +267,11 @@ uasort($arGroups, 'arSortByNum');
 							{
 								$usr_fullname = $cnt['fullname'];
 							}
+							if($cnt['alias']!=$cnt["name"]) {
+								$usr_aliasname = $cnt['alias'];
+							} else {
+								$usr_aliasname = $usr_fullname;
+							}							
 							if($cnt['sortnum'] == -5 || $cnt['sortnum'] == -10 || $cnt['sortnum'] == 990) {
 								$drop = '';
 								$drag = '';
@@ -279,7 +291,7 @@ uasort($arGroups, 'arSortByNum');
 							
 						?>
 							
-							<div id="cnt_<?=$cnt['user_id']?>" class="<?=$cnt_classname;?><?=$drag;?><?=$drop;?>" data-usr-id="<?=$cnt['user_id']?>" data-usr-name="<?=$cnt['name']?>" data-usr-fullname="<?=$usr_fullname?>" data-photo-id="<?=$cnt['photo_id']?>" data-group="<?=mb_strtolower($cnt['group'], 'UTF-8');?>" data-group-name="<?=$cnt['group'];?>" data-usr-activedate="<?=$cnt['activedate'];?>" data-usr-index="<?=mb_strtolower($cnt['name'],'UTF-8').'_ins_'.mb_strtolower($cnt['fullname'],'UTF-8')?>">
+							<div id="cnt_<?=$cnt['user_id']?>" class="<?=$cnt_classname;?><?=$drag;?><?=$drop;?>" data-usr-id="<?=$cnt['user_id']?>" data-usr-name="<?=$cnt['name']?>" data-usr-fullname="<?=$usr_fullname?>" data-usr-alias="<?=$cnt['alias']?>" data-photo-id="<?=$cnt['photo_id']?>" data-group="<?=mb_strtolower($cnt['group'], 'UTF-8');?>" data-group-name="<?=$cnt['group'];?>" data-usr-activedate="<?=$cnt['activedate'];?>" data-usr-index="<?=mb_strtolower($cnt['name'],'UTF-8').'_ins_'.mb_strtolower($cnt['fullname'],'UTF-8')?>">
 								<p class="cnt_info active_icon"><?include($_SERVER["DOCUMENT_ROOT"]."/my/data/svg/expand_more.svg");?></p>
 								<table style="border-spacing: 0;">
 									<tr>
@@ -302,7 +314,7 @@ uasort($arGroups, 'arSortByNum');
 										</td>
 										<td>
 											<div class="cnt_text">
-												<?echo $usr_fullname;?>
+												<?echo $usr_aliasname;?>
 											</div>
 											<p class="cnt_add cnt_mail">
 												<?if(!($cnt["name"] == $usr_fullname)) {
