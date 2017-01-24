@@ -588,7 +588,7 @@ function initDocView(arDoc, sender, receiver) {
 		obj.siblings('.item').children('.col_2').children('.fa').removeClass('fa-chevron-down').addClass('fa-chevron-up');
 		$(this).children('.fa').toggleClass('fa-chevron-down fa-chevron-up');
 		obj.toggleClass('opened');
-		obj.hasClass('opened') ? getItemInfo(obj, receiver.name) : obj.next('#order-item-info').remove();
+		obj.hasClass('opened') ? getOrderItemInfo(obj, receiver.name) : obj.next('#order-item-info').remove();
 	});
 	
 	//Переключение вкладок в подробной информации
@@ -1387,7 +1387,7 @@ function showPosList(obj, contact){
 	};				
 };		
 
-function getItemInfo(obj, contact) {
+function getOrderItemInfo(obj, contact) {
 	var item_id = obj.attr('data-it-id');
 	if(!(contact == undefined)){
 		var arr_fld = ['*'];
