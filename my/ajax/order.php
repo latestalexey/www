@@ -51,6 +51,32 @@ if($action == 'Documents_saveDocToLocalBase')
 				where message_id = $message_id and sender = '$user'") or die (mysql_error());
 	echo $result;		
 }
+elseif($action == 'Documents_deleteItemFromExistDoc')
+{
+	$receiver = $_POST["receiver"];
+	$itemid = $_POST["itemId"];
+	$result = mysql_query ("SELECT message_id, message, sum FROM t_documents WHERE sender='$user' and receiver = '$receiver' order by message_id desc limit 1") or die (mysql_error());
+	$id = json_decode(mysql_result ($result,0,0));
+	$message = json_decode(mysql_result ($result,0,1));
+	$docsum = json_decode(mysql_result ($result,0,2));
+	
+	foreach ( $message->docTable as $key=>$docitem ) {
+		if ($itemid  == $docitem->id) {
+			$item = $key;
+			$itemsum = $docitem->sum;
+			break;
+		};
+	};
+	
+	$totalsum = $docsum - $itemsum;
+	$message->docHeader->sum = $totalsum;
+	$message->docHeader->hash = '';
+	unset($message->docTable[$item]);
+	sort($message->docTable);
+	$jsonmessage = json_encode_cyr($message);
+	$result = mysql_query ("UPDATE t_documents SET sum = $totalsum, message = '$jsonmessage' where message_id = $id and sender='$user'") or die (mysql_error());
+	print_r($result);
+}
 elseif($action == 'Documents_addItemToExistDoc')
 {
 	$sender = $_POST["sender"];

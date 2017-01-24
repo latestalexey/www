@@ -6,10 +6,6 @@ var last_filter_value = "";
 var timer_ID = "";
 var searchIdletime = 0;
 var vi_timeout = "";
-/*var div_waiting = '<div class="wait" style="margin-top: 250px;">\
-			<img src="/include/telebot.png"/><br>\
-			<span style="font-size: 14px; font-weight: 600;">Просматриваю каталог...</span><br>\
-			<img src="/include/wait.gif"/></div>';*/
 
 $(document).ready(function()
 {
@@ -28,16 +24,9 @@ $(document).ready(function()
 		getMyCatalogItems();
 	}
 	else {	
-		//showTelebotInfo('Формирую каталог товаров','',0);
-		//getItemPosInfo();
-		//initContactItems();
 		getSelectedContactCategories();
 	}	
 
-	/*$('#ext_pan').resize(function() {
-		resizeSearching(false);
-		resizeItemInfo();
-	});*/
 	$(window).resize(function() {
 		resizeSearching(false);
 		$('#ext_filters').height($('#ext_pan').height() - $('#ext_pan_header').height() - $('#ext_pan_topblock').height());
@@ -58,7 +47,6 @@ $(document).ready(function()
 	
 	$('#cnt_list').on('click','.contact_inf', function(){
 		if($(this).hasClass('active_contact_inf')) { return };
-		//getItemPosInfo();
 		hideTelebotInfo();
 		getSelectedContactCategories();
 	});
@@ -212,7 +200,7 @@ $(document).ready(function()
 	
 	//all types
 	$('#item_li').on('click','.cart .cart_order', function(e) {
-		e.stopPropagation();
+		//e.stopPropagation();
 		$("#it_cart").removeClass('empty');
 		var it_cor = $(this).offset();
 		var cart_cor = $('#it_cart svg').offset();
@@ -227,9 +215,8 @@ $(document).ready(function()
 		$('#content').append(cart_clone);
 		cart_clone.animate({top: cart_cor.top, left: cart_cor.left}, 400, function() {
 			$('#content #animated_cart').remove(); 
-			$('#it_cart').addClass('not_empty');
 		});
-		getItemInfoForDoc($(this).closest('.item_block')); 
+		getItemInfoForDoc($(this).closest('.item_block'));
 	});	
 	$('#item_li').on('keypress','.cart .cart_input', function(e) {
 		e.stopPropagation();
@@ -576,13 +563,14 @@ $(document).ready(function()
 		});
 	});
 	
-	$('#items_header').on('click', '#it_cart', function(){
-		var userDocId = $(this).attr('data-doc-id');
+	$('#items_header').on('click', '#it_cart .checkout_button', function(){
+		var userDocId = $('#it_cart').attr('data-doc-id');
 		var receiver = getActiveContact();
-		localStorage.setItem("userDocId", userDocId);
-		localStorage.setItem("sender", smuser.name);
-		localStorage.setItem("receiver", receiver.name);
-		window.location.href = window.location.protocol + '//' + window.location.host+'/my/index.php?mode=orders';	
+		getTmpDocInfo(userDocId, smuser.name, receiver.name)
+		//localStorage.setItem("userDocId", userDocId);
+		//localStorage.setItem("sender", smuser.name);
+		//localStorage.setItem("receiver", receiver.name);
+		//window.location.href = window.location.protocol + '//' + window.location.host+'/my/index.php?mode=orders';	
 	});
 	
 	$('#item_list').on('click', '#detail_info_window .edit_item', function(){
@@ -796,6 +784,28 @@ $(document).ready(function()
 				$(this).addClass('current').nextAll().remove();			
 			}
 		};	
+	});
+	
+	$('#it_cart .cart_icon').on('mouseenter', function(){
+		$('#it_cart').find('.cart_items').fadeIn(200);
+	});
+	
+	$('#it_cart').on('mouseleave', '.cart_items', function(){
+		$(this).fadeOut(200);
+	});
+	
+	$(document).on('click', function(e){
+		if (!$(e.target).hasClass('cart_items') && !$(e.target).parents('.cart_items').length) {
+			$('#it_cart').find('.cart_items').fadeOut(200);
+		}
+	});
+	
+	$('#it_cart').on('click', 'td:last-child .fa', function(e) {
+		var contact = getActiveContact();
+		var itemId = $(this).attr('data-item-id');
+		if (contact.id === undefined || itemId === undefined) return;
+		var row = $(this).closest('tr');
+		deleteItemFromExistDoc(itemId, contact.name, row);
 	});
 });
 
@@ -1036,6 +1046,7 @@ function getSelectedContactItems(it_nom, it_filter) {
 }
 
 function getSelectedContactCategories(cat_id) {
+	$('#it_cart').find('.cart_items').remove();
 	$('#it_cart .simple_button').fadeOut(0);
 	cat_id = cat_id || "";
 	items_filter = [];
@@ -1090,12 +1101,12 @@ function getSelectedContactCategories(cat_id) {
 				}
 				$('#item_list_header').css('display','none');
 				$('#item_li').html(html_str).position({'top':0, 'left': 0});
+				getItemPosInfo();
 			} else {
 				item_nom = 1;
 				if (cat_id.length) {
 					items_filter.push({"mode": "item", "group": "AND", "name":"category_id", "operation":"=", "value": cat_id});
 				};	
-				getItemPosInfo();	
 				initContactItems();
 			}
 			showExtendedFilters(cat_id);
@@ -1205,11 +1216,7 @@ function showItems(responseText) {
 	else {
 		hideTelebotInfo();
 	}	
-
-	/*if(!(item_ID == undefined)) {
-		document.getElementById(item_ID).scrollIntoView(true);
-	}*/
-
+	getItemPosInfo();
 	$("#items_header").css('padding-right', $("#work_zone").width() - $("#item_li").width());	
 	$("#item_list").css("height", $(".main_pan").height() - $("#items_header").height());
 }
@@ -1674,6 +1681,29 @@ function getItemInfoForDoc(obj) {
 
 };
 
+function deleteItemFromExistDoc(itemId, contact, row) {
+	$.post('/my/ajax/order.php', { action: 'Documents_deleteItemFromExistDoc', itemId: itemId, receiver: contact }, function(data){
+		if (data==1) {
+			var cnt = $('#it_cart .info span').text()*1 - 1;
+			if (cnt) {
+				var sum = $('td:nth-child(3)', row).text();
+				var totalsum = $('#it_cart .total_sum span').text();
+				sum = sum.replace(/\s/g, '')*1;
+				totalsum = totalsum.replace(/\s/g, '')*1;
+				$('#it_cart .total_sum span').text(number_format(totalsum - sum, 2, '.', ' '));
+				$('#it_cart .info span').text(cnt);
+				$('#item_li #it_'+itemId+' .item_block_info').removeClass('item_content_selected');
+				row.remove();
+			}
+			else {
+				$('#it_cart .info span').text(0);
+				$('#it_cart .cart_items').remove();
+				$('#it_cart').removeClass('not_empty');
+				$('#item_li .item_block_info').removeClass('item_content_selected');
+			};
+		};
+	});
+};
 
 function addItemToExistDoc(Item, contact) {
 	$.post('/my/ajax/order.php', { action: 'Documents_addItemToExistDoc', item: JSON.stringify(Item), receiver: contact }, function(data){
@@ -1732,18 +1762,33 @@ function addItemToNewDoc(Item, contact) {
 	});	
 };
 
+
 function getItemPosInfo() {
-	//$('#it_cart').addClass('empty');
+	$('#it_cart .cart_items').remove();
+	$('#item_li').find('.item_content_selected').removeClass('item_content_selected');
 	var contact = getActiveContact();
 	if (contact.id != undefined) {
 		$.post('/my/ajax/order.php', {action: 'Documents_getItemPosInfo', receiver: contact.name}, function(data){
 			try {
 				var UserDocs = JSON.parse(data);
-				var UserItemsQty = UserDocs.docTable.length*1;		
-				$('#it_cart').removeClass('empty');
-				$('#it_cart .info').html('<span>'+UserItemsQty+'</span>');	
+				var UserItemsQty = UserDocs.docTable.length*1;
+				if (UserItemsQty) {
+					var html_str = '';
+					$.each(UserDocs.docTable, function (i, val) {
+						$('#item_li').find('#it_'+val.id).children('.item_block_info').addClass('item_content_selected');
+						html_str = html_str + '<tr>';
+						html_str = html_str + '<td>'+val.name+'</td>';
+						html_str = html_str + '<td>'+val.quantity+'</td>';
+						html_str = html_str + '<td>'+number_format(val.sum, 2, '.', ' ')+'</td>';
+						html_str = html_str + '<td><i class="fa fa-times" data-item-id='+val.id+'></i></td>';
+						html_str = html_str + '</tr>';
+					});
+					$('#it_cart').append('<div class="cart_items"><table><tbody><tr><th>Наименование</th><th>Кол-во</th><th>Сумма</th><th></th></tr>'+html_str+'</tbody></table><div class="total_sum"><b>Итого: </b><span>'+number_format(UserDocs.docHeader.sum, 2, '.', ' ')+'</span></div><div class="simple_button checkout_button" style="padding: 7px 10px 6px; display: inline-block;">Оформить заказ</div></div>');
+					$('#it_cart .simple_button').fadeIn(100);
+				}			
+				$('#it_cart .info').html('<span>'+UserItemsQty+'</span>');
+				UserItemsQty ? $('#it_cart').addClass('not_empty') : $('#it_cart').removeClass('not_empty');
 				$('#it_cart').attr('data-doc-id', UserDocs.docHeader.id);
-				$('#it_cart .simple_button').fadeIn(100);
 			}
 			catch(e) {
 				$('#it_cart').attr('data-doc-id', 0);

@@ -1519,3 +1519,74 @@ div#UserDocList .UserDocItem:hover {
 .it_filter[data-filter-type=stocks] {
 	padding: 15px 15px 15px 20px;
 }
+
+#it_rule_pan div.cart_items {
+	display: none;
+	position: absolute !important;
+	top: 100% !important;
+	right: 0 !important;
+	width: 550px;
+	max-height: 800px;
+	z-index: 9999 !important;
+	background-color: #FBFBFB !important;
+    border: 1px solid #CCCCCC !important;
+	border-radius: 5px !important;
+    padding: 10px !important;
+	box-shadow: 2px 2px 4px #777777 !important;
+	text-align: center;
+	overflow: auto;
+}
+
+.item_line {
+	overflow: visible !important;
+}
+
+.cart_items table {
+	width: 100%;
+	font-size: 13px;
+	border-collapse: collapse;
+	margin-bottom: 15px;
+}
+
+.cart_items th {
+	font-weight: bold;
+	text-align: center;
+	padding: 2px 5px;
+	border: 1px solid #ccc;
+	white-space: nowrap;
+}
+
+.cart_items th:first-child {
+	text-align: left;
+}
+
+.cart_items td {
+	padding: 5px 5px;
+	text-align: center;
+	border: 1px solid #ccc;
+}
+
+.cart_items td:first-child {
+	text-align: left;
+}
+
+.cart_items td:not(:first-child) {
+	width: 100px;
+}
+
+.cart_items td:last-child {
+	width: 25px;
+}
+
+.cart_items td .fa {
+	font-size: 16px;
+	color: #d20000;
+}
+
+.cart_items .total_sum {
+	width: 100%;
+    text-align: right;
+    margin-bottom: 15px !important;
+	border: 0 !important;
+	color: #777;
+}

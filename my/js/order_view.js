@@ -1,3 +1,32 @@
+var docStatus = { 
+	'new': 'Новый',
+	'transmitted': 'Отправлен',
+	'agreement': 'На согласовании',
+	'confirmed': 'Подтвержден',
+	'canceled': 'Отменен',
+	'processed': 'Принят в обработку',
+	'shipped': 'Готов к отгрузке',
+	'closed': 'Выполнен'
+}
+
+var delete_svg = '<svg fill="#BBB" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">'+
+					 '<path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>'+
+					 '<path d="M0 0h24v24H0z" fill="none"/></svg>';
+					 
+var file_html = '<div class="msg_file uploadifive-queue-item"><div class="upfile" id="msg_fn"><div class="file_icon"></div>'+
+				'<div class="file_block"><p class="filename"></p>'+
+				'<p class="file_info"></p></div>'+
+				'<a class="del_file close"><div class="cloud">'+delete_svg+'</div></a>'+
+				'<div class="fileinfo">Готов к отправке</div>'+
+				'<div class="progress"><div class="progress-bar"></div></div>'+
+				'</div>';
+				
+var doc_file = '<div class="msg_file uploadifive-queue-item"><div class="upfile" id="msg_fn"><div class="file_icon"></div>'+
+				'<div class="file_block"><span class="filename"></span>'+
+				'<span class="file_info"></span></div>'+
+				'<a class="del_file close"><div class="cloud">'+delete_svg+'</div></a>'+
+				'</div>';		
+				
 function getDocInfo(id, sender, receiver) {
 	var xhr = new XMLHttpRequest();
 	var body =	'action=Documents_GetById' +
@@ -13,12 +42,38 @@ function getDocInfo(id, sender, receiver) {
 		}
 		var arResult = JSON.parse(xhr.responseText);
 		initDocView(arResult, sender, receiver);
+		SearchFiles();
 	};
+	xhr.send(body);	
+};
+
+function SearchFiles() {
+	var contact	= getActiveContact();
+	var xhr = new XMLHttpRequest();
+	var body =	'action=filesList' +
+				'&adds=json' +
+				'&contact=' + encodeURIComponent(contact.name) +
+				'&Category=documents' +
+				'&limit=2' +
+				'&nom=1';					
+	xhr.open("POST", '/my/ajax/action.php', true);
+	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+	xhr.onreadystatechange = function() 
+	{ 
+		if (xhr.readyState != 4) return;
+		
+		if(!(xhr.responseText.indexOf('%err%') == -1)) {
+			showError(xhr.responseText.replace('%err%',''));
+			return;
+		}
+		console.log(xhr.responseText);
+	}				
 	xhr.send(body);	
 };
 
 function getTmpDocInfo(id, sender, receiver) {
 	$.post('/my/ajax/order.php', { action: 'Documents_GetById', message_id: id }, function(data) {
+		console.log(data);
 		var arResult = JSON.parse(data);
 		initDocView(arResult, sender, receiver);
 	});
@@ -302,20 +357,23 @@ function initDocView(arDoc, sender, receiver) {
 	var strorderinfo = 
 		'<div id="order_num">Заказ № '+docHeader.num+' от '+ docDate.day + '-' + docDate.month + '-' + docDate.year +' (' + docDate.hh + ':' + docDate.mm +':'+ docDate.ss + ')' + '</div>' +
 		'<div class="order_status"><div class="ord_hd_x1">Статус:</div><div class="ord_hd_x2">'+docStatus[docHeader.status]+'</div></div>' +
-		'<div class="order_headline"><div class="ord_hd_x1">Получатель:</div><div class="ord_hd_x2"><input class="cnt_inp" type="text" name="receiver" value="'+contact.fullname+'" data-receiver="'+contact.name+'" disabled></div></div>';
+		'<div class="order_headline"><div class="ord_hd_x1">Получатель:</div><div class="ord_hd_x2"><input class="cnt_inp" type="text" name="receiver" value="'+contact.fullname+'" data-receiver="'+contact.name+'" disabled></div><div id="doc-filename"></div></div>';
 
 	var upl_xls = 	'<form id="upl_xls_form" name="upl_xls_form">' +	
 						'<div id="upl_xls" class="button fa fa-file-excel-o tooltip"  data-tooltip="Загрузить позиции из xls-файла"></div>' +
 						'<input type="file" name="xls_upl" id="xls_upl" style="display: none;">' +
 						'<input type="hidden" name="action" value="upload_xls">' +	
-					'</form>';		
+					'</form>';	
+					
+	var append_file = 	'<form style="display: inline-block;"><div class="button fa fa-files-o tooltip add-file-to-doc"  data-tooltip="Добавить файл к документу"></div><input type="file" name="add-file-to-doc" id="add-file-to-doc" value="" style="display: none;"></form>';
+	
 	var strordercontrols = 
 		'<div class="func-buttons">' +	
 			'<div id="show_addinfo" class="button fa fa-info-circle tooltip" data-tooltip="Показать дополнительные сведения о заказе"></div>' +
 			'<div id="show_msg" class="button fa fa-commenting-o tooltip" data-tooltip="Открыть панель сообщений"></div>' +
-			//'<div id="upl_xls" class="button fa fa-file-excel-o tooltip"  data-tooltip="Загрузить позиции из xls-файла"></div>' +
 			upl_xls +
 			'<div id="del_item" class="button disabled fa fa-trash tooltip"  data-tooltip="Удалить выбранные элементы"></div>' +
+			append_file +
 		'</div>' +
 		'<div class="confirm-buttons">' +
 			'<div id="save-local" class="button fa fa-floppy-o tooltip hidden" data-tooltip="Сохранить заказ, не отправляя получателю"><span class="button-text">Сохранить</span></div>' +
@@ -378,6 +436,9 @@ function initDocView(arDoc, sender, receiver) {
 			$('#order_li .order[data-order-id='+docHeader.id+'] .col_4').text(number_format(docHeader.sum, 2, '.', ' '));
 			hideModalWindow($('#order_view'));
 			$('.dark-tooltip').remove();
+			if ($('#m_catalog').hasClass('active')) {
+				getItemPosInfo();
+			};
 		});
 	});			
 	
@@ -386,13 +447,13 @@ function initDocView(arDoc, sender, receiver) {
 		var old_hash = arDoc.docHeader.hash;
 		buildTmpDoc (arDoc, receiver);
 		var new_hash = arDoc.docHeader.hash;
-		/*if ((old_hash === new_hash) && (arDoc.docHeader.status!='new')) {
+		if ((old_hash === new_hash) && (arDoc.docHeader.status!='new')) {
 			showTelebotInfo('Документ возможно отправить на согласование только при условии внесения в него изменений ...','amaze',7000);
-		} else {*/
+		} else {
 			var delID = (arDoc.docHeader.status === 'new') ? 1 : 0;
 			arDoc.docHeader.status = 'transmitted';
 			sendDoc(arDoc, (sender.id==smuser.id) ? receiver.name : sender.name, delID);
-		//};	
+		};	
 	});
 	
 	//Подтвердить заказ
@@ -414,12 +475,12 @@ function initDocView(arDoc, sender, receiver) {
 		var old_hash = arDoc.docHeader.hash;
 		buildTmpDoc (arDoc, receiver);
 		var new_hash = arDoc.docHeader.hash;
-		/*if (old_hash === new_hash) {
+		if (old_hash === new_hash) {
 			showTelebotInfo('Документ возможно отправить на согласование только при условии внесения в него изменений ...','amaze',7000);				
-		} else {*/
+		} else {
 			arDoc.docHeader.status = 'agreement';
 			sendDoc(arDoc, (sender.id==smuser.id) ? receiver.name : sender.name, 0);
-		//};
+		};
 	});	
 	
 	//Заказ готов к отгрузке
@@ -834,6 +895,74 @@ function initDocView(arDoc, sender, receiver) {
 		$(this).replaceWith($(im_svg));
 	});
 	
+	
+	//Добавление файла к документу для отправки
+	$('#order_view').on('click', '.add-file-to-doc' ,function() {
+		$('#order_view #add-file-to-doc').uploadifive('clearQueue');
+		$(this).siblings('#uploadifive-add-file-to-doc').children().last().click();
+	});	
+	$(function() {	
+		$("#order_view #add-file-to-doc").uploadifive({
+			'multi' : false,
+			'auto' : false,
+			'uploadScript' : '/my/ajax/action.php',
+			'buttonText' : '',
+			'buttonClass' : 'filename_button',
+			'dnd' : false,
+			'queueID' : 'doc-filename',
+			'fileSizeLimit' : '20MB',
+			'uploadLimit' : 0,
+			'queueSizeLimit' : 1,
+			'simUploadLimit' : 0,
+			'itemTemplate' : doc_file,
+			'formData': {'action': 'send_msg'},
+			'onAddQueueItem': function(file_obj) {
+				var file_name = file_obj.name;
+				var fileUrl = file_name, parts, ext = ( parts = file_name.split("/").pop().split(".") ).length > 1 ? parts.pop() : "";
+				var file_size = Math.round(file_obj.size/1024);
+				var file_idat = getFileType(ext);
+				var file_type = file_idat.type;
+				var att_svg = file_idat.svg;
+				var file_met = "KB";
+				if(file_size > 1024) { 
+					file_size = Math.round(file_size/1024);
+					file_met = "MB";
+				}		
+				$('#doc-filename .msg_file .filename:contains('+encodeString(file_name)+')').each(function(key, value) {
+					$(value).parent().parent().find('.file_icon').html(att_svg);
+					$(value).next('span').html(file_size+file_met+' '+file_type);
+				});
+			},
+			'onUploadComplete' : function(file, data) {
+				if(!(data.indexOf('%err%') == -1)) {
+					showError(data.replace('%err%',''));
+					return;
+				}
+				try {
+					$('#add-file-to-doc').uploadifive('clearQueue');
+					console.log(file);
+				}	
+				catch (err)	{
+					console.log(err);
+					console.log(data);
+					return;
+				}
+			},
+			'onQueueComplete' : function() {
+
+			},
+			'onClearQueue' : function() {
+
+			},
+			'onCancel'     : function() {
+
+			},
+			'onSelect'     : function() {
+
+			}	
+		});
+	});
+	
 	//Загрузка позиций каталога из xls-файла
 	$('#order_view').on('click', '#upl_xls' ,function() {
 		$('#order_view #xls_upl').uploadifive('clearQueue');
@@ -1018,13 +1147,24 @@ function sendDoc (message, receiver, delID) {
 		};	
 		var new_Doc = JSON.parse(xhr.responseText);
 		if (new_Doc[0].ID.length) {
+			if ($('#m_orders.active').length) {
+				var obj = $('#order_li .order[data-order-id='+docid+']');
+				$('.col_4', obj).text(number_format(message.docHeader.sum, 2, '.', ' '));	
+				$('.col_5', obj).text(docStatus[message.docHeader.status]);	
+			};
+			if ($('#m_catalog.active').length) {
+				$('#item_li').find('.item_content_selected').removeClass('item_content_selected');
+				$('#it_cart').removeClass('not_empty');
+				$('#it_cart .info').empty();
+				$('#it_cart .checkout_button').fadeOut(0);
+				$('#it_cart .cart_items').remove();
+			}
 			var doc_num = JSON.parse(new_Doc[0].msg_text).docHeader.num;
-			var obj = $('#order_li .order[data-order-id='+docid+']');
-			$('.col_4', obj).text(number_format(message.docHeader.sum, 2, '.', ' '));	
-			$('.col_5', obj).text(docStatus[message.docHeader.status]);		
 			if (delID) {
-				$('.col_1', obj).text(doc_num);
-				obj.attr('id', new_Doc[0].ID).attr('data-order-id', new_Doc[0].ID).removeClass('new');
+				if ($('#m_orders.active').length) {
+					$('.col_1', obj).text(doc_num);
+					obj.attr('id', new_Doc[0].ID).attr('data-order-id', new_Doc[0].ID).removeClass('new');
+				};
 				$.post('/my/ajax/order.php', {action: 'Documents_delSentDoc', message_id: docid, receiver: receiver});
 			};
 			hideModalWindow($('#order_view'));
@@ -1289,18 +1429,6 @@ function showSidebarMsg(contact){
 
 	$('#order_view .sidebar-header').html('Сообщения');
 	$('#order_view .sidebar-content').html('<div id="msg_li"></div>');
-
-	var delete_svg = '<svg fill="#BBB" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">'+
-					 '<path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>'+
-					 '<path d="M0 0h24v24H0z" fill="none"/></svg>';
-					 
-	var file_html = '<div class="msg_file uploadifive-queue-item"><div class="upfile" id="msg_fn"><div class="file_icon"></div>'+
-					'<div class="file_block"><p class="filename"></p>'+
-					'<p class="file_info"></p></div>'+
-					'<a class="del_file close"><div class="cloud">'+delete_svg+'</div></a>'+
-					'<div class="fileinfo">Готов к отправке</div>'+
-					'<div class="progress"><div class="progress-bar"></div></div>'+
-					'</div>';
 
 	var html_str = 
 	'<div id="mess_send" class="mess_send" style="display: block;">' +
