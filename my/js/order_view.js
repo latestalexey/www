@@ -447,13 +447,13 @@ function initDocView(arDoc, sender, receiver) {
 		var old_hash = arDoc.docHeader.hash;
 		buildTmpDoc (arDoc, receiver);
 		var new_hash = arDoc.docHeader.hash;
-		if ((old_hash === new_hash) && (arDoc.docHeader.status!='new')) {
+		/*if ((old_hash === new_hash) && (arDoc.docHeader.status!='new')) {
 			showTelebotInfo('Документ возможно отправить на согласование только при условии внесения в него изменений ...','amaze',7000);
-		} else {
+		} else {*/
 			var delID = (arDoc.docHeader.status === 'new') ? 1 : 0;
 			arDoc.docHeader.status = 'transmitted';
 			sendDoc(arDoc, (sender.id==smuser.id) ? receiver.name : sender.name, delID);
-		};	
+		//};	
 	});
 	
 	//Подтвердить заказ
@@ -475,12 +475,12 @@ function initDocView(arDoc, sender, receiver) {
 		var old_hash = arDoc.docHeader.hash;
 		buildTmpDoc (arDoc, receiver);
 		var new_hash = arDoc.docHeader.hash;
-		if (old_hash === new_hash) {
+		/*if (old_hash === new_hash) {
 			showTelebotInfo('Документ возможно отправить на согласование только при условии внесения в него изменений ...','amaze',7000);				
-		} else {
+		} else {*/
 			arDoc.docHeader.status = 'agreement';
 			sendDoc(arDoc, (sender.id==smuser.id) ? receiver.name : sender.name, 0);
-		};
+		//};
 	});	
 	
 	//Заказ готов к отгрузке

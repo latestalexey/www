@@ -539,7 +539,7 @@ $(document).ready(function(e)
 				var xhr = new XMLHttpRequest();
 				var body =	'action=resend_msg' +
 					'&message_ID=' + msg_ID + 
-					'&receiver=' + encodeURIComponent(JSON.stringify(add_receiver));
+					'&contact=' + encodeURIComponent(JSON.stringify(add_receiver));
 				xhr.open("POST", '/my/ajax/action.php', true);
 				xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 				xhr.onreadystatechange = function() 

@@ -295,7 +295,7 @@ $(document).ready(function()
 			if(isShared == 1) {
 				var href = window.location.protocol + '//' + window.location.host + '/my/ajax/files.php?a=catalog&i='+encodeURIComponent('contact='+contact+'&catalog_type=');
 			} else {
-				var href = 'https://sstest.e-teleport.ru/Catalog_GetSharedCatalog?contact='+contact+'&catalog_type=';
+				var href = 'https://wbs.e-teleport.ru/Catalog_GetSharedCatalog?contact='+contact+'&catalog_type=';
 			}	
 			$('#main_content').append(
 					'<div id="download_cat" class="modal_window">' +
@@ -326,7 +326,7 @@ $(document).ready(function()
 			if(isShared == 1) {
 				var href = window.location.protocol + '//' + window.location.host + '/my/ajax/files.php?a=catalog&i='+encodeURIComponent('contact='+contact+'&catalog_type=');
 			} else {
-				var href = 'https://sstest.e-teleport.ru/Catalog_GetSharedCatalog?contact='+contact+'&catalog_type=';
+				var href = 'https://wbs.e-teleport.ru/Catalog_GetSharedCatalog?contact='+contact+'&catalog_type=';
 			}	
 			svg_dwnld = '<svg fill="#777" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">\
 						<path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>\
@@ -606,7 +606,7 @@ $(document).ready(function()
 			$.each(arItem['properties'][item_id], function(key, value){
 				html_props = html_props + '<div class="item-prop"><span class="name">'+value.property_name+'</span><input value="'+value.property_value+'"></div>'
 			});
-			var item_image = (arItem['pictures'].length) ? 'https://sstest.e-teleport.ru/Catalog_Pics/'+arItem['pictures'][item_id][0].file_id : '/include/no_photo.png';
+			var item_image = (arItem['pictures'].length) ? 'https://wbs.e-teleport.ru/Catalog_Pics/'+arItem['pictures'][item_id][0].file_id : '/include/no_photo.png';
 			var html_str = '<div class="item_detail_block_edit">' +
 								'<div class="close" style="float: right;"><img src="/include/close_window.svg"></div>' +
 								'<h2>Редактирование карточки товара</h2>' +
@@ -1078,7 +1078,7 @@ function getSelectedContactCategories(cat_id) {
 					$.each(arCategories, function(i, val){		
 					    var html_img = '';
 						for (key = 0; key < 4; key++) {
-							var img = (val.pics[key]!=undefined) ? 'https://sstest.e-teleport.ru/Catalog_Pics/prev/'+val.pics[key] : '/include/no_photo.png';
+							var img = (val.pics[key]!=undefined) ? 'https://wbs.e-teleport.ru/Catalog_Pics/prev/'+val.pics[key] : '/include/no_photo.png';
 							html_img = html_img + '<div><img src="'+img+'"></div>'
 						};
 						html_str = html_str + 
