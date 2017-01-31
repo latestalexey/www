@@ -244,7 +244,9 @@ elseif($action == 'resend_msg') //TODO
 	$arFnc = array();
 	foreach ($_POST as $key => $value) 
 	{
-		if(!($key == 'action' || $key=='adds'))
+		if($key == 'contact') {
+			$arFnc[$key] = json_decode($value,true);
+		} else if(!($key == 'action' || $key=='adds'))
 			{$arFnc[$key] = $value;}
 	}	
 	$res = $TLP_obj->telecall('Messages_ReSend', $arFnc);
