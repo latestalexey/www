@@ -1553,6 +1553,7 @@ div#UserDocList .UserDocItem:hover {
 	padding: 2px 5px;
 	border: 1px solid #ccc;
 	white-space: nowrap;
+	background-color: #eee;
 }
 
 .cart_items th:first-child {
@@ -1588,4 +1589,8 @@ div#UserDocList .UserDocItem:hover {
     margin-bottom: 15px !important;
 	border: 0 !important;
 	color: #777;
+}
+
+.cart_items tr:hover {
+	background-color: #eee;
 }
