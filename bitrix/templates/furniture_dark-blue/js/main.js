@@ -889,11 +889,11 @@ function topMenu_action(id){
 
 		$("#work_zone").load(url, function(e) {
 			if(!(contact.id == undefined) && (id == 'm_catalog')) {
-				hideRightPan();
+				/*hideRightPan();
 				showExtPan();
 				$('#it_extsearch').addClass('ext_selected');
 				requestExtendedSearch();
-				resizeSearching(false);
+				resizeSearching(false);*/
 			} else {
 				showRightPan();
 				hideExtPan();

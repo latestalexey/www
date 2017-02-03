@@ -1329,7 +1329,24 @@ div#UserDocList .UserDocItem:hover {
 	top: 0;
 	z-index: 9999;
 }
-
+.item_block.novetly:before,
+.item_block.novetly + #detail_info_window:before {
+	content: url('../img/novetly.png');
+	display: block;
+	position: absolute;
+	left: 0;
+	top: 0;
+	z-index: 9999;
+}
+.item_block.popular:before,
+.item_block.popular + #detail_info_window:before {
+	content: url('../img/popular.png');
+	display: block;
+	position: absolute;
+	left: 0;
+	top: 0;
+	z-index: 9999;
+}
 .item.action .item_line .col_3,
 .item_block.action .item_price {
 	color: #d20000;
@@ -1420,6 +1437,8 @@ div#UserDocList .UserDocItem:hover {
 
 #item_list {
 	margin-top: 3px;
+	padding-bottom: 10px;
+    box-sizing: border-box;
 }
 
 .breadcrumbs {
@@ -1515,7 +1534,7 @@ div#UserDocList .UserDocItem:hover {
 }
 
 
-.it_filter[data-filter-type=stocks] {
+.it_filter[data-filter-type=items] {
 	padding: 15px 15px 15px 20px;
 }
 
@@ -1553,9 +1572,8 @@ div#UserDocList .UserDocItem:hover {
 	padding: 2px 5px;
 	border: 1px solid #ccc;
 	white-space: nowrap;
-	background-color: #eee;
+	background-color: #eee;	
 }
-
 .cart_items th:first-child {
 	text-align: left;
 }
@@ -1590,7 +1608,57 @@ div#UserDocList .UserDocItem:hover {
 	border: 0 !important;
 	color: #777;
 }
-
 .cart_items tr:hover {
 	background-color: #eee;
+}
+
+#featured-items-block {
+	margin-bottom: 30px;
+	border-bottom: 2px solid #f0840a;
+}
+
+#featured-items-block .container {
+	
+	overflow: hidden;
+}
+
+#featured-items-block .container.short {
+	max-height: 264px;
+}
+
+.featured-items {
+	padding: 15px 0;
+	text-align: center;
+}
+.featured-items .button {
+	padding: 7px 15px;
+	left: 0;
+	font-size: 18px;
+	margin-top: 15px;
+}
+
+.featured-items .title {
+	position: relative;
+	padding-bottom: 15px;
+	font-size: 27px;
+	font-weight: bold;
+}
+
+.featured-items .title span {
+	position: relative;
+	display: inline-block;
+	padding: 4px 15px;
+	color: #f0840a;
+	background-color: #fff;
+	z-index: 2;
+}
+
+.featured-items .divider {
+    position: absolute;
+    border-top: 1px solid #f0840a;
+    top: 18px;
+    right: 0;
+    left: 0;
+    margin: 0;
+	z-index: 1;
 }

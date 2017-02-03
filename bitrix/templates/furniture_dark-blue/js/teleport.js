@@ -333,6 +333,31 @@ function getFileType(ftype) {
 	return {'type': type_str, 'svg': svg_icon, 'ext': type, 'img': img_type};
 }
 
+function addUnknownContact(contact) {
+
+	var xhr = new XMLHttpRequest();
+	var body =	'action=cnt_unknown' +
+					'&contact=' + encodeURIComponent(contact);
+
+		xhr.open("POST", '/my/ajax/action.php', true);
+		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+		xhr.onreadystatechange = function() 
+		{ 
+			if (xhr.readyState != 4) return;
+			if(!(xhr.responseText.indexOf('%err%') == -1)) {
+				showError(xhr.responseText.replace('%err%',''));
+				return;
+			}
+			try {
+				$('#last_cnt').next('div').prepend(xhr.responseText);
+			}	
+			catch (err)	{
+				return;
+			}
+		}
+		xhr.send(body);
+}
+
 function messagesRequest() {
 
 	var xhr = new XMLHttpRequest();
@@ -391,6 +416,11 @@ function messagesRequest() {
 					all_notifies 	= all_notifies + req_quantity;
 					
 					var new_msg_obj = $('[data-usr-name='+req_sender+']').first().find(".new_" + req_prefix);
+					if(new_msg_obj.length == 0) {
+						addUnknownContact(rqobject.contact);
+						new_msg_obj = $('[data-usr-name='+req_sender+']').first().find(".new_" + req_prefix);
+					}
+					
 					if(req_quantity > 0 && new_msg_obj.length != 0) {
 						new_msg_obj.css("display", "block");
 						if(!(new_msg_obj.first().find('span').text() == req_quantity)) {
@@ -655,6 +685,64 @@ function ContactInfoView(name) {
 					}
 				}
 			});
+			$('#cnt_view #inf_user_fullname').keydown(function(event){
+				event.stopPropagation();
+				if (event.which == 13 && $('#cnt_view #alias_set').css('display') == 'block')
+					{
+						$('#cnt_view #alias_set').click();
+					}
+				else {	
+					$('#cnt_view #alias_set').show();
+				}	
+			});
+			$('#cnt_view #alias_reset').click(function(e) {
+				e.stopPropagation();
+				var cnt_name = $('#cnt_view #cnt_info_main').attr('data-usr-name');
+				var cnt_fullName = $('#cnt_view #cnt_info_main').attr('data-usr-flname');
+				var xhr = new XMLHttpRequest();
+				var body =	'action=setAlias' +
+							'&contact='+encodeURIComponent(cnt_name);
+				xhr.open("POST", '/my/ajax/action.php', true);
+				xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+				xhr.onreadystatechange = function()	{ 
+					if (xhr.readyState != 4) return;
+					
+					if(!(xhr.responseText.indexOf('%err%') == -1)) {
+						showError(xhr.responseText.replace('%err%',''));
+						return;
+					}
+					$('#cnt_view #inf_user_fullname').val(cnt_fullName);
+					$('#cnt_view #alias_reset').hide();
+				}	
+				xhr.send(body);
+			});
+			$('#cnt_view #alias_set').click(function(e) {
+				e.stopPropagation();
+				var cnt_name = $('#cnt_view #cnt_info_main').attr('data-usr-name');
+				var cnt_fullName = $('#cnt_view #cnt_info_main').attr('data-usr-flname');
+				var cnt_alias = $('#cnt_view #inf_user_fullname').val();
+				var xhr = new XMLHttpRequest();
+				var body =	'action=setAlias' +
+							'&contact='+encodeURIComponent(cnt_name) + 
+							'&alias=' + encodeURIComponent(cnt_alias);
+							;
+				xhr.open("POST", '/my/ajax/action.php', true);
+				xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+				xhr.onreadystatechange = function()	{ 
+					if (xhr.readyState != 4) return;
+					
+					if(!(xhr.responseText.indexOf('%err%') == -1)) {
+						showError(xhr.responseText.replace('%err%',''));
+						return;
+					}
+					$('#cnt_view #alias_set').hide();
+					if(cnt_fullName != cnt_alias) {
+						$('#cnt_view #alias_reset').show();
+					}
+					
+				}	
+				xhr.send(body);
+			});				
 			$('#cnt_view #cnt_info_save').click(function(e) {
 				e.stopPropagation();
 				var xhr = new XMLHttpRequest();

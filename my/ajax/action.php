@@ -374,7 +374,9 @@ elseif($action == 'catalog_get')
 				
 				if($list_type == 'list') {
 					//list type
-					$action = $item["action"] ? ' action' : '';
+					$action = $item["popular"] ? ' popular' : '';
+					$action = $item["novetly"] ? ' novetly' : $action;
+					$action = $item["action"] ? ' action' : $action;
 					$str = $str.'<div id="it_'.$item["id"].'" class="item'.$action.'" data-it-id="'.$item["id"].'"><div class="item_content"><div class="item_line">';
 					$str = $str.'<div class="col_1">'.$item["article"].'</div><div class="col_2">'.$item["name"].'<p class="sub_info"><img src="/include/stdown.png"/></p></div>';
 					if($allow_prices)
@@ -419,7 +421,10 @@ elseif($action == 'catalog_get')
 				elseif ($list_type == 'block') {
 					//block type
 					$im_count = (count($arPictures[$item["id"]])==0)?1:count($arPictures[$item["id"]]);
-					$action = $item["action"] ? ' action' : '';
+					$action = $item["popular"] ? ' popular' : '';
+					$action = $item["novetly"] ? ' novetly' : $action;
+					$action = $item["action"] ? ' action' : $action;
+
 					$li_size = 150*$im_count;
 					$it_name = ($item["article"]=='')?$item["name"]:$item["article"].'<br>'.$item["name"];
 					$str = $str.'<div id="it_'.$item["id"].'" class="item_block'.$action.'" data-it-id="'.$item["id"].'">
@@ -978,7 +983,7 @@ elseif($action == 'getPersonInfo')
 			$arResult = $res["return"];
 			$arFields = array("user_name"=>"Пользователь",
 							"email"=>"e-mail",
-							"user_fullname"=>"Мое имя",
+							"user_fullname"=>"Имя контакта",
 							"phone"=>"Телефон",
 							"user_group"=>"Я в команде",
 							"company"=>"Моя компания",
@@ -1057,16 +1062,27 @@ elseif($action == 'getPersonInfo')
 			<?
 			foreach($arFields as $key=>$fvalue)
 			{
-				$value = $arResult[$key];
 				if($key == 'user_name') {
 					continue;
 				}
+				
+				$readOnly = true;
 				if ($mySettings && array_key_exists($key, $rdFields)) {
 					$readOnly = true;
 				}
 				elseif ($mySettings) {
 					$readOnly = false;
 				}
+				if($key == 'user_fullname' && !$mySettings) {
+					if($arResult['alias'] == $arResult['user_name']) {
+						$value = $arResult[$key];
+					} else {
+						$value = $arResult['alias'];
+					}					
+					$readOnly = false;
+				} else {
+					$value = $arResult[$key];
+				}	
 				
 				/*if($arResult['allow_contacts'] == 0 && (!$mySettings) && ($key == 'phone' || $key == 'email')) {
 					continue;}*/
@@ -1118,7 +1134,7 @@ elseif($action == 'getPersonInfo')
 								</div>
 							</a>
 						<?	
-						}
+						} 
 						elseif ($key == 'company')
 						{?>
 							<pre style="width: 90%"><?echo ($value=='')?'-':$value;?></pre>
@@ -1191,6 +1207,25 @@ elseif($action == 'getPersonInfo')
 										Скачать карточку организации
 									</div>
 									<?include($_SERVER["DOCUMENT_ROOT"]."/my/data/svg/cloud_download.svg");?>
+								</div>
+							<?} elseif ($key == 'user_fullname' && !$mySettings) {?>
+								<div id="alias_set" class="mail_icon active_icon help_icon" style="display: none;">
+									<div class="help_info">
+										Сохранить имя контакта
+									</div>
+									<svg fill="#CCCCCC" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+										<path d="M0 0h24v24H0z" fill="none"/>
+										<path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/>
+									</svg>
+								</div>
+								<div id="alias_reset" class="mail_icon active_icon help_icon" style="display: <?=($value != $arResult[$key])?'block':'none';?>;">
+									<div class="help_info">
+										Сбросить на имя из карточки контакта
+									</div>
+									<svg fill="#CCCCCC" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+										<path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path>
+										<path d="M0 0h24v24H0z" fill="none"></path>
+									</svg>
 								</div>
 							<?}?>
 					<?}?>	
@@ -1737,5 +1772,54 @@ elseif($action == 'Files_Delete')
 		$res = $TLP_obj->get('files/delete/'.$_POST['file_id'].'?format=json&Category=userFiles');
 		print_r($_POST['file_id']);
 	}
+elseif($action == 'cnt_unknown')
+	{
+		$arFnc = array();
+		foreach ($_POST as $key => $value) 
+		{
+			if(!($key == 'action' || $key=='adds'))
+				{$arFnc[$key] = $value;}
+		}	
+		$res = $TLP_obj->telecall('Contacts_GetPersonInfo', $arFnc);
+		if($res['errCode'] == 0)
+		{
+			$arResult = $res["return"];
+			$cnt = array();
+			$cnt['user_id'] = get_GUID();
+			$cnt['group'] = 'Нет в списке контактов';
+			$cnt['name'] = $arResult['user_name'];
+			$cnt['alias'] = $arResult["alias"];;
+			$cnt['fullname'] = $arResult["user_fullname"];
+			$cnt['groupinfo'] = '';
+			$cnt['membergroupname'] = '';
+			$cnt['membergroupfullname'] = '';
+			$cnt['sortnum'] = 0;
+			
+			$activedate = new DateTime();
+			$cnt['activedate'] = $activedate->format('Y-m-d').'T'.$activedate->format('H:i:s').'.00000';
+			$strDate = $activedate->format("H:i");
 
+			$cnt['strDate'] = $strDate;
+			$cnt['photo_id'] = $arResult["photo_id"];
+			$cnt['photo'] = ($arResult["photo_id"] == '')?(''):('/my/ajax/files.php?a=prev&i='.$arResult["photo_id"]);
+			include('cnt_lstblock.php');
+		} else {
+			echo '%err%'.$TLP_obj->mistakes[$res['errCode']];
+		}
+	}
+elseif ($action == 'setAlias') {
+		$arFnc = array();
+		foreach ($_POST as $key => $value) 
+		{
+			if(!($key == 'action' || $key=='adds'))
+				{$arFnc[$key] = $value;}
+		}	
+		$res = $TLP_obj->telecall('Contacts_SetAlias', $arFnc);
+		if($res['errCode'] == 0)
+		{
+		} else {
+			echo '%err%'.$TLP_obj->mistakes[$res['errCode']];
+		}
+}
+	
 ?>

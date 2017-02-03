@@ -1227,7 +1227,8 @@ function showMessages(contact, arMsg, mode, isBegining)
 			var xhr = new XMLHttpRequest();
 			var body =	'contact=' + encodeURIComponent(contact.name) +
 						'&fullname=' + encodeURIComponent(contact.fullname) +
-						'&contact_img=' + encodeURIComponent(avatarURL);
+						'&contact_img=' + encodeURIComponent(avatarURL) +
+						'&contact_alias=' + encodeURIComponent($('.active_contact_inf').attr('data-usr-alias'));
 
 			xhr.open("POST", '/my/ajax/msg_begin.php', true);
 			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');

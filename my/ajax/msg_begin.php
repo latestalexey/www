@@ -4,7 +4,11 @@
 		</div>
 		<div class="message_header" style="vertical-align: 30px; font-size: 20px; color: #000">
 			<?
-			$contactName = ($_POST["fullname"] == "" || $_POST["fullname"] == $_POST["contact"])?($_POST["contact"]):($_POST["fullname"]);
+			if($_POST["contact_alias"] == $_POST["contact"] ||  $_POST["contact_alias"] == '') {
+				$contactName = ($_POST["fullname"] == "" || $_POST["fullname"] == $_POST["contact"])?($_POST["contact"]):($_POST["fullname"]);
+			} else {
+				$contactName = $_POST["contact_alias"];
+			}			
 			?>
 			<a><?=$contactName?></a>
 		</div>
