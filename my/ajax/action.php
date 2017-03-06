@@ -986,9 +986,9 @@ elseif($action == 'getPersonInfo')
 							"user_fullname"=>"Имя контакта",
 							"phone"=>"Телефон",
 							"user_group"=>"Я в команде",
-							"company"=>"Моя компания",
+							//"company"=>"Моя компания",
 							"user_status"=>"Мой статус",
-							"address"=>"Наш адрес",
+							//"address"=>"Наш адрес",
 							"information"=>"Информация о себе");
 			$rdFields = array("user_name"=>true, "email"=>true, "user_group"=>true, "user_status"=>true, "company"=>true, "address"=>true);
 			$msFields = array("fullname"=>true, "email"=>true, "information"=>true, "address"=>true, "company"=>true);
@@ -1106,6 +1106,12 @@ elseif($action == 'getPersonInfo')
 						<textarea class="svd" id="inf_<?=$key;?>" name="<?=$key;?>"><? echo $value;?></textarea>
 					<?}?>
 					</div>
+					<div class="cnt_headline">
+						<div class="simple_button legal-entity" style="padding: 15px; width: 94%;">Юридические лица</div>
+					</div>
+					<div class="cnt_headline">
+						<div class="simple_button trade-point" style="padding: 15px; width: 94%;">Торговые точки</div>
+					</div>					
 				<?}
 				else
 				{
@@ -1238,6 +1244,130 @@ elseif($action == 'getPersonInfo')
 				<?}
 			}?>
 			</div>
+			<div id="trade_point_card" style="display: none;">
+				<div class="cnt_headline">
+					<div id="back_main" class="active_icon">
+						<?include($_SERVER["DOCUMENT_ROOT"]."/my/data/svg/arrow_back.svg");?>
+						<div style="display: inline-block; font-size: 14px; vertical-align: 7px; font-weight: 800;">
+							Вернуться назад к основной информации
+						</div>
+					</div>
+				</div>
+				<div class="cnt_headline">
+					<div class="cnt_hd_x1">Торговая точка:</div>
+					<div class="cnt_hd_x2" style="border: none; padding: 0px; width: 71%;">
+						<input class="data" id="inf_branch_name" type="text" name="branch_name" value="">							
+					</div>
+				</div>
+				<div class="cnt_headline">
+					<div class="cnt_hd_x1">КПП:</div>
+					<div class="cnt_hd_x2" style="border: none; padding: 0px; width: 71%;">
+						<input class="data" id="inf_branch_KPP" type="text" name="branch_KPP" value="">							
+					</div>
+				</div>
+				<div class="cnt_headline">
+					<div class="cnt_hd_x1">Адрес:</div>
+					<div class="cnt_hd_x2" style="border: none; padding: 0px; width: 71%;">
+						<input class="data" id="inf_branch_address" type="text" name="branch_address" value="">							
+					</div>
+				</div>
+				<div class="cnt_headline">
+					<div class="cnt_hd_x1">Телефоны:</div>
+					<div class="cnt_hd_x2" style="border: none; padding: 0px; width: 71%;">
+						<input class="data" id="inf_branch_phone" type="text" name="branch_phone" value="">							
+					</div>
+				</div>
+				<div id="trade_points_save" style="margin: 15px 5px 0 5px;" class="menu_button">Сохранить</div>
+			</div>
+			<div id="legal_entity_card" style="display: none;">
+				<div class="cnt_headline">
+					<div id="back_main" class="active_icon">
+						<?include($_SERVER["DOCUMENT_ROOT"]."/my/data/svg/arrow_back.svg");?>
+						<div style="display: inline-block; font-size: 14px; vertical-align: 7px; font-weight: 800;">
+							Вернуться назад к основной информации
+						</div>
+					</div>
+				</div>
+				<div class="cnt_headline">
+					<div class="cnt_hd_x1">Моя компания:</div>
+					<div class="cnt_hd_x2" style="border: none; padding: 0px; width: 71%;">
+						<input class="data" id="inf_company_name" type="text" name="company_name" value="">							
+					</div>
+				</div>
+				<div class="cnt_headline">
+					<div class="cnt_hd_x1">Полное наименование:</div>
+					<div class="cnt_hd_x2" style="border: none; padding: 0px; width: 71%;">
+						<input class="data" id="inf_company_fullname" type="text" name="company_fullname" value="">							
+					</div>
+				</div>
+				<div class="cnt_headline">
+					<div class="cnt_hd_x1">ИНН:</div>
+					<div class="cnt_hd_x2" style="border: none; padding: 0px; width: 71%;">
+						<input class="data" id="inf_company_INN" type="text" name="company_INN" value="">							
+					</div>
+				</div>
+				<div class="cnt_headline">
+					<div class="cnt_hd_x1">КПП:</div>
+					<div class="cnt_hd_x2" style="border: none; padding: 0px; width: 71%;">
+						<input class="data" id="inf_company_KPP" type="text" name="company_KPP" value="">							
+					</div>
+				</div>
+				<div class="cnt_headline">
+					<div class="cnt_hd_x1">ОГРН:</div>
+					<div class="cnt_hd_x2" style="border: none; padding: 0px; width: 71%;">
+						<input class="data" id="inf_company_OGRN" type="text" name="company_OGRN" value="">							
+					</div>
+				</div>
+				<div class="cnt_headline">
+					<div class="cnt_hd_x1">Р/сч:</div>
+					<div class="cnt_hd_x2" style="border: none; padding: 0px; width: 71%;">
+						<input class="data" id="inf_company_account" type="text" name="company_account" value="">							
+					</div>
+				</div>
+				<div class="cnt_headline">
+					<div class="cnt_hd_x1">в банке:</div>
+					<div class="cnt_hd_x2" style="border: none; padding: 0px; width: 71%;">
+						<input class="data" id="inf_company_bank" type="text" name="company_bank" value="">							
+					</div>
+				</div>
+				<div class="cnt_headline">
+					<div class="cnt_hd_x1">БИК:</div>
+					<div class="cnt_hd_x2" style="border: none; padding: 0px; width: 71%;">
+						<input class="data" id="inf_company_BIK" type="text" name="company_BIK" value="">							
+					</div>
+				</div>
+				<div class="cnt_headline">
+					<div class="cnt_hd_x1">К/сч:</div>
+					<div class="cnt_hd_x2" style="border: none; padding: 0px; width: 71%;">
+						<input class="data" id="inf_company_coraccount" type="text" name="company_coraccount" value="">							
+					</div>
+				</div>
+				<div class="cnt_headline">
+					<div class="cnt_hd_x1">Юр. адрес:</div>
+					<div class="cnt_hd_x2" style="border: none; padding: 0px; width: 71%;">
+						<input class="data" id="inf_company_address" type="text" name="company_address" value="">							
+					</div>
+				</div>
+				<div class="cnt_headline">
+					<div class="cnt_hd_x1">Телефоны:</div>
+					<div class="cnt_hd_x2" style="border: none; padding: 0px; width: 71%;">
+						<input class="data" id="inf_company_phone" type="text" name="company_phone" value="">							
+					</div>
+				</div>
+				<div class="cnt_headline">
+					<div class="cnt_hd_x1">Руководитель:</div>
+					<div class="cnt_hd_x2" style="border: none; padding: 0px; width: 71%;">
+						<input class="data" id="inf_company_chief" type="text" name="company_chief" value="">							
+					</div>
+				</div>
+				<div class="cnt_headline">
+					<div class="cnt_hd_x1">Главный бухгалтер:</div>
+					<div class="cnt_hd_x2" style="border: none; padding: 0px; width: 71%;">
+						<input class="data" id="inf_company_buh" type="text" name="company_buh" value="">							
+					</div>
+				</div>
+				<div id="legal_entity_save" style="margin: 15px 5px 0 5px;" class="menu_button">Сохранить</div>
+			</div>	
 			<div id="cnt_company_card" style="display: none;">
 				<div class="cnt_headline">
 					<div id="back_main" class="active_icon">
@@ -1466,6 +1596,29 @@ elseif($action == 'getPersonInfo')
 				<div id="cnt_filelist_content"></div>
 			</div>	
 			
+			<div id="legal_entity" style="display: none;">
+				<div class="cnt_headline">
+					<div id="back_main" class="active_icon">
+						<?include($_SERVER["DOCUMENT_ROOT"]."/my/data/svg/arrow_back.svg");?>
+						<div style="display: inline-block; font-size: 14px; vertical-align: 7px; font-weight: 800;">
+							Вернуться назад к основной информации
+						</div>
+					</div>
+				</div>	
+				<div id="legal_entity_content" style="min-height: 80px; max-height: 300px"></div>
+			</div>
+			
+			<div id="trade_point" style="display: none;">
+				<div class="cnt_headline">
+					<div id="back_main" class="active_icon">
+						<?include($_SERVER["DOCUMENT_ROOT"]."/my/data/svg/arrow_back.svg");?>
+						<div style="display: inline-block; font-size: 14px; vertical-align: 7px; font-weight: 800;">
+							Вернуться назад к основной информации
+						</div>
+					</div>
+				</div>	
+				<div id="trade_point_content" style="min-height: 80px; max-height: 300px"></div>
+			</div>				
 			
 			<div id="buttons" class="cnt_headline">
 				<div id="cnt_info_docs" style="display: inline-block; margin: 0 33px 0 5px;" class="menu_button">Файлы профиля</div>
@@ -1821,5 +1974,98 @@ elseif ($action == 'setAlias') {
 			echo '%err%'.$TLP_obj->mistakes[$res['errCode']];
 		}
 }
-	
+
+
+elseif ($action == 'Company_Add') {
+	$arFnc = array();
+	foreach ($_POST as $key => $value) {
+		if($key=="Parameters") {
+			{$arFnc[$key] = json_decode($value, true);}
+		} elseif(!($key == 'action' || $key=='adds'))
+			{$arFnc[$key] = $value;}
+	}	
+	$res = $TLP_obj->telecall('Company_Add', $arFnc);
+	echo json_encode($res);		
+}
+elseif ($action == 'Company_Change') {
+	$arFnc = array();
+	foreach ($_POST as $key => $value) {
+		if($key=="Parameters") {
+			{$arFnc[$key] = json_decode($value, true);}
+		} elseif(!($key == 'action' || $key=='adds'))
+			{$arFnc[$key] = $value;}
+	}	
+	$res = $TLP_obj->telecall('Company_Change', $arFnc);
+	//echo json_encode($res);		
+
+	print_r($res);}
+elseif ($action == 'Company_GetList') {
+	$arFnc = array();
+	foreach ($_POST as $key => $value) {
+		if(!($key == 'action' || $key=='adds'))
+			{$arFnc[$key] = $value;}
+	}	
+	$res = $TLP_obj->telecall('Company_GetList', $arFnc);
+	if($res['errCode'] == 0){
+		echo json_encode($res['retVal']);
+	}
+	else {
+		echo json_encode($res['errCode']);
+	}
+}
+elseif ($action == 'Company_Delete') {
+	$arFnc = array();
+	foreach ($_POST as $key => $value) {
+		if(!($key == 'action' || $key=='adds'))
+			{$arFnc[$key] = $value;}
+	}	
+	$res = $TLP_obj->telecall('Company_Delete', $arFnc);
+	echo json_encode($res);	
+}
+
+elseif ($action == 'Branch_Add') {
+	$arFnc = array();
+	foreach ($_POST as $key => $value) {
+		if($key=="Parameters") {
+			{$arFnc[$key] = json_decode($value, true);}
+		} elseif(!($key == 'action' || $key=='adds'))
+			{$arFnc[$key] = $value;}
+	}	
+	$res = $TLP_obj->telecall('Branch_Add', $arFnc);
+	echo json_encode($res);		
+}
+elseif ($action == 'Branch_Change') {
+	$arFnc = array();
+	foreach ($_POST as $key => $value) {
+		if($key=="Parameters") {
+			{$arFnc[$key] = json_decode($value, true);}
+		} elseif(!($key == 'action' || $key=='adds'))
+			{$arFnc[$key] = $value;}
+	}	
+	$res = $TLP_obj->telecall('Branch_Change', $arFnc);
+	echo json_encode($res);	
+}
+elseif ($action == 'Branch_GetList') {
+	$arFnc = array();
+	foreach ($_POST as $key => $value) {
+		if(!($key == 'action' || $key=='adds'))
+			{$arFnc[$key] = $value;}
+	}	
+	$res = $TLP_obj->telecall('Branch_GetList', $arFnc);
+	if($res['errCode'] == 0){
+		echo json_encode($res['retVal']);
+	}
+	else {
+		echo json_encode($res['errCode']);
+	}
+}
+elseif ($action == 'Branch_Delete') {
+	$arFnc = array();
+	foreach ($_POST as $key => $value) {
+		if(!($key == 'action' || $key=='adds'))
+			{$arFnc[$key] = $value;}
+	}	
+	$res = $TLP_obj->telecall('Branch_Delete', $arFnc);
+	echo json_encode($res);	
+}	
 ?>

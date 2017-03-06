@@ -9,6 +9,33 @@ var docStatus = {
 	'closed': 'Выполнен'
 }
 
+
+var orderSteps = { 
+	'selection': 'Подбор товара',
+	'parameters': 'Параметры заказа',
+	'payment': 'Доставка и оплата',
+	'confirmation': 'Подтверждение'
+}
+
+var deliveryType = { 
+	'pickup': 'Самовывоз',
+	'outlet': 'Доставка до торговой точки',
+	'transportCompany': 'Транспортная компания'
+}
+
+var paymentType = { 
+	'cash': 'Наличные',
+	'cashless': 'Безналичная оплата'
+}
+
+var hasCompany = false;
+var hasBranch = false;
+
+var cloud_svg = '<svg fill="#CCCCCC" height="36" viewBox="0 0 24 24" width="36" xmlns="http://www.w3.org/2000/svg">'+
+			'<path d="M0 0h24v24H0z" fill="none"/>'+
+   '<path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/>'+
+			'</svg>	';
+
 var delete_svg = '<svg fill="#BBB" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">'+
 					 '<path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>'+
 					 '<path d="M0 0h24v24H0z" fill="none"/></svg>';
@@ -20,16 +47,18 @@ var file_html = '<div class="msg_file uploadifive-queue-item"><div class="upfile
 				'<div class="fileinfo">Готов к отправке</div>'+
 				'<div class="progress"><div class="progress-bar"></div></div>'+
 				'</div>';
-				
-var doc_file = '<div class="msg_file uploadifive-queue-item"><div class="upfile" id="msg_fn"><div class="file_icon"></div>'+
+
+var doc_file = '<div class="msg_file uploadifive-queue-item"><div class="upfile" id="msg_fn">'+
 				'<div class="file_block"><span class="filename"></span>'+
 				'<span class="file_info"></span></div>'+
-				'<a class="del_file close"><div class="cloud">'+delete_svg+'</div></a>'+
-				'</div>';		
-				
+				'<div id="del-user-file" class="fa fa-trash-o help_icon"><div class="help_info">Удалить файл</div></div>'+
+				'</div>';
+
+var newDocID = '';
+
 function getDocInfo(id, sender, receiver) {
-	var xhr = new XMLHttpRequest();
-	var body =	'action=Documents_GetById' +
+  var xhr = new XMLHttpRequest();
+  var body = 'action=Documents_GetById' +
 				'&message_id=' + id;
 	xhr.open("POST", '/my/ajax/action.php', true);
 	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -41,21 +70,206 @@ function getDocInfo(id, sender, receiver) {
 			return;
 		}
 		var arResult = JSON.parse(xhr.responseText);
+		console.log(arResult)
 		initDocView(arResult, sender, receiver);
-		SearchFiles();
 	};
 	xhr.send(body);	
 };
 
-function SearchFiles() {
-	var contact	= getActiveContact();
+function getCompanyList(contact) {
+	hasCompany = false;
+	var xhr = new XMLHttpRequest();
+	var body = 'action=Company_GetList' +
+			 '&contact=' + encodeURIComponent(contact);
+	xhr.open("POST", '/my/ajax/action.php', true);
+	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+	xhr.onreadystatechange = function() { 
+		if (xhr.readyState != 4) return;
+
+		if(!(xhr.responseText.indexOf('%err%') == -1)) {
+			showError(xhr.responseText.replace('%err%',''));
+			return;
+		}
+		var arResult = JSON.parse(xhr.responseText);
+		var html_str = '';
+		if (arResult.length) hasCompany = true;
+		$.each(arResult, function(i, val){
+			html_str = html_str +
+			'<div class="company_item item" data-value='+val.company_id+'>\
+				<div class="company_name name">'+((val.company_fullname.length) ? val.company_fullname : val.company_name)+'</div>\
+				<div class="company_address address">'+val.company_address+'</div>\
+			</div>'
+		});
+		$('#order_view').find('.company_items').html(html_str);
+	};
+	xhr.send(body);	
+};
+
+function getBranchList(contact) {
+	hasBranch = false;
+	var xhr = new XMLHttpRequest();
+	var body = 'action=Branch_GetList' +
+			 '&contact=' + encodeURIComponent(contact);
+	xhr.open("POST", '/my/ajax/action.php', true);
+	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+	xhr.onreadystatechange = function() { 
+		if (xhr.readyState != 4) return;
+
+		if(!(xhr.responseText.indexOf('%err%') == -1)) {
+			showError(xhr.responseText.replace('%err%',''));
+			return;
+		}
+		var arResult = JSON.parse(xhr.responseText);
+		if (arResult.length) hasBranch = true;
+		var html_str = '';
+		$.each(arResult, function(i, val){
+			html_str = html_str +
+			'<div class="branch_item item" data-value='+val.branch_id+'>\
+				<div class="branch_name name">'+val.branch_name+'</div>\
+				<div class="branch_address address">'+val.branch_address+'</div>\
+			</div>'
+		});
+		$('#order_view').find('.branch_items').html(html_str);
+	};
+	xhr.send(body);	
+};
+
+function getDeliveryPropsList() {
+	var html_str = '';
+	$.each(deliveryType, function(i, val){
+		html_str = html_str +
+		'<div class="delivery_item item" data-value='+i+'>\
+			<div class="delivery_name name">'+val+'</div>\
+		</div>'
+	});
+	$('#order_view').find('.delivery_items').html(html_str);	
+	
+	html_str = '';
+	$.each(paymentType, function(i, val){
+		html_str = html_str +
+		'<div class="payment_item item" data-value='+i+'>\
+			<div class="payment_name name">'+val+'</div>\
+		</div>'
+	});
+	$('#order_view').find('.payment_items').html(html_str);	
+}
+
+function getDatePicker() {
+	var daysStr =
+		'<div class="day_block">' +
+			'<div class="day_name">Пн</div>' +
+			'<div class="day_name">Вт</div>' +
+			'<div class="day_name">Ср</div>' +
+			'<div class="day_name">Чт</div>' +
+			'<div class="day_name">Пт</div>' +
+			'<div class="day_name red">Сб</div>' +
+			'<div class="day_name red">Вс</div>' +
+		'</div>';
+
+	var date = new Date();
+	var dayNum = (!date.getDay()) ? 7 :  date.getDay();
+	var html_str = '<div class="week_block">';
+	for (var i = 1; i < dayNum; i++) {
+		html_str = html_str + '<div class="date_item empty_item"></div>'
+	}
+	for (var i = 1; i < 22; i++) {
+		var dayNum = (!date.getDay()) ? 7 :  date.getDay();
+		if (dayNum === 1) {
+			html_str = html_str + '</div><div class="week_block">'
+		}
+		var day = String(date.getDate());
+		var month = String(date.getMonth()+1);
+		var year = String(date.getFullYear());
+		day = (day.length === 2) ? day : '0'+day ;
+		month = (month.length === 2) ? month : '0'+month;
+		html_str = html_str +
+		'<div class="date_item item" data-value='+day+'.'+month+'.'+year+'>\
+			<div class="date_name name">'+day+'.'+month+'</div>\
+		</div>'
+		date.setDate(date.getDate() + 1);
+    }
+	$('#order_view .delivery_date').find('.date_picker').html(daysStr+html_str);	
+};
+
+function getCommonOrderInfo() {
+	var obj = $('#order_view .order-configuration-tab');
+	var html_str = '';
+	html_str = 
+	'<table>' +
+		'<tr>' +
+			'<td>Отправитель заказа:</td>' +
+			'<td>'+smuser.name+'</td>' +
+		'</tr>' +
+		'<tr>' +
+			'<td>Получатель заказа:</td>' +
+			'<td>'+$('#order_view .cnt_inp[name="receiver"]').val()+'</td>' +
+		'</tr>' +
+		'<tr>' +
+			'<td>Количество позиций:</td>' +
+			'<td>'+$('#order_view .order_item_list_content').find('tr').length+'</td>' +
+		'</tr>' +
+		'<tr>' +
+			'<td>На сумму</td>' +
+			'<td>'+$('#order_view .totalsum-block .total-sum').text()+$('#order_view .totalsum-block .currency').text()+'</td>' +
+		'</tr>' +
+		'<tr>' +
+			'<td>Прикрепленные файлы:</td>' +
+			'<td>'+($('#order_view #doc-filename .file_block .filename').text() || 'Отсутствуют')+'</td>' +
+		'</tr>' +
+		'<tr>' +
+			'<td>Юридическое лицо:</td>' +
+			'<td>'+($('.company_item.selected .name', obj).text() || 'Не указано')+'</td>' +
+		'</tr>' +
+		'<tr>' +
+			'<td>Торговая точка:</td>' +
+			'<td>'+($('.branch_item.selected .name', obj).text() || 'Не указана')+'</td>' +
+		'</tr>' +
+		'<tr>' +
+			'<td>Способ доставки:</td>' +
+			'<td>'+($('.delivery_item.selected .name', obj).text() || 'Не указан')+'</td>' +
+		'</tr>' +
+		'<tr>' +
+			'<td>Способ оплаты:</td>' +
+			'<td>'+($('.payment_item.selected .name', obj).text() || 'Не указан')+'</td>' +
+		'</tr>' +
+		'<tr>' +
+			'<td>Дата доставки:</td>' +
+			'<td>'+($('.date_item.selected', obj).attr('data-value') || 'Не указана')+'</td>' +
+		'</tr>' +
+		'<tr>' +
+			'<td colspan="2" style="text-align: center;">Комментарий: ' +
+			'<div class="order_comment"><input value="" ></div></td>' +
+		'</tr>' +
+	'</table>';
+	obj.find('.common_info').html(html_str);	
+};
+
+function setConfigurationValues(arParams) {
+	$.each(arParams, function(i, val) {
+		switch (val.name) {
+			case 'company_id':
+				$('#order_view .parameters .company_item[data-value="'+val.value+'"]').addClass('selected');
+			case 'branch_id':
+				$('#order_view .parameters .branch_item[data-value="'+val.value+'"]').addClass('selected');
+			case 'delivery_type':
+				$('#order_view .payment .delivery_item[data-value="'+val.value+'"]').addClass('selected');
+			case 'payment_type':
+				$('#order_view .payment .payment_item[data-value="'+val.value+'"]').addClass('selected');
+			case 'delivery_date':
+				$('#order_view .payment .date_item[data-value="'+val.value+'"]').addClass('selected');
+		}
+	});
+};
+
+function SearchFiles(file_id, contact) {
 	var xhr = new XMLHttpRequest();
 	var body =	'action=filesList' +
 				'&adds=json' +
-				'&contact=' + encodeURIComponent(contact.name) +
+				'&contact=' + encodeURIComponent(contact) +
+				'&file_id=' + encodeURIComponent(file_id) +
 				'&Category=documents' +
-				'&limit=2' +
-				'&nom=1';					
+				'&limit=1' +
+				'&nom=1';
 	xhr.open("POST", '/my/ajax/action.php', true);
 	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 	xhr.onreadystatechange = function() 
@@ -66,14 +280,16 @@ function SearchFiles() {
 			showError(xhr.responseText.replace('%err%',''));
 			return;
 		}
-		console.log(xhr.responseText);
+		var obj = JSON.parse(xhr.responseText);
+		if (obj.length) {
+			$('#order_view #doc-filename').html('<div class="msg_file">' + addDocFileToList(obj[0], true) + '</div>');
+		}
 	}				
 	xhr.send(body);	
 };
 
 function getTmpDocInfo(id, sender, receiver) {
 	$.post('/my/ajax/order.php', { action: 'Documents_GetById', message_id: id }, function(data) {
-		console.log(data);
 		var arResult = JSON.parse(data);
 		initDocView(arResult, sender, receiver);
 	});
@@ -92,6 +308,7 @@ function calcHash(message) {
 function setEditPolicy (sender, message) {
 	$("#upl_xls").addClass('hidden');
 	$('#del_item').addClass('hidden');
+	$('.add-file-to-doc').addClass('hidden');
 	$('.input_row .col_1_2 input').addClass('hidden');
 	$(".order_item_list_content .col_0 .fa").addClass('hidden');
 	$(".order_item_list_content .col_4 .fa").addClass('hidden');
@@ -104,6 +321,7 @@ function setEditPolicy (sender, message) {
 			case 'new':
 				$('#upl_xls').removeClass('hidden');
 				$('#del_item').removeClass('hidden');
+				$('.add-file-to-doc').removeClass('hidden');
 				$('.input_row .col_1_2 input').removeClass('hidden');
 				$('.order_item_list_content .col_0 .fa').removeClass('hidden');
 				$('.order_item_list_content .col_4 .fa').removeClass('hidden');
@@ -123,7 +341,7 @@ function setEditPolicy (sender, message) {
 			case 'processed':
 				break;
 			case 'agreement':
-				$("#upl_xls").removeClass('hidden');
+				//$("#upl_xls").removeClass('hidden');
 				$('#del_item').removeClass('hidden');
 				$('.input_row .col_1_2 input').removeClass('hidden');
 				$(".order_item_list_content .col_0 .fa").removeClass('hidden');
@@ -140,15 +358,14 @@ function setEditPolicy (sender, message) {
 				break;
 			case 'closed':
 				break;
-		}		
+		}
 	}
 	else {
-		console.log('else');
 		switch(message.docHeader.status) {
 			case 'new':
 				break;
 			case 'transmitted':
-				$("#upl_xls").removeClass('hidden');
+				//$("#upl_xls").removeClass('hidden');
 				$('#del_item').removeClass('hidden');
 				$('.input_row .col_1_2 input').removeClass('hidden');
 				$(".order_item_list_content .col_0 .fa").removeClass('hidden');
@@ -233,7 +450,7 @@ function getDocHeaderProps(arHeader) {
 			);
 		};
 	});	
-	
+/*	
 	$('#order_view .sidebar-content .doc-add-props').append(
 		'<div class="sidebar-item-wrap comment">' +
 			'<div class="sidebar-item-header"><i class="fa fa-chevron-down"></i>Комментарии</div>' +
@@ -244,7 +461,10 @@ function getDocHeaderProps(arHeader) {
 			'</div>' +
 		'</div>'
 	);
+*/
 
+	$('#order_view .order_comment input').val(arHeader.comment);
+	
 	var h = $('#order_view .sidebar').height() - 46;
 	$('#order_view .sidebar .sidebar-content .doc-add-props').slimScroll({height: h, size: '7px', disableFadeOut: false});
 };
@@ -326,7 +546,6 @@ function getDocTable(docTable, tabHeaderProps){
 
 function initDocView(arDoc, sender, receiver) {
 	arDoc.docHeader.hash = calcHash(arDoc.docTable);
-	console.log(arDoc);
 	var docHeader = arDoc.docHeader;
 	var tabHeader = arDoc.tabHeader;
 	var docTable = arDoc.docTable;
@@ -334,17 +553,74 @@ function initDocView(arDoc, sender, receiver) {
 	var sender = getContactInfo(sender);
 	var receiver = getContactInfo(receiver);
 	var contact = (sender.id==smuser.id) ? receiver : sender;	
+
 /*=====================================Формирование HTML=====================================================*/
 	$('#order_view').remove();
 	$('#main_content').append(
 			'<div id="order_view" class="modal_window">' +
 				'<div class="close_line"><div class="clw"><img src="/include/close_window.svg"/></div></div>' +
-				'<div class="docview">' +
+				'<div class="docview" data-doc-id='+docHeader.id+'>' +
 					'<div class="order_header"></div>' +
-					'<div class="order_controls"></div>' +
-					'<div class="order_positions">' +
-						'<table class="order_item_list_head"></table>' +
-						'<table class="order_item_list_content"></table>' +
+					'<div class="order-configuration-panel">' +
+						'<div class="configuration-steps">' +
+							'<div class="step active" data-step="selection">' +
+								'<span class="step_num">1</span>' +
+								'<span class="step_title">Подбор товара</span>' +
+							'</div>' +
+							'<div class="step" data-step="parameters">' +
+								'<hr>' +
+								'<span class="step_num">2</span>' +
+								'<span class="step_title">Параметры заказа</span>' +
+							'</div>' +
+							'<div class="step" data-step="payment">' +
+								'<hr>' +
+								'<span class="step_num">3</span>' +
+								'<span class="step_title">Оплата и доставка</span>' +
+							'</div>' +
+							((docHeader.status !== 'new') ? '' :
+								'<div class="step" data-step="confirmation">' +
+									'<hr>' +
+									'<span class="step_num">4</span>' +
+									'<span class="step_title">Подтверждение</span>' +
+								'</div>'
+							) +
+						'</div>' +
+						'<div class="configuration-buttons">' +
+							'<div class="next button fa fa-chevron-right">Далее</div>' +
+							'<div class="prev button fa fa-chevron-left unvisible">Назад</div>' +
+						'</div>' +
+					'</div>' +
+					'<div class="order-configuration-tab" data-step="selection">' +
+						'<div class="order_controls"></div>' +
+						'<div class="order_positions">' +
+							'<table class="order_item_list_head"></table>' +
+							'<table class="order_item_list_content"></table>' +
+						'</div>' +
+					'</div>' +	
+					'<div class="order-configuration-tab parameters hidden" data-step="parameters">' +
+						'<div class="container">' +
+							'<div class="company_list configuration_list"><div class="header">Юридическое лицо</div><div class="company_items"></div></div>' +
+						'</div>' +
+						'<div class="container">' +
+							'<div class="branch_list configuration_list"><div class="header">Торговая точка</div><div class="branch_items"></div></div>' +
+						'</div>' +
+					'</div>' +
+					'<div class="order-configuration-tab payment hidden" data-step="payment">' +
+						'<div class="container">' +
+							'<div class="scroll-block">' +
+								'<div class="delivery_date configuration_list"><div class="header">Желаемая дата отгрузки</div><div class="date_picker"></div></div>' +
+								'<div class="delivery_type configuration_list"><div class="header">Способ отгрузки</div><div class="delivery_items"></div></div>' +
+							'</div>' +
+						'</div>' +
+						'<div class="container">' +
+							'<div class="scroll-block">' +
+								'<div class="payment_type configuration_list"><div class="header">Способ оплаты</div><div class="payment_items"></div></div>' +
+							'</div>' +
+						'</div>' +
+					'</div>' +
+					'<div class="order-configuration-tab confirmation hidden" data-step="confirmation">' +
+						'<div class="header">Сводная информация по заказу</div>' +
+						'<div class="common_info"></div>' +
 					'</div>' +
 					'<div class="sidebar">' +
 						'<div class="pan_bar"></div>' +	
@@ -357,26 +633,28 @@ function initDocView(arDoc, sender, receiver) {
 	var strorderinfo = 
 		'<div id="order_num">Заказ № '+docHeader.num+' от '+ docDate.day + '-' + docDate.month + '-' + docDate.year +' (' + docDate.hh + ':' + docDate.mm +':'+ docDate.ss + ')' + '</div>' +
 		'<div class="order_status"><div class="ord_hd_x1">Статус:</div><div class="ord_hd_x2">'+docStatus[docHeader.status]+'</div></div>' +
-		'<div class="order_headline"><div class="ord_hd_x1">Получатель:</div><div class="ord_hd_x2"><input class="cnt_inp" type="text" name="receiver" value="'+contact.fullname+'" data-receiver="'+contact.name+'" disabled></div><div id="doc-filename"></div></div>';
+		'<div class="order_headline"><div class="ord_hd_x1">Получатель:</div><div class="ord_hd_x2"><input class="cnt_inp" type="text" name="receiver" value="'+contact.fullname+'" data-receiver="'+contact.name+'" disabled></div></div>';
 
 	var upl_xls = 	'<form id="upl_xls_form" name="upl_xls_form">' +	
-						'<div id="upl_xls" class="button fa fa-file-excel-o tooltip"  data-tooltip="Загрузить позиции из xls-файла"></div>' +
+						'<div id="upl_xls" class="button fa fa-file-excel-o tooltip"  data-tooltip="Загрузить позиции из xls-файла">&nbsp;&nbsp;Загрузить заказ из Excel</div>' +
 						'<input type="file" name="xls_upl" id="xls_upl" style="display: none;">' +
 						'<input type="hidden" name="action" value="upload_xls">' +	
 					'</form>';	
 					
-	var append_file = 	'<form style="display: inline-block;"><div class="button fa fa-files-o tooltip add-file-to-doc"  data-tooltip="Добавить файл к документу"></div><input type="file" name="add-file-to-doc" id="add-file-to-doc" value="" style="display: none;"></form>';
+	var append_file = 	'<form id="attach_docfile_form" style="float: left;"><div class="button tooltip add-file-to-doc"  style="padding: 13px; margin-right: 5px; float: left;" data-tooltip="Добавить файл к документу">' +
+						'<svg fill="#777777" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg>' +
+						'</div><input type="file" name="add-file-to-doc" id="add-file-to-doc" value="" style="display: none;"><div id="doc-filename"></div></form>';
 	
 	var strordercontrols = 
-		'<div class="func-buttons">' +	
-			'<div id="show_addinfo" class="button fa fa-info-circle tooltip" data-tooltip="Показать дополнительные сведения о заказе"></div>' +
+		'<div class="func-buttons">' +
+		    '<div id="del_item" class="button disabled fa fa-trash tooltip"  data-tooltip="Удалить выбранные элементы"></div>' +
+			//'<div id="show_addinfo" class="button fa fa-info-circle tooltip" data-tooltip="Показать дополнительные сведения о заказе"></div>' +
 			'<div id="show_msg" class="button fa fa-commenting-o tooltip" data-tooltip="Открыть панель сообщений"></div>' +
-			upl_xls +
-			'<div id="del_item" class="button disabled fa fa-trash tooltip"  data-tooltip="Удалить выбранные элементы"></div>' +
 			append_file +
 		'</div>' +
-		'<div class="confirm-buttons">' +
-			'<div id="save-local" class="button fa fa-floppy-o tooltip hidden" data-tooltip="Сохранить заказ, не отправляя получателю"><span class="button-text">Сохранить</span></div>' +
+
+		'<div class="confirm-buttons">' +	
+		    upl_xls +
 			'<div id="transmit" class="button fa fa-exchange tooltip hidden" data-tooltip="Отправить заказ получателю"><span class="button-text">Отправить</span></div>' +
 			'<div id="cancel" class="button fa fa-reply tooltip hidden" data-tooltip="Отменить заказ"><span class="button-text">Отменить</span></div>' +
 			'<div id="process" class="button fa fa-share tooltip hidden" data-tooltip="Принять заказ в обработку"><span class="button-text">Принять в обработку</span></div>' +
@@ -384,7 +662,7 @@ function initDocView(arDoc, sender, receiver) {
 			'<div id="confirm" class="button fa fa-file-text-o tooltip hidden" data-tooltip="Подтвердить заказ"><span class="button-text">Подтвердить</span></div>' +
 			'<div id="ship" class="button fa fa-ship tooltip hidden" data-tooltip="Готов к отгрузке"><span class="button-text">Готов к отгрузке</span></div>' +
 			'<div id="complete" class="button fa fa-thumbs-o-up tooltip hidden" data-tooltip="Выполнен"><span class="button-text">Выполнен</span></div>' +
-			
+	        '<div id="save-local" class="button fa fa-floppy-o tooltip hidden" data-tooltip="Сохранить заказ, не отправляя получателю"><span class="button-text">Сохранить</span></div>'	
 		'</div>';
 
 	var strorderlisthead = getTabHeader(tabHeader);
@@ -397,18 +675,82 @@ function initDocView(arDoc, sender, receiver) {
 	$('#order_view .order_controls').append(strordercontrols);
 	$('#order_view .order_positions .order_item_list_head').prepend(strorderlisthead);	
 	$('#order_view .order_positions .order_item_list_head').append(strordersearchrow);	
-	$('#order_view .order_positions .order_item_list_content').append(strorderlist);	
-	$('#order_view').show(200, function(){
-		setEditPolicy (sender.name, arDoc);
-		getDocHeaderProps(docHeader);
-		setOrderItemListContentHeight();	
-		$('.tooltip', this).darkTooltip({
-			animation:'fadeIn',
-			gravity:'north'
-		});	
-	});
+	$('#order_view .order_positions .order_item_list_content').append(strorderlist);
+
+	getDocHeaderProps(docHeader);
+	setEditPolicy (sender.name, arDoc);
+	getCompanyList((smuser.name === docHeader.owner) ? smuser.name : docHeader.owner);
+	getBranchList((smuser.name === docHeader.owner) ? smuser.name : docHeader.owner);
+	getDatePicker();
+	getDeliveryPropsList();
+	if (docHeader.fileAttached) SearchFiles(docHeader.file_id, docHeader.owner);
+	if (docHeader.status === 'new') $('#order_view .order-configuration-tab.confirmation').append($('#order_view #transmit'));
+	setTimeout(
+		function() {
+			if (!hasCompany && !hasBranch) {
+				$('#order_view .order-configuration-tab.parameters').remove();
+				$('#order_view .order-configuration-panel .step[data-step="parameters"]').remove();
+				$('#order_view .order-configuration-panel .step[data-step="configuration"]').remove();
+				$('#order_view .order-configuration-panel .step[data-step="payment"] .step_num').text('2');
+				$('#order_view .order-configuration-panel .step[data-step="confirmation"] .step_num').text('3');
+			};
+			if (!hasCompany) {
+				$('#order_view .order-configuration-tab.parameters .container:first-child').remove();
+			};
+			if (!hasBranch) {
+				$('#order_view .order-configuration-tab.parameters .container:last-child').remove();
+			};
+			$('#order_view').show(200, function(){
+				setOrderItemListContentHeight();
+				$('.tooltip', this).darkTooltip({
+					animation:'fadeIn',
+					gravity:'north'
+				});	
+			});
+		}, 500);
+
 	/*=====================================**********************=====================================================*/
 	
+	$('#order_view').on('click', '.parameters .item, .payment .item', function(){
+		if (docHeader.status !== 'new') return;
+		if ($(this).hasClass('selected')) {
+			$(this).removeClass('selected');
+			return;
+		}
+		$(this).parents('.configuration_list').find('.item').removeClass('selected');
+		$(this).addClass('selected');
+	});
+	
+	//Подтвердить заказ
+	$('#order_view').on('click', '.configuration-buttons .button', function(){
+		if ($(this).hasClass('next')) {
+			$('#order_view .configuration-steps .step.active:not(:last-child)').removeClass('active').next('.step').addClass('active');
+			$(this).siblings('.prev').removeClass('unvisible');
+		}
+		if ($(this).hasClass('prev')) {
+			$('#order_view .configuration-steps .step.active:not(:first-child)').removeClass('active').prev('.step').addClass('active');
+			$(this).siblings('.next').removeClass('unvisible');
+		}
+		
+		
+		const index = $('#order_view .configuration-steps .step.active').index();
+		$('#order_view .order-configuration-tab').addClass('hidden');
+		$('#order_view .order-configuration-tab:eq('+index+')').removeClass('hidden');
+		if ($('#order_view .configuration-steps .step[data-step="parameters"]').hasClass('active')) {
+			//getCommonOrderInfo();
+			setConfigurationValues(docHeader.props);
+		};
+		
+		if ($('#order_view .configuration-steps .step:last-child').hasClass('active')) {
+			getCommonOrderInfo();
+			$(this).addClass('unvisible');
+		};
+
+		if ($('#order_view .configuration-steps .step:first-child').hasClass('active')) {
+			$(this).addClass('unvisible');
+		};
+	});
+
 	//Закрытие сайдбара по клику вне его	
 	$('#order_view').on('click', '.docview', function(e){
 		if ((!$(e.target).closest(".sidebar").length) && (!$(e.target).closest("#show_addinfo").length) && (!$(e.target).closest("#show_msg").length)) {
@@ -737,7 +1079,8 @@ function initDocView(arDoc, sender, receiver) {
 	
 	//Показ сообщений в сайдбаре
 	$('#order_view').on('click', '#show_msg', function(e) {
-		if (!$(this).hasClass('active')){
+		$(this).toggleClass('active')
+		if ($(this).hasClass('active')){
 			showSidebarMsg((sender.id==smuser.id) ? receiver.name: sender.name);
 		};	
 		$('#order_view .pan_bar').trigger('click');		
@@ -838,8 +1181,6 @@ function initDocView(arDoc, sender, receiver) {
 				}	
 				catch (err)	{
 					showError('Не удалось отправить сообщение. <br>Сбой операции <br> Повторите попытку позже');
-					console.log(xhr.responseText);
-					console.log(err);
 					msg_init();
 					$('#msg_li #msg_'+msg_tmpGUID).remove();
 					return;
@@ -937,16 +1278,38 @@ function initDocView(arDoc, sender, receiver) {
 				if(!(data.indexOf('%err%') == -1)) {
 					showError(data.replace('%err%',''));
 					return;
-				}
-				try {
-					$('#add-file-to-doc').uploadifive('clearQueue');
-					console.log(file);
-				}	
-				catch (err)	{
-					console.log(err);
-					console.log(data);
-					return;
-				}
+				};
+				var delID = true;
+				var docid = $('#order_view .docview').attr('data-doc-id');
+				var new_Doc = JSON.parse(data);
+				var new_ID = new_Doc[0].ID;
+				new_Doc = JSON.parse(new_Doc[0].msg_text);
+				var receiver = $('#order_view .cnt_inp[name="receiver"]').attr('data-receiver');
+				$('#order_view').remove('.modal_bg');
+				if (new_ID.length) {
+					if ($('#m_orders.active').length) {
+						var obj = $('#order_li').find('.order[data-order-id='+docid+']');
+						$('.col_4', obj).text(number_format(new_Doc.docHeader.sum, 2, '.', ' '));	
+						$('.col_5', obj).text(docStatus[new_Doc.docHeader.status]);	
+					};
+					if ($('#m_catalog.active').length) {
+						$('#item_li').find('.item_content_selected').removeClass('item_content_selected');
+						$('#it_cart').removeClass('not_empty');
+						$('#it_cart .info').empty();
+						$('#it_cart .checkout_button').fadeOut(0);
+						$('#it_cart .cart_items').remove();
+					}
+					var doc_num = new_Doc.docHeader.num;
+					if (delID) {
+						if ($('#m_orders.active').length) {
+							$('.col_1', obj).text(doc_num);
+							obj.attr('id', new_ID).attr('data-order-id', new_ID).removeClass('new');
+						};
+						$.post('/my/ajax/order.php', {action: 'Documents_delSentDoc', message_id: docid, receiver: receiver});
+					};
+					hideModalWindow($('#order_view'));
+					$('.dark-tooltip').remove();
+				};
 			},
 			'onQueueComplete' : function() {
 
@@ -960,6 +1323,27 @@ function initDocView(arDoc, sender, receiver) {
 			'onSelect'     : function() {
 
 			}	
+		});
+		
+		$('#order_view').on('click', '#doc-filename #del-user-file', function(){
+			var obj = $(this).parents('.upfile');
+			var xhr = new XMLHttpRequest();
+			var body =	'action=Files_Delete' +
+						'&file_id=' + obj.attr('id').replace('fn_','');
+
+			xhr.open("POST", '/my/ajax/action.php', true);
+			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+			xhr.onreadystatechange = function() 
+			{ 
+				if (xhr.readyState != 4) return;
+				
+				if(!(xhr.responseText.indexOf('%err%') == -1)) {
+					showError(xhr.responseText.replace('%err%',''));
+					return;
+				}
+				obj.parent('.msg_file').remove();
+			}
+			xhr.send(body);
 		});
 	});
 	
@@ -989,17 +1373,13 @@ function initDocView(arDoc, sender, receiver) {
 				$('.dark-tooltip').hide();
 			},
 			'onUploadComplete' : function(file, data) {
-				console.log(data);
 				try {
 					var arPos = JSON.parse(data);
 				} catch (e) {
 					var arPos = [];
-					console.log(e);
 				};
-				console.log(arPos);
-				if (arPos.length && (arPos[0].length == 3)) {
+				if (arPos.length && (arPos[0].length > 3)) {
 					delete arPos[0];
-					console.log(arPos);
 					var  article_str = '';
 					arPos.forEach(function(val, key, arPos){
 						article_str = article_str + '"' + val[0] + '",';
@@ -1058,7 +1438,7 @@ function initDocView(arDoc, sender, receiver) {
 											'<td class="col_4 required"><i class="fa fa-minus" aria-hidden="true"></i><input class="quantity" value="'+number_format(curPos[0][2], 0, '', ' ')+'"><i class="fa fa-plus" aria-hidden="true"></i></td>'+
 											'<td class="col_5"><i class="fa fa-minus" aria-hidden="true"></i><input class="confirmed" value="0"><i class="fa fa-plus" aria-hidden="true"></i></td>'+
 											'<td class="col_6">'+price+'</td>'+
-											'<td class="col_7">'+number_format(price*curPos[0][2], 2, '.', ' ')+'</td>'+	html_str +						
+											'<td class="col_7">'+number_format(item.price*curPos[0][2], 2, '.', ' ')+'</td>'+	html_str +						
 										'</tr>'
 									);
 									setOrderItemListContentHeight();
@@ -1125,27 +1505,9 @@ var delay = (function(){
 })();
 
 function sendDoc (message, receiver, delID) {
-	$('#order_view').append('<div class="modal_bg" style="width:100%; height:100%; z-index:9999;">\
-								<div style="position:absolute; top:40%; width:100%; text-align:center;"><img src="/include/wait.gif"><br>Отправка документа</div>\
-							</div>');
-	docid = message.docHeader.id;
-	if (delID) { message.docHeader.id='' };
-	var xhr = new XMLHttpRequest();
-	var body =	'action=send_msg' +
-				'&message=' + encodeURIComponent(JSON.stringify(message)) +
-				'&message_type=document' +
-				'&contact=' + encodeURIComponent(receiver);					
-	xhr.open("POST", '/my/ajax/action.php', true);
-	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-	xhr.onreadystatechange = function() 
-	{ 
+	
+	function afterTransfer(docid, message, new_Doc) {
 		$('#order_view').remove('.modal_bg');
-		if (xhr.readyState != 4) return;
-		if(!(xhr.responseText.indexOf('%err%') == -1)) {
-			showError(xhr.responseText.replace('%err%',''));
-			return;
-		};	
-		var new_Doc = JSON.parse(xhr.responseText);
 		if (new_Doc[0].ID.length) {
 			if ($('#m_orders.active').length) {
 				var obj = $('#order_li .order[data-order-id='+docid+']');
@@ -1169,9 +1531,52 @@ function sendDoc (message, receiver, delID) {
 			};
 			hideModalWindow($('#order_view'));
 			$('.dark-tooltip').remove();
-		};				
-	}				
-	xhr.send(body);
+		};
+	}
+	$('#order_view').append('<div class="modal_bg" style="width:100%; height:100%; z-index:9999;">\
+								<div style="position:absolute; top:40%; width:100%; text-align:center;"><img src="/include/wait.gif"><br>Отправка документа</div>\
+							</div>');
+	docid = message.docHeader.id;
+	if (delID) { message.docHeader.id='' };
+	
+	var files_count = $("#attach_docfile_form .uploadifive-queue-item").length;
+	if(files_count>0) {
+		$("#add-file-to-doc").uploadifive('appendFormData','message_type','document');
+		$("#add-file-to-doc").uploadifive('appendFormData','contact',receiver);
+		$("#add-file-to-doc").uploadifive('appendFormData','message',JSON.stringify(message));
+		$('#add-file-to-doc').uploadifive('upload');
+	} else {
+		var xhr = new XMLHttpRequest();
+		var body =	'action=send_msg' +
+					'&message=' + encodeURIComponent(JSON.stringify(message)) +
+					'&message_type=document' +
+					'&contact=' + encodeURIComponent(receiver);					
+		xhr.open("POST", '/my/ajax/action.php', true);
+		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+		xhr.onreadystatechange = function() {
+			if (xhr.readyState != 4) return;
+			if(!(xhr.responseText.indexOf('%err%') == -1)) {
+				showError(xhr.responseText.replace('%err%',''));
+				return;
+			};	
+			var new_Doc = JSON.parse(xhr.responseText);
+			afterTransfer(docid, message, new_Doc);
+		}
+		xhr.send(body);
+	}
+};
+
+function sendDocWithFile(message, receiver, delID) {
+	$('#order_view').append('<div class="modal_bg" style="width:100%; height:100%; z-index:9999;">\
+								<div style="position:absolute; top:40%; width:100%; text-align:center;"><img src="/include/wait.gif"><br>Отправка документа</div>\
+							</div>');
+	newDocID = message.docHeader.id;
+	if (delID) { message.docHeader.id='' };
+
+	$("#add-file-to-doc").uploadifive('appendFormData','message_type','document');
+	$("#add-file-to-doc").uploadifive('appendFormData','contact',receiver);
+	$("#add-file-to-doc").uploadifive('appendFormData','message',JSON.stringify(message));
+	$('#add-file-to-doc').uploadifive('upload');
 };
 
 function getTotalSum() {
@@ -1192,8 +1597,8 @@ function mergeItems(newItem, exItem){
 
 function buildTmpDoc (tmpDoc, receiver){
 	var arItems = [];
-	$('.order_item_list_content .item').each(function(key, item){			
-		if (tmpDoc.tabHeader.props.length) {
+	$('.order_item_list_content .item').each(function(key, item){		
+		/*if (tmpDoc.tabHeader.props.length) {
 			var arItemsProps = [];
 			$.each(tmpDoc.tabHeader.props, function(i, val){
 				if (val.type == 'enum') {
@@ -1216,7 +1621,7 @@ function buildTmpDoc (tmpDoc, receiver){
 				};				
 				arItemsProps.push(jsonstr);				
 			});	
-		};
+		};*/
 		var jsonstr = {
 			"owner":receiver.name,
 			"id":$(this).attr('data-it-id'),
@@ -1227,7 +1632,7 @@ function buildTmpDoc (tmpDoc, receiver){
 			"confirmed":parseFloat($('.col_5 input',this).val().replace(/ /g, '')),
 			"price":parseFloat($('.col_6',this).text().replace(/ /g, '')),
 			"sum":parseFloat($('.col_7',this).text().replace(/ /g, '')),
-			"props":arItemsProps || []
+			"props": []//arItemsProps || []
 		};
 		arItems.push(jsonstr);
 	});
@@ -1236,7 +1641,8 @@ function buildTmpDoc (tmpDoc, receiver){
 	tmpDoc.docHeader.sum = sum;
 	var hash = calcHash(tmpDoc.docTable);
 	tmpDoc.docHeader.hash = hash;
-	tmpDoc.docHeader.comment = $('.sidebar .comment textarea').val();
+	tmpDoc.docHeader.comment = $('.order_comment input').val();
+	/*
 	if (tmpDoc.docHeader.props.length){
 		$.each(tmpDoc.docHeader.props, function(i, val){
 			(val.type=='enum') ?
@@ -1245,7 +1651,39 @@ function buildTmpDoc (tmpDoc, receiver){
 			val.value = $('.sidebar #'+val.name+' .item_'+i+' .sidebar-item-box').hasClass('checked') :
 			val.value = $('.sidebar #'+val.name+' .item_'+i+' .sidebar-item-box .sidebar-item-name input').val()
 		});
-	};
+	};*/
+	tmpDoc.docHeader.props.push({
+		"name": "company_id",
+		"value": $('#order_view .parameters .company_item.selected').attr('data-value')
+	});
+	tmpDoc.docHeader.props.push({
+		"name": "company_name",
+		"value": $('#order_view .parameters .company_item.selected .name').text()
+	});
+	tmpDoc.docHeader.props.push({
+		"name": "branch_id",
+		"value": $('#order_view .parameters .branch_item.selected').attr('data-value')
+	});
+	tmpDoc.docHeader.props.push({
+		"name": "branch_name",
+		"value": $('#order_view .parameters .branch_item.selected .name').text()
+	});
+	tmpDoc.docHeader.props.push({
+		"name": "branch_address",
+		"value": $('#order_view .parameters .branch_item.selected .address').text()
+	});
+	tmpDoc.docHeader.props.push({
+		"name": "delivery_type",
+		"value": $('#order_view .payment .delivery_item.selected').attr('data-value')
+	});
+	tmpDoc.docHeader.props.push({
+		"name": "payment_type",
+		"value": $('#order_view .payment .payment_item.selected').attr('data-value')
+	});
+	tmpDoc.docHeader.props.push({
+		"name": "delivery_date",
+		"value": $('#order_view .payment .date_item.selected').attr('data-value')
+	});
 };
 
 function setNewDocPosition(obj, arHeader){
@@ -1315,8 +1753,13 @@ function setOrderItemListContentHeight(){
 	var h2 = $('#order_view .order_header')[0].clientHeight;
 	var h3 = $('#order_view .order_controls')[0].clientHeight;
 	var h4 = $('#order_view .order_positions .order_item_list_head')[0].clientHeight;
-	var h = h1-h2-h3-h4-20;
+	var h5 = $('#order_view .order-configuration-panel').height();
+	var h = h1-h2-h3-h4-h5-10;
 	h = h>0 ? h : 0;
+	$('#order_view .order-configuration-tab').height(h1-h2-h5);
+	$('#order_view .order-configuration-tab .scroll-block').slimScroll({height: '100%'});
+	$('#order_view .order-configuration-tab .company_items').slimScroll({height: '100%'});
+	$('#order_view .order-configuration-tab .branch_items').slimScroll({height: '100%'});
 	$('#order_view .order_positions .order_item_list_content').slimScroll({height: h, size: '7px', disableFadeOut: false});
 	$('#order_view .order_positions .slimScrollDiv').height(h);
 	$('#order_view .order_positions .order_item_list_content').css('max-height',h);
@@ -1554,8 +1997,6 @@ function showSidebarMsg(contact){
 				}	
 				catch (err)	{
 					showError('Не удалось отправить сообщение. <br>Сбой операции <br> Повторите попытку позже');
-					console.log(err);
-					console.log(data);
 					msg_init();
 					return;
 				}
@@ -1574,7 +2015,7 @@ function showSidebarMsg(contact){
 				setTimeout(function(){calcMsgBoxHeight();},200);
 			}	
 		});
-	});	
+	});
 };	
 
 function calcMsgBoxHeight() {
@@ -1820,3 +2261,49 @@ function addSentMessages(msg_arResult) {
 	};	
 	$('#msg_li').scrollTop($('.mess-list').height());
 }
+
+
+
+function addDocFileToList(obj, hide_image) {
+	var cloud_svg = '<svg fill="#CCCCCC" height="36" viewBox="0 0 24 24" width="36" xmlns="http://www.w3.org/2000/svg">'+
+		'<path d="M0 0h24v24H0z" fill="none"/>'+
+		'<path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/>'+
+		'</svg>	';
+	var file_size = Math.round(obj.file_size/1024);
+	var file_idat = getFileType(obj.file_extention);
+	var file_type = file_idat.type;
+	var att_svg = file_idat.svg;
+	var file_url = '/my/ajax/files.php?a=detail&i='+obj.file_id;//$(this).attr('furl');
+	var pvfile_url = '/my/ajax/files.php?a=prev&i='+obj.file_id;//$(this).attr('furl');
+	var file_met = "KB";
+	if(file_size > 1024) { 
+		file_size = Math.round(file_size/1024);
+		file_met = "MB";
+	}
+	var img_str = "";	
+	var hide_class = (hide_image)?(' close_image'):('');
+	/*if(file_idat.img) {
+		img_str = '<div class="image_file'+hide_class+'">' +
+		'<div class="close_line">'+
+		'<svg fill="#000000" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">'+
+		'<path d="M7 10l5 5 5-5z"/>'+
+		'<path d="M0 0h24v24H0z" fill="none"/>'+
+		'</svg></div>'+
+		'<img src="'+pvfile_url+'"/>'+
+		'</div>';
+	}*/
+	var contact = getActiveContact();
+	if (contact.id === undefined) contact = smuser;
+	var del_icon = '';
+	if (contact.name === smuser.name && $('.add-file-to-doc:visible')) {
+		del_icon = '<div id="del-user-file" class="fa fa-trash-o help_icon"><div class="help_info">Удалить файл</div></div>';
+	};
+	var str_html = 	'<div class="upfile" style="padding-right: 70px;" id="fn_'+ obj.file_id + '" data-furl="'+file_url+'">'+
+					'<div class="file_block"><a target="_blank" href="'+file_url+'"><p class="filename">' + obj.file_name + '</p></a>'+
+					'<p class="file_info">'+file_size+file_met+' '+file_type+'</p></div>'+
+					del_icon +
+					'<a target="_blank" href="'+file_url+'"><div class="cloud help_icon"><div class="help_info">Скачать файл</div>'+cloud_svg+'</div></a>'+ img_str +
+					'</div>';
+
+	return str_html;
+};

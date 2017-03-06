@@ -636,11 +636,23 @@ function ContactInfoView(name) {
 				$('#cnt_view #cnt_settings').hide(0);
 				$('#cnt_view #cnt_addings').hide(0);
 				$('#cnt_view #cnt_filelist').hide(0);
-				$('#cnt_view #cnt_info_body').show(0);
-				$('#cnt_view #buttons').show(0);
+				$('#cnt_view #legal_entity_card').hide(0);
+				$('#cnt_view #trade_point_card').hide(0);
+				$('#cnt_view #legal_entity').hide(0);
+				$('#cnt_view #trade_point').hide(0);
 				$('#cnt_view #cnt_logo').hide(0, function(){
 					$('#cnt_view #cnt_photo').show(300);
 				});
+				if ($(this).parents('#legal_entity_card').length) {
+					getLegalEnities();
+					return;
+				};
+				if ($(this).parents('#trade_point_card').length) {
+					getTradePoints();
+					return;
+				};
+				$('#cnt_view #cnt_info_body').show(0);
+				$('#cnt_view #buttons').show(0);		
 			});
 
 			$('#cnt_view #nav-back').on('click',function(e){
@@ -1631,5 +1643,467 @@ function getMainUser() {
 	}	
 	return contact;
 }
+/*=====================================================================*/
+/*=====================================================================*/
+/*=====================================================================*/
+function delLegalEnities(obj) {
+	var companyId = obj.attr('data-entity-id');
+	var xhr = new XMLHttpRequest();
+	var body =	'action=Company_Delete' +
+				'&companyId=' + encodeURIComponent(companyId);
+	xhr.open("POST", '/my/ajax/action.php', true);
+	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+	xhr.onreadystatechange = function() 
+	{ 
+		if (xhr.readyState != 4) return;
+		if(!(xhr.responseText.indexOf('%err%') == -1)) {
+			showError(xhr.responseText.replace('%err%',''));
+			return;
+		}
+		obj.remove();
+	}
+	xhr.send(body);
+};
+
+function getLegalEnities() {
+	var xhr = new XMLHttpRequest();
+	var body =	'action=Company_GetList' +
+				'&contact=' + encodeURIComponent($('#cnt_view #cnt_info_main').attr('data-usr-name'));
+	xhr.open("POST", '/my/ajax/action.php', true);
+	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+	xhr.onreadystatechange = function() 
+	{ 
+		if (xhr.readyState != 4) return;
+		if(!(xhr.responseText.indexOf('%err%') == -1)) {
+			showError(xhr.responseText.replace('%err%',''));
+			return;
+		}
+		var arResult = JSON.parse(xhr.responseText);
+		requestLegalEntity(arResult);
+	}
+	xhr.send(body);
+};
+
+function requestLegalEntity(arResult) {
+	$('#content #legal_entity .cnt_headline #add_cntfile').remove();
+	var contact = $('#main_content #cnt_view #cnt_info_main').attr('data-usr-name');
+	if (contact === smuser.name) {
+
+		 $('#content #legal_entity .cnt_headline').append('<div id="add_cntfile" style="margin: 10px 0;">' +
+						'<svg fill="#777" height="32" viewBox="0 0 24 24" width="32" xmlns="http://www.w3.org/2000/svg">' +
+							'<path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path>' +
+							'<path d="M0 0h24v24H0z" fill="none"></path>' +
+						'</svg>' +
+						'<p>Добавить юридическое лицо</p>' +
+					'</div>');
+	}
+	var files_html = '';
+	$(arResult).each(function(key, val){
+		files_html = files_html + '<div class="msg_file" style="min-height: 70px;" data-entity-id='+val.company_id+'>' + addCompanyToList(val) + '</div>';
+	});	
+	
+	var target = $('#content').find('#legal_entity_content');
+	target.html(files_html);
+	target.wrapInner('<div class="scrolllist"></div>');
+	$('#cnt_view #back_main').show(0);
+	$('#cnt_view #buttons').hide(0);
+	$('#cnt_view #cnt_info_body').hide(0);
+	target.parent().fadeIn(0);
+	$('.scrolllist', target).slimScroll({height: 'auto', size: '7px', disableFadeOut: false});
+};
+
+function addCompanyToList(obj) {
+	var contact = $('#main_content #cnt_view #cnt_info_main').attr('data-usr-name');
+	var str_html = 	'<div class="upfile"><div class="file_block"><p class="filename">'+obj.company_name+'</p>\
+					<p class="file_info">'+obj.company_fullname+'</p><p class="file_info">';
+	if (obj.company_INN.length) {
+		str_html += 'ИНН <i>'+obj.company_INN+' </i>';
+	};
+	if (obj.company_KPP.length) {
+		str_html += ' КПП <i>'+obj.company_KPP+'</i>';
+	}
+	str_html +=    '</p></div>';
+
+	if (contact === smuser.name) {
+		str_html +=    '<div id="del-user-file" class="fa fa-trash-o help_icon">\
+						<div class="help_info">Удалить запись</div>\
+						</div>';
+	}
+
+	str_html +=    '<a target="_blank" href="/my/ajax/files.php?a=detail&amp;i=cf5feef6-0366-495d-9b58-96e349023f61">\
+						<div class="cloud help_icon"><div class="help_info">Скачать карточку организации</div>\
+							<svg fill="#CCCCCC" height="36" viewBox="0 0 24 24" width="36" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h24v24H0z" fill="none"></path>\
+							<path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"></path>\
+							</svg>\
+						</div>\
+					</a></div>';
+	return str_html;
+};
 
 
+function addLegalEnities(company, parameters) {
+	var xhr = new XMLHttpRequest();
+	var body =	'action=Company_Add' +
+				'&adds=json' +
+				'&OwnerType=contact' +
+				'&Owner=' + encodeURIComponent(smuser.name) +
+				'&CompanyName=' + encodeURIComponent(company) +
+				'&Parameters='+ encodeURIComponent(JSON.stringify(parameters));
+	
+	xhr.open("POST", '/my/ajax/action.php', true);
+	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+	xhr.onreadystatechange = function() 
+	{ 
+		if (xhr.readyState != 4) return;
+		if(!(xhr.responseText.indexOf('%err%') == -1)) {
+			showError(xhr.responseText.replace('%err%',''));
+			return;
+		}
+		$('#cnt_view #legal_entity_card .data').val('');
+		$('#cnt_view #legal_entity_card').hide(0);
+		getLegalEnities();
+		showMessageBox("Сведения успешно сохранены", 7000);
+	}
+	xhr.send(body);
+};
+
+function editLegalEnities(companyId, parameters) {
+	var xhr = new XMLHttpRequest();
+	var body =	'action=Company_Change' +
+				'&CompanyId=' + encodeURIComponent(companyId) +
+				'&Parameters='+ encodeURIComponent(JSON.stringify(parameters));
+	
+	xhr.open("POST", '/my/ajax/action.php', true);
+	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+	xhr.onreadystatechange = function() 
+	{ 
+		if (xhr.readyState != 4) return;
+		if(!(xhr.responseText.indexOf('%err%') == -1)) {
+			showError(xhr.responseText.replace('%err%',''));
+			return;
+		}
+				console.log(xhr.responseText);
+		$('#cnt_view #legal_entity_card .data').val('');
+		$('#cnt_view #legal_entity_card').hide(0);
+		getLegalEnities();
+		showMessageBox("Информация успешно изменена", 7000);
+	}
+	xhr.send(body);
+};
+
+function getEditedLegalEnities() {
+	var companyId = $('#cnt_view #legal_entity_card').attr('data-company-id');
+	var contact = $('#cnt_view #cnt_info_main').attr('data-usr-name');
+	var xhr = new XMLHttpRequest();
+	var body =	'action=Company_GetList' +
+				'&contact=' + encodeURIComponent(contact);
+	xhr.open("POST", '/my/ajax/action.php', true);
+	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+	xhr.onreadystatechange = function() 
+	{ 
+		if (xhr.readyState != 4) return;
+		if(!(xhr.responseText.indexOf('%err%') == -1)) {
+			showError(xhr.responseText.replace('%err%',''));
+			return;
+		}
+		var editedItem = {};
+		var arResult = JSON.parse(xhr.responseText);
+		$.each(arResult, function() {
+			if (this.company_id === companyId) {
+				editedItem = this;
+				return;
+			};
+		});
+		$('#cnt_view #legal_entity_card .data').each(function() {
+			var prop = $(this).attr('name');
+			$(this).val(editedItem[prop]);
+		});
+		$('#cnt_view #legal_entity_card .data').prop('disabled', true);
+		$('#legal_entity_save').hide(0);
+		if (contact === smuser.name) {
+			$('#cnt_view #legal_entity_card .data:not([name="company_name"])').prop('disabled', false);
+			$('#legal_entity_save').show(0);
+		};
+		$('#content #legal_entity').hide(0);
+		$('#content #legal_entity_card').show(0);
+	}
+	xhr.send(body);
+};
+
+/*=====================================================================*/
+function delTradePoints(obj) {
+	var branchId = obj.attr('data-branch-id');
+	var xhr = new XMLHttpRequest();
+	var body =	'action=Branch_Delete' +
+				'&BranchId=' + encodeURIComponent(branchId);
+	xhr.open("POST", '/my/ajax/action.php', true);
+	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+	xhr.onreadystatechange = function() 
+	{ 
+		if (xhr.readyState != 4) return;
+		if(!(xhr.responseText.indexOf('%err%') == -1)) {
+			showError(xhr.responseText.replace('%err%',''));
+			return;
+		}
+		obj.remove();
+	}
+	xhr.send(body);
+};
+
+function getTradePoints() {
+	var xhr = new XMLHttpRequest();
+	var body =	'action=Branch_GetList' +
+				'&contact=' + encodeURIComponent($('#cnt_view #cnt_info_main').attr('data-usr-name'));
+	xhr.open("POST", '/my/ajax/action.php', true);
+	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+	xhr.onreadystatechange = function() 
+	{ 
+		if (xhr.readyState != 4) return;
+		if(!(xhr.responseText.indexOf('%err%') == -1)) {
+			showError(xhr.responseText.replace('%err%',''));
+			return;
+		}
+		var arResult = JSON.parse(xhr.responseText);
+		requestTradePoints(arResult);
+	}
+	xhr.send(body);
+};
+
+function requestTradePoints(arResult) {
+	$('#content #trade_point .cnt_headline #add_cntfile').remove();
+	var contact = $('#main_content #cnt_view #cnt_info_main').attr('data-usr-name');
+	if (contact === smuser.name) {
+
+		 $('#content #trade_point .cnt_headline').append('<div id="add_cntfile" style="margin: 10px 0;">' +
+						'<svg fill="#777" height="32" viewBox="0 0 24 24" width="32" xmlns="http://www.w3.org/2000/svg">' +
+							'<path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path>' +
+							'<path d="M0 0h24v24H0z" fill="none"></path>' +
+						'</svg>' +
+						'<p>Добавить торговую точку</p>' +
+					'</div>');
+	}
+	var files_html = '';
+	$(arResult).each(function(key, val){
+		files_html = files_html + '<div class="msg_file" style="min-height: 50px;" data-branch-id='+val.branch_id+'>' + addBranchToList(val) + '</div>';
+	});	
+	
+	var target = $('#content').find('#trade_point_content');
+	target.html(files_html);
+	target.wrapInner('<div class="scrolllist"></div>');
+	$('#cnt_view #back_main').show(0);
+	$('#cnt_view #buttons').hide(0);
+	$('#cnt_view #cnt_info_body').hide(0);
+	target.parent().fadeIn(0);
+	$('.scrolllist', target).slimScroll({height: 'auto', size: '7px', disableFadeOut: false});
+};
+
+function addBranchToList(obj) {
+	var contact = $('#main_content #cnt_view #cnt_info_main').attr('data-usr-name');
+	var str_html = 	'<div class="upfile"><div class="file_block"><p class="filename">'+obj.branch_name+'</p>';
+	
+	if (obj.branch_address.length) {
+		str_html += '<p class="file_info">'+obj.branch_address+'</p>';
+	};
+					
+	str_html +=    '</div>';
+
+	if (contact === smuser.name) {
+		str_html +=    '<div id="del-user-file" class="fa fa-trash-o help_icon">\
+						<div class="help_info">Удалить запись</div>\
+						</div>';
+	}
+
+	str_html +=    '</div>';
+	return str_html;
+};
+
+
+function addTradePoints(branch, parameters) {
+	var xhr = new XMLHttpRequest();
+	var body =	'action=Branch_Add' +
+				'&adds=json' +
+				'&OwnerType=contact' +
+				'&Owner=' + encodeURIComponent(smuser.name) +
+				'&BranchName=' + encodeURIComponent(branch) +
+				'&Parameters=' + encodeURIComponent(JSON.stringify(parameters));
+	
+	xhr.open("POST", '/my/ajax/action.php', true);
+	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+	xhr.onreadystatechange = function() 
+	{ 
+		if (xhr.readyState != 4) return;
+		if(!(xhr.responseText.indexOf('%err%') == -1)) {
+			showError(xhr.responseText.replace('%err%',''));
+			return;
+		}
+		$('#cnt_view #trade_point_card .data').val('');
+		$('#cnt_view #trade_point_card').hide(0);
+		getTradePoints();
+		showMessageBox("Сведения успешно сохранены", 7000);
+	}
+	xhr.send(body);
+};
+
+function editTradePoints(branchId, parameters) {
+	var xhr = new XMLHttpRequest();
+	var body =	'action=Branch_Change' +
+				'&BranchId=' + encodeURIComponent(branchId) +
+				'&Parameters=' + encodeURIComponent(JSON.stringify(parameters));
+	
+	xhr.open("POST", '/my/ajax/action.php', true);
+	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+	xhr.onreadystatechange = function() 
+	{ 
+		if (xhr.readyState != 4) return;
+		if(!(xhr.responseText.indexOf('%err%') == -1)) {
+			showError(xhr.responseText.replace('%err%',''));
+			return;
+		}
+		console.log(xhr.responseText);
+		$('#cnt_view #trade_point_card .data').val('');
+		$('#cnt_view #trade_point_card').hide(0);
+		getTradePoints();
+		showMessageBox("Информация успешно изменена", 7000);
+	}
+	xhr.send(body);
+};
+
+function getEditedTradePoints() {
+	var branchId = $('#cnt_view #trade_point_card').attr('data-branch-id');
+	var contact = $('#cnt_view #cnt_info_main').attr('data-usr-name');
+	var xhr = new XMLHttpRequest();
+	var body =	'action=Branch_GetList' +
+				'&contact=' + encodeURIComponent(contact);
+	xhr.open("POST", '/my/ajax/action.php', true);
+	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+	xhr.onreadystatechange = function() 
+	{ 
+		if (xhr.readyState != 4) return;
+		if(!(xhr.responseText.indexOf('%err%') == -1)) {
+			showError(xhr.responseText.replace('%err%',''));
+			return;
+		}
+		var editedItem = {};
+		var arResult = JSON.parse(xhr.responseText);
+		$.each(arResult, function() {
+			if (this.branch_id === branchId) {
+				editedItem = this;
+				return;
+			};
+		});
+		$('#cnt_view #trade_point_card .data').each(function() {
+			var prop = $(this).attr('name');
+			$(this).val(editedItem[prop]);
+		});
+		$('#cnt_view #trade_point_card .data').prop('disabled', true);
+		$('#trade_points_save').hide(0);
+		if (contact === smuser.name) {
+			$('#cnt_view #trade_point_card .data:not([name="branch_name"])').prop('disabled', false);
+			$('#trade_points_save').show(0);
+		};
+		$('#content #trade_point_card').show(0);
+		$('#content #trade_point').hide(0);
+	}
+	xhr.send(body);
+};
+
+$(document).ready(function(){
+	$('#content').on('click', '.legal-entity', function(){
+		getLegalEnities();
+	});
+	
+	$('#content').on('click', '#legal_entity #del-user-file', function(e){
+		e.stopPropagation();
+		delLegalEnities($(this).parents('.msg_file'));
+	});
+	
+	$('#content').on('click', '#legal_entity #add_cntfile', function(){
+		$('#cnt_view #legal_entity_card .data').val('');
+		$('#legal_entity_card').attr('data-company-id', '');
+		$('#cnt_view #legal_entity_card .data').prop('disabled', false);
+		$('#content #legal_entity_card').show(0);
+		$('#content #legal_entity').hide(0);
+	});
+	
+	$('#content').on('click', '#cnt_view #legal_entity_content .msg_file', function(e){
+		e.stopPropagation();
+		$('#cnt_view #legal_entity_card .data').val('');
+		$('#legal_entity_card').attr('data-company-id', $(this).attr('data-entity-id'));
+		getEditedLegalEnities();
+	});
+	
+	$('#content').on('click', '#cnt_view #legal_entity_save', function(e) {
+		e.stopPropagation();
+		var parameters = {};
+		var company = $('#cnt_view #legal_entity_card .data[name="company_name"]').val();
+		var companyId = $('#cnt_view #legal_entity_card').attr('data-company-id');
+		$('#cnt_view #legal_entity_card .data:not([name="company_name"])').each(function() {
+			if($(this).attr('id') === undefined) {
+				return;
+			}
+			var this_id = $(this).attr('id').replace('inf_','');
+			
+			if($(this).hasClass('checkbox')) {
+				var inf_value = ($(this).hasClass('checkbox_clicked')) ? true : false;
+			}
+			else {
+				var inf_value = $(this).val();
+			}
+			
+			parameters[this_id] = inf_value;
+		});
+
+		if (companyId === undefined || !companyId.length) {
+			addLegalEnities(company, parameters);
+		} else {
+			editLegalEnities(companyId, parameters);
+		}
+	});
+	
+
+	/*=====branch============*/
+	$('#content').on('click', '.trade-point', function(){
+		getTradePoints();
+	});
+	
+	$('#content').on('click', '#trade_point #del-user-file', function(e){
+		e.stopPropagation();
+		delTradePoints($(this).parents('.msg_file'));
+	});
+	
+	$('#content').on('click', '#trade_point #add_cntfile', function(){
+		$('#cnt_view #trade_point_card .data').val('');
+		$('#trade_point_card').attr('data-branch-id', '');
+		$('#cnt_view #trade_point_card .data').prop('disabled', false);
+		$('#content #trade_point_card').show(0);
+		$('#content #trade_point').hide(0);
+	});
+	
+	$('#content').on('click', '#cnt_view #trade_point_content .msg_file', function(e){
+		e.stopPropagation();
+		$('#cnt_view #trade_point_card .data').val('');
+		$('#trade_point_card').attr('data-branch-id', $(this).attr('data-branch-id'));
+		getEditedTradePoints();
+	});
+	
+	$('#content').on('click', '#cnt_view #trade_points_save', function(e) {
+		e.stopPropagation();
+		var parameters = {};
+		var branch = $('#cnt_view #trade_point_card .data[name="branch_name"]').val();
+		var branchId = $('#cnt_view #trade_point_card').attr('data-branch-id');
+		$('#cnt_view #trade_point_card .data:not([name="branch_name"])').each(function() {
+			if($(this).attr('id') === undefined) {
+				return;
+			}
+			var this_id = $(this).attr('id').replace('inf_','');
+			var inf_value = $(this).val();
+
+			parameters[this_id] = inf_value;
+		});
+		if (branchId === undefined || !branchId.length) {
+			addTradePoints(branch, parameters);
+		} else {
+			editTradePoints(branchId, parameters);
+		}
+	});
+});
