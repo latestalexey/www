@@ -39,7 +39,7 @@ $(document).ready(function()
 		$('#ext_filters').height($('#ext_pan').height() - $('#ext_pan_header').height() - $('#ext_pan_topblock').height());
 		resizeItemInfo();
 		var w = $('#featured-items-block').width();
-		var cnt = Math.floor((w/170)+1);
+		var cnt = Math.floor((w/220)+1);
 		$('#featured-items-block .item_block:nth-child(-n+'+cnt+')').removeClass('hidden');	
 		$('#featured-items-block .item_block:nth-child(n+'+cnt+')').addClass('hidden');	
 	});
@@ -632,7 +632,7 @@ $(document).ready(function()
 			$.each(arItem['properties'][item_id], function(key, value){
 				html_props = html_props + '<div class="item-prop"><span class="name">'+value.property_name+'</span><input value="'+value.property_value+'"></div>'
 			});
-			var item_image = (arItem['pictures'].length) ? 'https://wbs.e-teleport.ru/Catalog_Pics/'+arItem['pictures'][item_id][0].file_id : '/include/no_photo.png';
+			var item_image = (arItem['pictures'].length) ? 'https://wbs.e-teleport.ru/Catalog_Pics/'+arItem['pictures'][item_id][0].file_id : '/include/no_photo.svg';
 			var html_str = '<div class="item_detail_block_edit">' +
 								'<div class="close" style="float: right;"><img src="/include/close_window.svg"></div>' +
 								'<h2>Редактирование карточки товара</h2>' +
@@ -758,7 +758,7 @@ $(document).ready(function()
 		});
 		
 		$('#item_list').on('click', '#detail_info_window .item_detail_block_edit #clear_item_photo', function(e){
-			$('#detail_info_window .item_detail_block_edit .item-photo img').attr('src', '../include/no_photo.png');
+			$('#detail_info_window .item_detail_block_edit .item-photo img').attr('src', '../include/no_photo.svg');
 		});
 
 		$('#item_list').on('click', '#detail_info_window .item_detail_block_edit #add_item_photo', function(e){
@@ -1119,7 +1119,7 @@ function getSelectedContactCategories(cat_id) {
 					$.each(arCategories, function(i, val){		
 					    var html_img = '';
 						for (key = 0; key < 4; key++) {
-							var img = (val.pics[key]!=undefined) ? 'https://wbs.e-teleport.ru/Catalog_Pics/prev/'+val.pics[key] : '/include/no_photo.png';
+							var img = (val.pics[key]!=undefined) ? 'https://wbs.e-teleport.ru/Catalog_Pics/prev/'+val.pics[key] : '/include/no_photo.svg';
 							html_img = html_img + '<div><img src="'+img+'"></div>'
 						};
 						html_str = html_str + 
@@ -1882,7 +1882,7 @@ function getFeaturedItems(itemType) {
 			$('#featured-items-block').removeClass('hidden');	
 		}
 		var w = $('#featured-items-block').width();
-		var cnt = Math.floor((w/170)+1);
+		var cnt = Math.floor((w/220)+1);
 		
 		$('#featured-items-block .item_block:nth-child(-n+'+cnt+')').removeClass('hidden');	
 		$('#featured-items-block .item_block:nth-child(n+'+cnt+')').addClass('hidden');	

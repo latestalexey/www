@@ -43,7 +43,7 @@ $(document).ready(function()
 	$('#contact_filter').text('Показать по всем контактам');
 	hideExtPan();
 	hideTelebotInfo();
-	initOrderList(true);
+	initOrderList(false);
 	
 	if (localStorage.getItem("userDocId")) {
 		getTmpDocInfo(localStorage.getItem("userDocId"), localStorage.getItem("sender"), localStorage.getItem("receiver"));

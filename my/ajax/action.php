@@ -425,14 +425,14 @@ elseif($action == 'catalog_get')
 					$action = $item["novetly"] ? ' novetly' : $action;
 					$action = $item["action"] ? ' action' : $action;
 
-					$li_size = 150*$im_count;
+					$li_size = 200*$im_count;
 					$it_name = ($item["article"]=='')?$item["name"]:$item["article"].'<br>'.$item["name"];
 					$str = $str.'<div id="it_'.$item["id"].'" class="item_block'.$action.'" data-it-id="'.$item["id"].'">
 						<div class="item_block_info">
 							<div class="item_photo_list">
 								<div class="item_photo_li" style="width: '.$li_size.'px;" data-im-num="0" data-im-count="'.$im_count.'">';
 								for ($i=0; $i<$im_count; $i++) {
-									$item_url = (count($arPictures[$item["id"]]) == 0)?'/include/no_photo.png':'https://'.$TLP_obj->TLP_HOST.'/Catalog_Pics/prev/'.$arPictures[$item["id"]][$i]["file_id"];
+									$item_url = (count($arPictures[$item["id"]]) == 0)?'/include/no_photo.svg':'https://'.$TLP_obj->TLP_HOST.'/Catalog_Pics/prev/'.$arPictures[$item["id"]][$i]["file_id"];
 									$str = $str.'<div class="item_photo" data-im-cnt="'.$i.'" style="background-image: url('.$item_url.');"></div>';
 								}
 								$str = $str.'</div>
@@ -464,9 +464,33 @@ elseif($action == 'catalog_get')
 								}
 								$str = $str.'</div></div>';
 							if(!$item["article"]=='') {
-								$str = $str.'<div class="item_block_name help_icon"><div class="help_info">Артикул: '.$item["article"].'</div>'.$item["article"].'</div>';
-							}
-							$str = $str.'<div class="item_block_name help_icon"><div class="help_info">Наименование: '.$item["name"].'</div>'.$item["name"].'</div>';
+								$str = $str.'<div class="item_block_name help_icon" style="border-bottom: 1px solid #ccc;"><div class="help_info">Артикул: '.$item["article"].'</div>'.$item["article"].'</div>';
+							} else {
+								$str = $str.'<div class="item_block_name help_icon" style="border-bottom: 1px solid #ccc;"><div class="help_info">Наименование: '.$item["name"].'</div>'.$item["name"].'</div>';
+							}	
+							if($allow_prices)
+							{
+								$strPrice = ($item["price"]=='' || $item["price"] == 0)?'-':number_format($item["price"], 2, '.', ' ').' руб';
+								$actionPrice = ($item["action_price"]==='' || $item["action_price"] == 0)?'':number_format($item["action_price"], 2, '.', ' ').' руб';
+								$stroke = '';
+								if ($item["action"] && strlen($actionPrice)) {
+									$str = $str.'<div class="item_block_name item_block_name_allows item_action_price">'.$actionPrice.'</div>';
+									$stroke = ' cross-out';
+								};
+								$str = $str.'<div class="item_block_name item_block_name_allows item_price'.$stroke.'">'.$strPrice.'</div>';
+							}	
+							$str = $str.'<div class="cart" data-cart-id="'.$item["id"].'">
+								<div id="b_minus" class="cart_button"><span>-</span></div>
+									<input class="cart_input" type="text" name="cart_q" value="1"/>
+								<div id="b_plus" class="cart_button"><span>+</span></div>
+								
+								<div class="cart_order">
+									<svg fill="#777" height="32" viewBox="0 0 24 24" width="32" xmlns="http://www.w3.org/2000/svg">
+										<path d="M0 0h24v24H0zm18.31 6l-2.76 5z" fill="none"/>
+										<path d="M11 9h2V6h3V4h-3V1h-2v3H8v2h3v3zm-4 9c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2zm-9.83-3.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.86-7.01L19.42 4h-.01l-1.1 2-2.76 5H8.53l-.13-.27L6.16 6l-.95-2-.94-2H1v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.13 0-.25-.11-.25-.25z"/>
+									</svg>
+								</div>
+							</div>';
 							if($allow_stocks)
 							{
 								$strStocks = ($item["stock"]=='' || $item["stock"] == 0)?'Нет':number_format($item["stock"], 0, '.', ' ');
@@ -475,34 +499,13 @@ elseif($action == 'catalog_get')
 									$year = $date["year"];
 									$month = (strlen($date["month"])>1) ? $date["month"] : '0'.$date["month"];
 									$day = (strlen($date["day"])>1) ? $date["day"] : '0'.$date["day"];
-									$str = $str.'<div class="item_block_name item_block_name_allows">Ожидается: <span>'.$day.'-'.$month.'-'.$year.'</span></div>';
+									$str = $str.'<div class="item_block_name item_block_name_allows" style="text-align: left; padding-bottom: 0;">Ожидается: <span>'.$day.'-'.$month.'-'.$year.'</span></div>';
 								} else {
-									$str = $str.'<div class="item_block_name item_block_name_allows">На складе: <span>'.$strStocks.'</span></div>';
+									$str = $str.'<div class="item_block_name item_block_name_allows" style="text-align: left; padding-bottom: 0;">На складе: <span>'.$strStocks.'</span></div>';
 								};													
 							}	
-							if($allow_prices)
-							{
-								$strPrice = ($item["price"]=='' || $item["price"] == 0)?'-':number_format($item["price"], 2, '.', ' ').' руб';
-								$actionPrice = ($item["action_price"]==='' || $item["action_price"] == 0)?'':number_format($item["action_price"], 2, '.', ' ').' руб';
-								$stroke = strlen($actionPrice) ? ' cross-out' : '';
-								$str = $str.'<div class="item_block_name item_block_name_allows item_price'.$stroke.'">Цена: <span>'.$strPrice.'</span></div>';
-								if (strlen($action) && strlen($actionPrice)) {
-									$str = $str.'<div class="item_block_name item_block_name_allows item_action_price"><span>'.$actionPrice.'</span></div>';
-								};
-							}	
 
-							$str = $str.'<div class="cart" data-cart-id="'.$item["id"].'">
-								<div id="b_minus" class="cart_button"><span>-</span></div>
-									<input class="cart_input" type="text" name="cart_q" value="1"/>
-								<div id="b_plus" class="cart_button"><span>+</span></div>
-								
-								<div class="cart_order">
-									<svg fill="#CCC" height="22" viewBox="0 0 24 24" width="22" xmlns="http://www.w3.org/2000/svg">
-										<path d="M0 0h24v24H0zm18.31 6l-2.76 5z" fill="none"/>
-										<path d="M11 9h2V6h3V4h-3V1h-2v3H8v2h3v3zm-4 9c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2zm-9.83-3.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.86-7.01L19.42 4h-.01l-1.1 2-2.76 5H8.53l-.13-.27L6.16 6l-.95-2-.94-2H1v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.13 0-.25-.11-.25-.25z"/>
-									</svg>
-								</div>
-							</div>
+							$str = $str.'
 						</div>
 						</div>';
 				}	
@@ -589,7 +592,7 @@ elseif($action == 'catalog_getItem')
 									}
 								}
 								else {
-									$item_url = '/include/no_photo.png';
+									$item_url = '/include/no_photo.svg';
 									$str = $str.'<div class="item_photo" data-im-cnt="0" style="width: '.$imSize.'px; height: '.$imSize.'px; background-image: url('.$item_url.');"></div>';
 								
 								}
