@@ -194,53 +194,50 @@ function getDatePicker() {
 function getCommonOrderInfo() {
 	var obj = $('#order_view .order-configuration-tab');
 	var html_str = '';
-	html_str = 
-	'<table>' +
-		'<tr>' +
-			'<td>Отправитель заказа:</td>' +
-			'<td>'+smuser.name+'</td>' +
-		'</tr>' +
-		'<tr>' +
-			'<td>Получатель заказа:</td>' +
-			'<td>'+$('#order_view .cnt_inp[name="receiver"]').val()+'</td>' +
-		'</tr>' +
-		'<tr>' +
-			'<td>Количество позиций:</td>' +
-			'<td>'+$('#order_view .order_item_list_content').find('tr').length+'</td>' +
-		'</tr>' +
-		'<tr>' +
-			'<td>На сумму</td>' +
-			'<td>'+$('#order_view .totalsum-block .total-sum').text()+$('#order_view .totalsum-block .currency').text()+'</td>' +
-		'</tr>' +
-		'<tr>' +
-			'<td>Прикрепленные файлы:</td>' +
-			'<td>'+($('#order_view #doc-filename .file_block .filename').text() || 'Отсутствуют')+'</td>' +
-		'</tr>' +
-		'<tr>' +
-			'<td>Юридическое лицо:</td>' +
-			'<td>'+($('.company_item.selected .name', obj).text() || 'Не указано')+'</td>' +
-		'</tr>' +
-		'<tr>' +
-			'<td>Торговая точка:</td>' +
-			'<td>'+($('.branch_item.selected .name', obj).text() || 'Не указана')+'</td>' +
-		'</tr>' +
-		'<tr>' +
-			'<td>Способ доставки:</td>' +
-			'<td>'+($('.delivery_item.selected .name', obj).text() || 'Не указан')+'</td>' +
-		'</tr>' +
-		'<tr>' +
-			'<td>Способ оплаты:</td>' +
-			'<td>'+($('.payment_item.selected .name', obj).text() || 'Не указан')+'</td>' +
-		'</tr>' +
-		'<tr>' +
-			'<td>Дата доставки:</td>' +
-			'<td>'+($('.date_item.selected', obj).attr('data-value') || 'Не указана')+'</td>' +
-		'</tr>' +
-		'<tr>' +
-			'<td colspan="2" style="text-align: center;">Комментарий: ' +
-			'<div class="order_comment"><input value="" ></div></td>' +
-		'</tr>' +
-	'</table>';
+	html_str =
+	'<div class="scroll-block">' +
+		'<table>' +
+			'<tr>' +
+				'<td>Количество позиций:</td>' +
+				'<td>'+$('#order_view .order_item_list_content').find('tr').length+'</td>' +
+			'</tr>' +
+			'<tr>' +
+				'<td>На сумму</td>' +
+				'<td>'+$('#order_view .totalsum-block .total-sum').text()+$('#order_view .totalsum-block .currency').text()+'</td>' +
+			'</tr>' +
+			'<tr>' +
+				'<td>Прикрепленные файлы:</td>' +
+				'<td>'+($('#order_view #doc-filename .file_block .filename').text() || 'Отсутствуют')+'</td>' +
+			'</tr>';
+		if ($('.order-configuration-tab.parameters .company_list').length) {
+			html_str = html_str +	
+				'<tr>' +
+					'<td>Юридическое лицо:</td>' +
+					'<td>'+($('.company_item.selected .name', obj).text() || 'Не указано')+'</td>' +
+				'</tr>';
+		}
+		if ($('.order-configuration-tab.parameters .branch_list').length) {
+			html_str = html_str +	
+				'<tr>' +
+					'<td>Торговая точка:</td>' +
+					'<td>'+($('.branch_item.selected .name', obj).text() || 'Не указана')+'</td>' +
+				'</tr>';
+		}
+		html_str = html_str +
+			'<tr>' +
+				'<td>Дата отгрузки:</td>' +
+				'<td>'+($('.date_item.selected', obj).attr('data-value') || 'Не указана')+'</td>' +
+			'</tr>' +
+			'<tr>' +
+				'<td>Способ отгрузки:</td>' +
+				'<td>'+($('.delivery_item.selected .name', obj).text() || 'Не указан')+'</td>' +
+			'</tr>' +
+			'<tr>' +
+				'<td>Способ оплаты:</td>' +
+				'<td>'+($('.payment_item.selected .name', obj).text() || 'Не указан')+'</td>' +
+			'</tr>' +
+		'</table>' +
+	'</div>';
 	obj.find('.common_info').html(html_str);	
 };
 
@@ -619,6 +616,7 @@ function initDocView(arDoc, sender, receiver) {
 						'</div>' +
 					'</div>' +
 					'<div class="order-configuration-tab confirmation hidden" data-step="confirmation">' +
+						'<div class="order_comment">Комментарий: <input value="" ></div>' +
 						'<div class="header">Сводная информация по заказу</div>' +
 						'<div class="common_info"></div>' +
 					'</div>' +
@@ -684,7 +682,7 @@ function initDocView(arDoc, sender, receiver) {
 	getDatePicker();
 	getDeliveryPropsList();
 	if (docHeader.fileAttached) SearchFiles(docHeader.file_id, docHeader.owner);
-	if (docHeader.status === 'new') $('#order_view .order-configuration-tab.confirmation').append($('#order_view #transmit'));
+	if (docHeader.status === 'new') $('#order_view .order-configuration-tab.confirmation').find('.order_comment').after($('#order_view #transmit'));
 	setTimeout(
 		function() {
 			if (!hasCompany && !hasBranch) {
@@ -1753,10 +1751,11 @@ function setOrderItemListContentHeight(){
 	var h2 = $('#order_view .order_header')[0].clientHeight;
 	var h3 = $('#order_view .order_controls')[0].clientHeight;
 	var h4 = $('#order_view .order_positions .order_item_list_head')[0].clientHeight;
-	var h5 = $('#order_view .order-configuration-panel').height();
+	var h5 = $('#order_view .order-configuration-panel:not(:hidden)').height();
 	var h = h1-h2-h3-h4-h5-10;
 	h = h>0 ? h : 0;
-	$('#order_view .order-configuration-tab').height(h1-h2-h5);
+	$('#order_view .order-configuration-tab').height(h1-h2-h5-20);
+	$('#order_view .order-configuration-tab .common_info').slimScroll({height: h1-h2-h5-240});
 	$('#order_view .order-configuration-tab .scroll-block').slimScroll({height: '100%'});
 	$('#order_view .order-configuration-tab .company_items').slimScroll({height: '100%'});
 	$('#order_view .order-configuration-tab .branch_items').slimScroll({height: '100%'});
@@ -1775,7 +1774,7 @@ function setOrderItemListContentHeight(){
 
 $(window).resize(function() {
 	if ($('#order_view').length) {
-		setTimeout("setOrderItemListContentHeight()",200);
+		setTimeout("setOrderItemListContentHeight()",500);
 	}
 });
 
