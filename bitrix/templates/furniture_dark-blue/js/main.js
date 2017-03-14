@@ -535,6 +535,18 @@ $(document).ready(function() {
 		$('#cnt_short_invite #confirm').addClass('accept_button');
     });
 
+	$('#cnt_short_command').on('click','.contact_invite .simple_button', function(e) {
+		e.stopPropagation();
+		commandInvitaionAnswer($(this).parent().parent(), $(this).attr('id'));
+	});
+	$('#cnt_short_command').on('mouseenter','#cancel',function(){
+		$(this).addClass("accept_button");
+		$('#cnt_short_command #confirm').removeClass('accept_button');
+    });
+	$('#cnt_short_command').on('mouseleave','#cancel',function(){
+		$(this).removeClass("accept_button");
+		$('#cnt_short_command #confirm').addClass('accept_button');
+    });
 	//menu
 	 $(".topmenu li").click(function(){
 		if(!$(this).hasClass('active')) {

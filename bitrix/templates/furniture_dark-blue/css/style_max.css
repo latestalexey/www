@@ -1734,6 +1734,7 @@ div#UserDocList .UserDocItem:hover {
     line-height: 32px;
     font-size: 16px;
 	background: #555;
+	cursor: pointer;
 }
 
 .order-configuration-panel .configuration-steps .step.active .step_num {
@@ -1745,6 +1746,7 @@ div#UserDocList .UserDocItem:hover {
     line-height: 32px;
 	margin-left: 10px;
 	color: #777;
+	cursor: pointer;
 }
 
 .order-configuration-panel .configuration-buttons .button {

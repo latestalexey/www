@@ -329,7 +329,7 @@ $(document).ready(function()
 						'<div class="teleport_buttons">' +
 							'<div class="header">Скачать каталог в формате:</div>' +
 							'<div id="teleport_btn">' +
-								'<a target="_blank" href="'+href+'teleport" target=_blank class="button" format-value=teleport>Teleport</a>' +
+								'<a target="_blank" href="'+href+'teleport&only_stocks=true" target=_blank class="button" format-value=teleport>Teleport</a>' +
 							'</div>' +	
 							'<div id="yml_btn">' +
 								'<a target="_blank" href="'+href+'yandex" target=_blank class="button" format-value=yandex>Яндекс</a>' +
@@ -365,19 +365,20 @@ $(document).ready(function()
 			$('#download_cat').append( 
 				'<div class="link-block">\
 					<span>Ссылка на каталог в формате Teleport</span>\
-					<input value='+href+'teleport readonly>\
+					<input value='+href+'teleport&only_stocks=true readonly>\
 					<div class="simple_button link_button link_copy help_icon">\
-					<div class="help_info">Скопировать ссылку в буфер обмена</div>'+svg_copy+'</div>\
-					<a target="_blank" href="'+href+'teleport"><div class="simple_button link_button link_download help_icon">\
+					<a target="_blank" href="'+href+'teleport&only_stocks=true">\
 					<div class="help_info">Скачать каталог в формате Teleport</div>'+svg_dwnld+'</div></a>\
 					<span>Ссылка на каталог в формате Яндекс</span>\
 					<input value='+href+'yandex readonly>\
 					<div class="simple_button link_button link_copy help_icon">\
-					<div class="help_info">Скопировать ссылку в буфер обмена</div>'+svg_copy+'</div>\
-					<a target="_blank" href="'+href+'yandex"><div class="simple_button link_button link_download help_icon">\
+					<a target="_blank" href="'+href+'yandex">\
 					<div class="help_info">Скачать каталог в формате Яндекс</div>'+svg_dwnld+'</div></a>\
 				</div>'
 			);
+			//		<div class="simple_button link_button link_download help_icon"><div class="help_info">Скопировать ссылку в буфер обмена</div>'+svg_copy+'</div>\
+			//		<div class="simple_button link_button link_download help_icon"><div class="help_info">Скопировать ссылку в буфер обмена</div>'+svg_copy+'</div>\
+
 			//https://my.e-teleport.ru/my/ajax/files.php?a=catalog&i=
 			/*'<span>Ссылка на каталог в формате Bitrix</span>' + 
 			'<input value='+href+'bitrix readonly>' +

@@ -316,6 +316,19 @@ elseif($action == 'msg_request')
 	$res = $TLP_obj->telecall('Messages_Request', $arFnc);
 	echo $res;
 }
+elseif($action == 'contactGroup_confirmRequest')
+{
+	$arFnc = array();
+	foreach ($_POST as $key => $value) 
+	{
+		if(!($key == 'action' || $key=='adds'))
+			{$arFnc[$key] = $value;}
+	}	
+		
+	$res = $TLP_obj->telecall('ContactGroup_ConfirmRequest', $arFnc);
+	echo $res;
+}
+
 elseif($action == 'filesList')
 {
 	$arFnc = array();
@@ -493,7 +506,7 @@ elseif($action == 'catalog_get')
 							</div>';
 							if($allow_stocks)
 							{
-								$strStocks = ($item["stock"]=='' || $item["stock"] == 0)?'Нет':number_format($item["stock"], 0, '.', ' ');
+								$strStocks = ($item["stock"]=='' || $item["stock"] == 0)?'Нет':number_format($item["stock"], 0, '.', ' ').' '.$item['unit'];
 								if($strStocks==='Нет' && strlen($item["receipt_date"]) && !strlen(stristr($item["receipt_date"],'0001-01-01T'))){
 									$date = date_parse($item["receipt_date"]);
 									$year = $date["year"];

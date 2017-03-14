@@ -748,6 +748,38 @@ function initDocView(arDoc, sender, receiver) {
 			$(this).addClass('unvisible');
 		};
 	});
+	
+	
+	//Подтвердить заказ
+	$('#order_view').on('click', '.configuration-steps .step_num, .configuration-steps .step_title', function(){
+		
+		var obj = $(this).parent('.step');
+		
+		if (obj.hasClass('active')) return;
+		
+		obj.siblings('.step').removeClass('active');
+		obj.addClass('active');
+		
+		const index = $('#order_view .configuration-steps .step.active').index();
+		$('#order_view .order-configuration-tab').addClass('hidden');
+		$('#order_view .order-configuration-tab:eq('+index+')').removeClass('hidden');
+		if ($('#order_view .configuration-steps .step[data-step="parameters"]').hasClass('active')) {
+			//getCommonOrderInfo();
+			setConfigurationValues(docHeader.props);
+		};
+		
+		if ($('#order_view .configuration-steps .step:last-child').hasClass('active')) {
+			getCommonOrderInfo();
+			$('#order_view .configuration-buttons .button.next').addClass('unvisible');
+			$('#order_view .configuration-buttons .button.prev').removeClass('unvisible');
+		} else
+		if ($('#order_view .configuration-steps .step:first-child').hasClass('active')) {
+			$('#order_view .configuration-buttons .button.prev').addClass('unvisible');
+			$('#order_view .configuration-buttons .button.next').removeClass('unvisible');
+		} else {
+			$('#order_view .configuration-buttons .button').removeClass('unvisible');
+		};
+	});
 
 	//Закрытие сайдбара по клику вне его	
 	$('#order_view').on('click', '.docview', function(e){

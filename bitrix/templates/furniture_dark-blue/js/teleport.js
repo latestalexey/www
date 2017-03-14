@@ -409,6 +409,13 @@ function messagesRequest() {
 					showContactRequests(rqobject.contact, rqobject.info);
 					all_notifies = all_notifies + 1;
 				}
+				else if(req_type == 'team_request') {
+					if($('#cnt_short_command').find('[data-group-name='+encodeString(rqobject.group_name)+']').length == 0) {
+						notifyInformation("Запрос от \n" + rqobject.group_name, "Вас хотят подключить к работе в команде \n" + rqobject.group_name);  
+					}
+					showCommandRequests(rqobject.group_name);
+					all_notifies = all_notifies + 1;
+				}
 				else {
 					req_sender		= encodeString(rqobject.contact);
 					req_quantity	= rqobject.quantity;
@@ -1263,6 +1270,39 @@ function invitaionAnswer(contact_obj, mode) {
 		xhr.send(body);
 	}
 }
+function commandInvitaionAnswer(group_obj, mode) {
+	var invAnswer = (mode == 'confirm')? 'true' : 'false';
+	var xhr = new XMLHttpRequest();
+	var body =	'action=contactGroup_confirmRequest' +
+				'&adds=html' +
+				'&confirm=' + encodeURIComponent(invAnswer);
+
+	xhr.open("POST", '/my/ajax/action.php', true);
+	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+	xhr.onreadystatechange = function() 
+	{ 
+		if (xhr.readyState != 4) return;
+		
+		if(!(xhr.responseText.indexOf('%err%') == -1)) {
+			showError(xhr.responseText.replace('%err%',''));
+			return;
+		}
+		group_obj.remove();
+		$('#cnt_short_command').hide();
+		$('#cnt_short_command').html('');
+
+		var inv_num = $('#cnt_short_invite .contact_invite').length;
+		$('#invitings').find('.new_invites span').html(inv_num);
+		if(inv_num == 0) {
+			$('#cnt_short_invite').hide();
+			$('#cnt_short_invite').html('');
+			$('#invitings').find('.new_invites').hide(0);
+			$('#invitings').hide(0);
+		}	
+		updateContactList('');
+	}	
+	xhr.send(body);
+}
 
 function addContactRequests(name, msg, result) {
 	var fullname = (result == undefined)?(name):(result.fullname);
@@ -1293,7 +1333,7 @@ function addContactRequests(name, msg, result) {
 	$('#invitings').removeClass('close_list');
 	$('#cnt_short_invite').show(0);
 
-	var inv_num = $('#cnt_short_invite .contact_invite').length;
+	var inv_num = $('#cnt_short_invite .contact_invite').length + $('#cnt_short_command .contact_invite').length;
 	if(inv_num == 0) {
 		$('#invitings').find('.new_invites span').html('0');
 		$('#invitings').find('.new_invites').hide(0);
@@ -1356,6 +1396,39 @@ function showContactRequests(name, msg) {
 		} else {
 			addContactRequests(name, msg, result);
 		}	
+	}			
+}
+function showCommandRequests(name) {
+	if($('#cnt_short_command').find('[data-group-name='+encodeString(name)+']').length != 0) {
+		return;
+	}
+	req_name = encodeString(name);
+	if($('#cnt_short_command [data-group-name='+req_name+']').length == 0) {
+
+		var fullname = name;
+		var str = '<div class="contact_invite" data-group-name="'+name+'">\
+					<div style="padding: 10px; border: 1px solid #ccc; border-radius: 2px; margin-bottom: 5px;">\
+					Вас хотят подключить к работе в команде '+name+'\
+					</div>\
+					<div style="text-align: center;">\
+						<div id="confirm" class="simple_button accept_button" style="margin: 5px; min-width: 115px; padding: 5px;">Принять</div>\
+						<div id="cancel" class="simple_button" style="margin: 5px; min-width: 115px; padding: 5px; ">Отказать</div>\
+					</div>\
+				</div>';
+
+		$('#cnt_short_command').append(str);
+		$('#invitings').show(0);
+		$('#invitings').removeClass('close_list');
+		$('#cnt_short_command').show(0);
+
+		var inv_num = $('#cnt_short_invite .contact_invite').length + $('#cnt_short_command .contact_invite').length;
+		if(inv_num == 0) {
+			$('#invitings').find('.new_invites span').html('0');
+			$('#invitings').find('.new_invites').hide(0);
+		} else {
+			$('#invitings').find('.new_invites span').html(inv_num);
+			$('#invitings').find('.new_invites').show(0);
+		}
 	}			
 }
 function droppableCreate(obj) {
