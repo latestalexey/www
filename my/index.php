@@ -65,9 +65,17 @@ if($mode=='')
 		</div>
 	<div class="topmenu">
 		<ul>
-			<li id="m_catalog" <?if($mode == "catalog"){echo 'class="active"';}?>>КАТАЛОГ</li>
-			<li id="m_orders" <?if($mode == "orders"){echo 'class="active"';}?>>ДОКУМЕНТЫ</li>
-			<li id="m_messages" <?if($mode == "messages"){echo 'class="active"';}?>>СООБЩЕНИЯ</li>
+			<li id="m_catalog" <?if($mode == "catalog"){echo 'class="active"';}?>>
+				КАТАЛОГ
+			</li>
+			<li id="m_orders" <?if($mode == "orders"){echo 'class="active"';}?>>
+				ДОКУМЕНТЫ
+				<div id="li_ord" class="notify"></div>
+			</li>
+			<li id="m_messages" <?if($mode == "messages"){echo 'class="active"';}?>>
+				СООБЩЕНИЯ
+				<div id="li_msg" class="notify"></div>
+			</li>
 		</ul>	
 	</div>
 	<div class="workspace">

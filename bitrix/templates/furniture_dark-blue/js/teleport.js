@@ -397,6 +397,8 @@ function messagesRequest() {
 			var notify_title = "";
 			var notify_text = "";
 			var all_notifies = 0;
+			var li_msg = 0;
+			var li_ord = 0;
 			
 			arResult.forEach(function(rqobject, key){
 				var req_type 		= rqobject.type;
@@ -404,14 +406,16 @@ function messagesRequest() {
 
 				if(req_type == 'request') {
 					if($('#cnt_short_invite').find('[data-usr-name='+encodeString(rqobject.contact)+']').length == 0) {
-						notifyInformation("Приглашение от \n" + rqobject.contact, rqobject.info);  
+						n_url = window.location.protocol + '//' + window.location.host + '/my/index.php?mode=messages';
+						notifyInformation("Приглашение от \n" + rqobject.contact, rqobject.info, n_url);  
 					}
 					showContactRequests(rqobject.contact, rqobject.info);
 					all_notifies = all_notifies + 1;
 				}
 				else if(req_type == 'team_request') {
 					if($('#cnt_short_command').find('[data-group-name='+encodeString(rqobject.group_name)+']').length == 0) {
-						notifyInformation("Запрос от \n" + rqobject.group_name, "Вас хотят подключить к работе в команде \n" + rqobject.group_name);  
+						n_url = window.location.protocol + '//' + window.location.host + '/my/index.php?mode=messages';
+						notifyInformation("Запрос от \n" + rqobject.group_name, "Вас хотят подключить к работе в команде \n" + rqobject.group_name, n_url);  
 					}
 					showCommandRequests(rqobject.group_name);
 					all_notifies = all_notifies + 1;
@@ -421,6 +425,9 @@ function messagesRequest() {
 					req_quantity	= rqobject.quantity;
 					req_prefix 		= (req_type == 'message')?('msg'):('ord');
 					all_notifies 	= all_notifies + req_quantity;
+					
+					if(req_type == 'message' && req_quantity>0) { li_msg = li_msg + req_quantity;}
+					if(req_type == 'document' && req_quantity>0) { li_ord = li_ord + req_quantity;}
 					
 					var new_msg_obj = $('[data-usr-name='+req_sender+']').first().find(".new_" + req_prefix);
 					if(new_msg_obj.length == 0) {
@@ -438,7 +445,9 @@ function messagesRequest() {
 
 							if(notify_text == "") {
 								notify_title = getContactInfo(rqobject.contact).fullname;
-								notify_text = (req_type == 'message')?("Получено новое сообщение"+"\n"+"Всего новых ("+req_quantity+")"):("Оформлен заказ"+"\n"+"Всего новых ("+req_quantity+")");
+								n_mode = (req_type == 'message')?('messages'):('orders');
+								n_url = window.location.protocol + '//' + window.location.host + '/my/index.php?mode=' + n_mode + '&cnt=' + rqobject.contact;
+								notify_text = (req_type == 'message')?("Получено новое сообщение"+"\n"+"Всего новых ("+req_quantity+")"):("Поступила информация по "+req_quantity+" заказам.");
 							} else {
 								notify_title = "Teleport";
 								notify_text = "";
@@ -446,7 +455,7 @@ function messagesRequest() {
 									notify_text = notify_text + "Получено "+notify_messages+" новых сообщений. \n";
 								}	
 								if(notify_orders != 0) {
-									notify_text = notify_text + "Оформлено "+notify_orders+" новых заказов. \n";
+									notify_text = notify_text + "Поступила информация по "+notify_orders+" заказам. \n";
 								}	
 							}
 									
@@ -461,9 +470,31 @@ function messagesRequest() {
 					}	
 				}	
 			});
+			if(li_msg != 0) {
+				$("#li_msg").html(li_msg);
+				if($("#li_msg").css("display") == "none") {
+					$("#li_msg").show(0);
+				}
+			} else {
+				$("#li_msg").html('');
+				if($("#li_msg").css("display") == "block") {
+					$("#li_msg").hide(0);
+				}
+			}
+			if(li_ord != 0) {
+				$("#li_ord").text(li_ord);
+				if($("#li_ord").css("display") == "none") {
+					$("#li_ord").show(0);
+				}
+			} else {
+				$("#li_ord").html('');
+				if($("#li_ord").css("display") == "block") {
+					$("#li_ord").hide(0);
+				}
+			}
 			if(notify_text != "") {
 				var notify_q = notify_messages + notify_orders;
-				notifyInformation(notify_title, notify_text);  
+				notifyInformation(notify_title, notify_text, n_url);  
 				changeTitle = setInterval(
 					function(){
 						(document.title === doc_title) ? document.title='(' + all_notifies + ') Новое уведомление' : document.title=doc_title;
@@ -1022,7 +1053,7 @@ function requestCntFileBrowser(arResult) {
 				});
 			},
 			'onUploadComplete' : function(file, data) {
-				console.log(data);
+				//console.log(data);
 				$('#cnt-fileinfo').hide(100);
 				var ext = ( parts = file.name.split("/").pop().split(".") ).length > 1 ? parts.pop() : "";
 				var obj = {
@@ -1060,7 +1091,7 @@ function requestCntFileBrowser(arResult) {
 					showError(xhr.responseText.replace('%err%',''));
 					return;
 				}
-				console.log(xhr.responseText)
+				//console.log(xhr.responseText)
 				obj.parent('.msg_file').remove();
 			}
 			xhr.send(body);
@@ -1855,7 +1886,7 @@ function editLegalEnities(companyId, parameters) {
 			showError(xhr.responseText.replace('%err%',''));
 			return;
 		}
-				console.log(xhr.responseText);
+				//console.log(xhr.responseText);
 		$('#cnt_view #legal_entity_card .data').val('');
 		$('#cnt_view #legal_entity_card').hide(0);
 		getLegalEnities();
@@ -2032,7 +2063,7 @@ function editTradePoints(branchId, parameters) {
 			showError(xhr.responseText.replace('%err%',''));
 			return;
 		}
-		console.log(xhr.responseText);
+		//console.log(xhr.responseText);
 		$('#cnt_view #trade_point_card .data').val('');
 		$('#cnt_view #trade_point_card').hide(0);
 		getTradePoints();

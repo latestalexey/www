@@ -70,7 +70,7 @@ function getDocInfo(id, sender, receiver) {
 			return;
 		}
 		var arResult = JSON.parse(xhr.responseText);
-		console.log(arResult)
+		//console.log(arResult)
 		initDocView(arResult, sender, receiver);
 	};
 	xhr.send(body);	

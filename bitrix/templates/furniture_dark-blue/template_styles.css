@@ -1112,7 +1112,7 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 	top: 30px;
 	right: 10px;
 	/*background-image: url(/my/data/svg/chat_bubble.svg);*/
-	background-color: #26A69A;
+	background-color: #ff6600;
     border-radius: 15px;
 	display: none;
 }
@@ -1125,7 +1125,7 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 	text-align: center;
 	/*font-weight: 600;*/
 	font-size: 14px;
-	color: #26A69A;
+	color: #ff6600;
 	position: absolute; 
 	top: 24px;
 	right: 34px;
@@ -1135,9 +1135,22 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 .new_ord span {position: relative; top: 9px;}
 
 .topmenu { padding-top: 1px; width: 600px; margin: 0 auto 0 auto; font: 800 16px 'Open Sans', Arial, Helvetica, sans-serif;}
-.topmenu li {float: left; padding: 0px 30px; cursor: pointer; text-align:center; text-decoration: none; list-style-type: none; color: #FFF;}
+.topmenu li {float: left; padding: 0px 30px; cursor: pointer; text-align:center; text-decoration: none; list-style-type: none; color: #FFF; position: relative;}
 .topmenu li.active {border-bottom: 3px solid #CFD8DC; color: #CFD8DC;}
 .topmenu li:hover {color: #CFD8DC;}
+.topmenu .notify {
+    position: absolute;
+    top: 7px;
+    right: -1px;
+    border-radius: 50%;
+    background-color: #ff6600;
+	color: #fff;
+    padding: 3px;
+    min-width: 18px;
+    font-weight: 600;
+    font-size: 13px;
+	display: none;
+}
 
 #ext_filters {
 	overflow: auto;

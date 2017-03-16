@@ -21,6 +21,7 @@ $(document).ready(function()
 	$('#it_cart .simple_button').fadeOut(0);
 	$('#contact_filter').css('display','inline-block');
 	$('#contact_filter').text('Показать МОЙ КАТАЛОГ');
+
 	getFeaturedItems('action');
 	getFeaturedItems('popular');
 	getFeaturedItems('novetly');
@@ -30,7 +31,8 @@ $(document).ready(function()
 		getMyCatalogItems();
 	}
 	else {	
-		getSelectedContactCategories();
+	getSelectedContactCategories();
+
 	}	
 	
 
@@ -249,7 +251,7 @@ $(document).ready(function()
 		if (e.ctrlKey || e.altKey || e.metaKey) return;
 			var chr = getChar(e);
 			if (chr == null) return;
-			if ((chr < '0' || chr > '9') && (chr != '.')) {
+			if ((chr < '0' || chr > '9')) {//&& (chr != '.')
 				return false;
 			}
 	});
@@ -628,7 +630,6 @@ $(document).ready(function()
 				return;
 			}
 			arItem = JSON.parse(xhr.responseText);
-			console.log(arItem);
 			var html_props = '';
 			$.each(arItem['properties'][item_id], function(key, value){
 				html_props = html_props + '<div class="item-prop"><span class="name">'+value.property_name+'</span><input value="'+value.property_value+'"></div>'
@@ -734,7 +735,7 @@ $(document).ready(function()
 					showError(xhr.responseText.replace('%err%',''));
 					return;
 				}
-				console.log(xhr.responseText);
+				//console.log(xhr.responseText);
 			}
 			xhr.send(body);
 		});
@@ -993,7 +994,7 @@ function initContactItems(){
 				{
 					$('.col_3').remove();
 				}
-				hideRightPan();
+				//hideRightPan();
 				showExtPan();
 				$('#it_extsearch').addClass('ext_selected');
 				requestExtendedSearch();
@@ -1280,7 +1281,6 @@ function scrollItemBy(obj, yPx, duration) {
 	}	
 }
 function getItemInfo(obj) {
-	console.log(obj);
 	var contact	= getActiveContact();
 	if(contact.id == undefined)	{ contact = smuser;	}
 
@@ -1294,7 +1294,6 @@ function getItemInfo(obj) {
 						'</div>'
 					);
 	}	
-	console.log(modal_obj);
 	var list_type = $('.activevwmode').attr('data-ln');
 	if(list_type == 'block') {
 		modal_obj.css('float', 'left');
@@ -1661,7 +1660,7 @@ function ShowStocks() {
 
 
 function InitCatCopy(update_params) {
-	console.log(update_params);
+	//console.log(update_params);
 }
 
 function getItemInfoForDoc(obj) {
@@ -1848,6 +1847,7 @@ function getFeaturedItems(itemType) {
 	if (typeof contact.id === 'undefined') return;
 	var arr_fld = ['id', 'article','name','price','stock','unit','currencyId','action','popular','novetly','action_price','receipt_date','pictures'];
 	var arr_filter = [{"mode": "item", "name": itemType, "operation": "NOT IN", "value": '"0","false","","Нет"'}];
+	
 	var xhr = new XMLHttpRequest();
 		var body =	'action=catalog_get' +
 					'&list_type=' + list_type +

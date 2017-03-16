@@ -4,6 +4,7 @@ var empty_group = '<div class="empty_group tl_droppable">Перетащите н
 
 $(document).ready(function() {
 	arSizes = getPageSize();
+	window.name = "my_teleport"
 	$(document.body).addClass('my_body');
 	$('.my_body').on('click',function(e) {
 		if($(e.target).hasClass('modal_back')) {
@@ -840,7 +841,7 @@ $(document).ready(function() {
 	$("#my_contacts_icon").hide(0);
 	
 	if(!(getActiveContact().id == undefined) && ($(".topmenu li.active").attr('id') == 'm_catalog')) {
-		hideRightPan();
+		//hideRightPan();
 	} else {
 		showRightPan();
 	}
@@ -917,7 +918,7 @@ function topMenu_action(id){
 }
 
 function showTelebotInfo(msg, emojion, timeout) {
-	if(!$('#telebot_info').length == 0) {
+	/*if(!$('#telebot_info').length == 0) {
 		hideTelebotInfo();
 	}
 	str = '<div id="telebot_info">\
@@ -932,12 +933,12 @@ function showTelebotInfo(msg, emojion, timeout) {
 	resizeTelebot();
 	if(timeout > 0) {
 		setTimeout(hideTelebotInfo, timeout);
-	}
+	}*/
 }
 
 
 
-function notifyInformation(title, message) {
+function notifyInformation(title, message, url) {
 	if ('Notification' in window) {
 		Notification.requestPermission( newMessage );	
 		function newMessage(permission) {
@@ -947,6 +948,14 @@ function notifyInformation(title, message) {
 				body : message,
 				icon : "/include/logo64.png",
 			});
+			notify.onclick = function(event) {
+				event.preventDefault(); 
+				
+				if(!(window.location.href == url)) {
+					window.open(url, 'my_teleport');
+				}	
+				window.focus();
+			}
 			function closeNotify() {
 				notify.close();
 			}
