@@ -8,7 +8,7 @@ require_once($_SERVER["DOCUMENT_ROOT"]."/my/admin/before.php");
 ?>
 <script type="text/javascript" src="/my/js/orders.js"></script>
 <script type="text/javascript" src="/my/js/order_view.js"></script>
-
+<script type="text/javascript" src="/my/js/upload_from_xls.js"></script>
 <div id="orders_header">
 <div class="order">
 	<div class="order_content_header">

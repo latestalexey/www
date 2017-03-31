@@ -1455,6 +1455,7 @@ div#UserDocList .UserDocItem:hover {
 	margin-top: 3px;
 	padding-bottom: 10px;
     box-sizing: border-box;
+	position: relative;
 }
 
 .breadcrumbs {
@@ -1538,15 +1539,17 @@ div#UserDocList .UserDocItem:hover {
 }
 
 .wait {
-	display: flex;
-    align-items: center;
-    justify-content: center;
-	position: absolute;
+	display: block;
+    /*align-items: center;
+    justify-content: center;*/
+	position: relative;
+    top: -30px;
     width: 100%;
-    height: 100%;
-    top: 0;
+    padding: 10px;
     text-align: center;
 	z-index: 9999;
+	box-sizing: border-box;
+	background-color: #EEE;
 }
 
 
@@ -1960,4 +1963,91 @@ div#UserDocList .UserDocItem:hover {
 
 .unvisible {
 	visibility: hidden;
+}
+
+
+#doc_excel_form {
+	display: none;
+	position: absolute;
+    top: 0;
+    left: -12px;
+    bottom: 0;
+    right: 0;
+    margin: auto;
+    width: 90%;
+    height: 70%;
+	padding: 10px 30px;
+	background-color: #FBFBFB;
+    border: 1px solid #CCCCCC;
+	border-radius: 5px;
+	box-shadow: 2px 2px 4px #777777;
+	overflow: hidden;
+	text-align: center;
+	z-index: 9999;
+}
+
+#doc_excel_form .upl_xls_example {
+	width: 90%;
+	margin: 0 auto;
+	overflow: hidden;
+}
+
+#doc_excel_form .upl_xls_example table {
+	width: 100%;
+	background: #fff;
+    border-collapse: collapse;
+}
+
+#doc_excel_form .upl_xls_example table th,
+#doc_excel_form .upl_xls_example table td {
+	border: 1px solid #ccc;
+	padding: 10px;
+	text-align: center;
+	font-size: 14px;
+}
+
+#doc_excel_form .upl_xls_example table .item.red {
+	background: rgba(255, 0, 0, 0.3);
+}
+
+#doc_excel_form #doc_upl_xls_form {
+	height: 50px;
+}
+
+#doc_excel_form #doc_upl_xls_btn,
+#doc_excel_form #append_xls_items_btn {
+	height: 50px;
+    padding: 15px;
+    /*margin: 45px 0;*/
+    font-size: 20px;
+	left: 0;
+	box-sizing: border-box;
+}
+
+#doc_excel_form #doc_upl_xls_btn:hover,
+#doc_excel_form #append_xls_items_btn:hover {
+    color: #fff;
+}
+
+#doc_excel_form .close_cross_line {
+	/*margin-bottom: 45px;*/
+	text-align: right;
+}
+
+#doc_excel_form .close_cross {
+	display: inline-block;
+    width: 24px;
+    height: 24px;
+    text-align: center;
+    border: 1px solid transparent;
+    cursor: pointer;
+    border-radius: 12px;
+}
+
+#doc_excel_form  .close_cross:hover {
+    border: 1px solid #AAAAAA;
+}
+
+#doc_excel_form .upl_xls_item_list_content .item:not(.red) .col_0 .fa {
+	cursor: pointer;
 }

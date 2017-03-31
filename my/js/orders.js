@@ -2,7 +2,7 @@ var lastOrderDate = new Date();
 lastOrderDate.setDate(lastOrderDate.getDate() + 2);
 
 var docStatus = { 
-	'new': 'Новый',
+	'new': 'В корзине',
 	'transmitted': 'Отправлен',
 	'agreement': 'На согласовании',
 	'confirmed': 'Подтвержден',

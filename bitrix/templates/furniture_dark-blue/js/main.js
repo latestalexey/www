@@ -986,7 +986,7 @@ function resizeTelebot() {
 
 /////
 function showGreeting() {
-	var hasGreeting = undefined;
+	/*var hasGreeting = undefined;
 	if(storu) {
 		var hasGreeting = localStorage.getItem('tlpGreeting');
 	}
@@ -1075,7 +1075,7 @@ function showGreeting() {
 			}	
 		});
 
-	});
+	});*/
 }
 
 function number_format(number, decimals, dec_point, thousands_sep) {

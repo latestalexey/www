@@ -1,5 +1,5 @@
 var docStatus = { 
-	'new': 'Новый',
+	'new': 'В корзине',
 	'transmitted': 'Отправлен',
 	'agreement': 'На согласовании',
 	'confirmed': 'Подтвержден',
@@ -17,9 +17,10 @@ var orderSteps = {
 	'confirmation': 'Подтверждение'
 }
 
-var deliveryType = { 
+var deliveryType = {
+	'reserve': 'Только резерв',
 	'pickup': 'Самовывоз',
-	'outlet': 'Доставка до торговой точки',
+	'delivery': 'Доставка до торговой точки',
 	'transportCompany': 'Транспортная компания'
 }
 
@@ -57,8 +58,8 @@ var doc_file = '<div class="msg_file uploadifive-queue-item"><div class="upfile"
 var newDocID = '';
 
 function getDocInfo(id, sender, receiver) {
-  var xhr = new XMLHttpRequest();
-  var body = 'action=Documents_GetById' +
+	var xhr = new XMLHttpRequest();
+	var body = 'action=Documents_GetById' +
 				'&message_id=' + id;
 	xhr.open("POST", '/my/ajax/action.php', true);
 	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -180,11 +181,14 @@ function getDatePicker() {
 		var day = String(date.getDate());
 		var month = String(date.getMonth()+1);
 		var year = String(date.getFullYear());
+		var weekDay = date.getDay();
+		var styleDay = (weekDay == 0 || weekDay == 6)?('style="color: #d20000;"'):('');
+		var dayOff = (weekDay == 0 || weekDay == 6)?('day_off'):('');
 		day = (day.length === 2) ? day : '0'+day ;
 		month = (month.length === 2) ? month : '0'+month;
 		html_str = html_str +
-		'<div class="date_item item" data-value='+day+'.'+month+'.'+year+'>\
-			<div class="date_name name">'+day+'.'+month+'</div>\
+		'<div class="date_item item ' + dayOff +'" data-value='+day+'.'+month+'.'+year+'>\
+			<div class="date_name name" '+styleDay+'>'+day+'.'+month+'</div>\
 		</div>'
 		date.setDate(date.getDate() + 1);
     }
@@ -605,8 +609,8 @@ function initDocView(arDoc, sender, receiver) {
 					'<div class="order-configuration-tab payment hidden" data-step="payment">' +
 						'<div class="container">' +
 							'<div class="scroll-block">' +
-								'<div class="delivery_date configuration_list"><div class="header">Желаемая дата отгрузки</div><div class="date_picker"></div></div>' +
 								'<div class="delivery_type configuration_list"><div class="header">Способ отгрузки</div><div class="delivery_items"></div></div>' +
+								'<div class="delivery_date configuration_list"><div class="header">Желаемая дата отгрузки</div><div class="date_picker"></div></div>' +
 							'</div>' +
 						'</div>' +
 						'<div class="container">' +
@@ -711,6 +715,9 @@ function initDocView(arDoc, sender, receiver) {
 	
 	$('#order_view').on('click', '.parameters .item, .payment .item', function(){
 		if (docHeader.status !== 'new') return;
+		
+		if($(this).hasClass("day_off")) return;
+		
 		if ($(this).hasClass('selected')) {
 			$(this).removeClass('selected');
 			return;
@@ -911,7 +918,7 @@ function initDocView(arDoc, sender, receiver) {
 		$(this).val(number_format(qty, 0, '', ' '));
 		var arKey = [8, 9, 37, 39, 46];
 		if ((e.which >= 48 && e.which <=57) || (e.which >= 96 && e.which <=105) || ($.inArray(e.which, arKey)>=0)) {
-			//if (!$(this).val().length || ($(this).val() == 0)) {$(this).val(1)};
+			if (!$(this).val().length || ($(this).val() == 0)) {$(this).val(1)};
 			var price = parseFloat($(this).closest('.item').children('.col_6').text().replace(/ /g, ''));
 			$(this).closest('.item').children('.col_7').text(number_format(price*(qty || 0), 2, '.', ' '));
 			getTotalSum();
@@ -925,8 +932,8 @@ function initDocView(arDoc, sender, receiver) {
 	//Изменение количества позиций в строке заказа вручную
 	$('#order_view').on('blur', '.col_4 input, .col_5 input', function(e){
 		var qty = parseFloat($(this).val().replace(/ /g, ''));
-		if (!qty.length || (qty == 0)) {
-			$(this).val(1);
+		if (qty == 0) {
+			$(this).val(0);
 			var price = parseFloat($(this).closest('.item').children('.col_6').text().replace(/ /g, ''));
 			$(this).closest('.item').children('.col_7').text(number_format(price, 2, '.', ' '));
 			getTotalSum();	
@@ -1379,8 +1386,9 @@ function initDocView(arDoc, sender, receiver) {
 	
 	//Загрузка позиций каталога из xls-файла
 	$('#order_view').on('click', '#upl_xls' ,function() {
-		$('#order_view #xls_upl').uploadifive('clearQueue');
-		$(this).siblings('#uploadifive-xls_upl').children().last().click();
+		//$('#order_view #xls_upl').uploadifive('clearQueue');
+		//$(this).siblings('#uploadifive-xls_upl').children().last().click();
+		showUploadXLSForm ();
 	});	
 	$(function() {	
 		$("#order_view #xls_upl").uploadifive({
@@ -1682,6 +1690,7 @@ function buildTmpDoc (tmpDoc, receiver){
 			val.value = $('.sidebar #'+val.name+' .item_'+i+' .sidebar-item-box .sidebar-item-name input').val()
 		});
 	};*/
+	tmpDoc.docHeader.props = [];
 	tmpDoc.docHeader.props.push({
 		"name": "company_id",
 		"value": $('#order_view .parameters .company_item.selected').attr('data-value')

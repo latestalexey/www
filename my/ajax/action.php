@@ -2,167 +2,6 @@
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_before.php");
 require_once($_SERVER["DOCUMENT_ROOT"]."/my/admin/before.php");
 
-function url_check($buf) 
-{ 
-      $buf=trim($buf); 
-      preg_match("~(?:(?:ftp|https?)?://|www\.)(?:[a-z0-9\-]+\.)*[a-z]{2,6}(:?/[a-z0-9\-?\[\]=&;#]+)?~i",$buf,$mat); 
-      return (isset($mat))?($mat[0]==$buf)?$mat[0]:0:0; 
-} 
-
-
-function combineMessagesHtml($arResult, $mode) {
-
-	if(count($arResult) == 0) {
-		return '';
-	}	
-	
-	$arStatus = array('new'=> 'Новый', 'sent'=>'Отправлено', 'delivered'=> 'Доставлено','viewed'=>'Просмотрено');
-	$repMessages = 0;
-	$strNowDate = date("Y-m-d");
-	$strYesterday = mktime(0, 0, 0, date("m")  , date("d")-1, date("Y"));
-		
-	$avatarSVG = '<svg fill="#BBB" height="36" viewBox="0 0 24 24" width="36" xmlns="http://www.w3.org/2000/svg">
-		<path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-		<path d="M0 0h24v24H0z" fill="none"/>
-		</svg>';
-		
-	if($TLP_obj->user_info['photo'] == '')
-		$myAvatar = '<div class="cnt_image cnt_avatar" style="background-image: none">'.avatarSVG.'</div>';
-	else
-		$myAvatar = '<div class="cnt_image cnt_avatar" style="background-image: '.$TLP_obj->user_info['photo'].'"></div>';
-
-	$myheader = ($TLP_obj->user_info['fullname'] == $TLP_obj->user_info['name'])?$TLP_obj->user_info['fullname']:$TLP_obj->user_info['fullname']."  '".$TLP_obj->user_info['name']."'";
-		
-	/*$rcv_from_obj = getContactInfo((arResult[0].from == smuser.name)?arResult[0].to:arResult[0].from);
-		var rcvAvatarURL = $('#cnt_'+ rcv_from_obj.id).find('.cnt_avatar').css('background-image') || $('#login_image').find('.cnt_avatar').css('background-image') || 'url(/include/no_avatar.svg)';
-		rcvAvatarURL = rcvAvatarURL.replace(new RegExp('"','g'),"");
-		if(rcvAvatarURL == 'none') {
-			var rcvAvatar = '<div class="cnt_image cnt_avatar" style="background-image: none">' + avatarSVG + '</div>';
-		} else {
-			var rcvAvatar = '<div class="cnt_image cnt_avatar" style="background-image: '+rcvAvatarURL+'"></div>';
-		}
-		var rcvheader = (rcv_from_obj.fullname == rcv_from_obj.name)?rcv_from_obj.fullname:rcv_from_obj.fullname +"  '" + rcv_from_obj.name + "'";
-		$('#msg_li').attr('data-cnt-id',rcv_from_obj.id);
-		
-		var last_msg = $('#msg_li .message_line').last();
-		var last_msg_cnt = last_msg.attr('data-ms-inf');
-		
-		var prev_cnt 	= "";
-		var prev_date	= "";
-		var html_block	= "";
-		
-		var first_cnt  = "";
-		var first_date  = "";
-		var last_date	= "";
-		arResult.forEach(function(msg_object, key){
-			var files_html = '';
-			var html_date = '';
-			var html_cnt = '';
-			var status_text = '';
-			var resend_text = '';
-			var txtNode = msg_object.msg_text;
-
-			//date_inf
-			var msg_date = getDateFromString(msg_object.dt);
-			var str_msgdate = getUserStringFromDate(msg_date);
-			var strDate = getUserStringFromDate(msg_date);
-			if(strDate == strNowDate) {	strDate = 'Сегодня'; }
-			else if (strDate == strYesterday) { strDate = 'Вчера'; }
-			
-			html_date = '<div class="message_line" style="text-align: center; margin: 10px 0;" data-msg-date="'+str_msgdate+'"><hr class="msg_divider"><div class="msg_date">' + strDate + '</div></div>';
-
-			//contact_inf
-			var msg_header = (msg_object.from == smuser.name)?myheader:rcvheader;
-			var msg_avatar = (msg_object.from == smuser.name)?myAvatar:rcvAvatar;
-			
-			html_cnt = '<div id="msg_inf" style="margin-top: -10px;">' + msg_avatar +
-					//'<div class="cnt_image cnt_avatar" style="background-image: '+avatarURL+'">' + avatarSVG + '</div>'+
-					'<div class="message_header"><a>'+msg_header+'</a></div>' + 
-					'<div class="message_date">'+getTimeStringFromDate(msg_date)+'</div>'+
-				'</div>';
-
-			//files
-			$(msg_object.files).each(function() {
-				
-				files_html = files_html + addFileToList($(this), false);
-			});
-			if(!files_html=='') {
-				files_html = '<div class="att_text">Вложенный(е) файлы:</div><div class="msg_file">' + files_html + '</div>';
-			}
-			
-			//message
-			resend_text = '<div class="msg_resend" title="Переслать сообщение">'+
-				'<svg fill="#777" height="19" viewBox="0 0 24 24" width="19" xmlns="http://www.w3.org/2000/svg">'+
-					'<path d="M10 9V5l-7 7 7 7v-4.1c5 0 8.5 1.6 11 5.1-1-5-4-10-11-11z"></path>'+
-					'<path d="M0 0h24v24H0z" fill="none"></path>'+
-				'</svg></div>';
-			if(msg_object.from == smuser.name) {
-				status_text = '<div class="msg_status" title="Статус сообщения">'+ arStatus[msg_object.status] +'</div>';
-			}
-			
-			var msg_ubody = '<div class="message_text">' +
-							'<div class="msg_time">'+getTimeStringFromDate(msg_date)+'</div><pre>'+txtNode+'</pre>' + files_html +
-							'<div class="msg_addblock">' + resend_text + status_text + '</div>' +
-						'</div>'+
-						'<div class="msg_submenu">'+
-							'<svg fill="#777" height="18" viewBox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg">'+
-								'<path d="M0 0h24v24H0z" fill="none"/>'+
-								'<path d="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>'+
-							'</svg></div>'+
-						'</div>'
-			
-			//creating message
-			var msg_html = "";
-			if ($("div").is('#' + 'msg_'+ msg_object.ID)) {
-				msg_html = '<div id="msg_'+ msg_object.ID+ '" class="message_line" data-ms-inf="'+msg_object.from+'">' + html_cnt + msg_ubody;
-				if($('#' + 'msg_'+ msg_object.ID).find('#msg_inf').length != 0) {
-					$('#' + 'msg_'+ msg_object.ID).replaceWith(msg_html);
-				}
-				else {
-					$('#' + 'msg_'+ msg_object.ID).replaceWith(msg_html);
-					$('#' + 'msg_'+ msg_object.ID).find('#msg_inf').remove();
-				}
-			}
-			else {
-				msg_html = '<div id="msg_'+ msg_object.ID+ '" class="message_line" data-ms-inf="'+msg_object.from+'">';
-				if((prev_cnt == '' && prev_date == '') || (prev_date != html_date)) {
-					if (mode == 'end' && first_cnt == '' && last_msg_cnt == msg_object.from) {
-						msg_html = html_date + msg_html;
-					} 
-					else {
-						msg_html = html_date + msg_html + html_cnt;
-					}
-					
-					first_date = (first_date == "")?str_msgdate:first_date;
-					first_cnt = (first_cnt == "")?msg_object.from:first_cnt;
-					last_date = str_msgdate;
-				}
-				else if(prev_cnt != msg_header) {
-					msg_html = msg_html + html_cnt;
-				}
-				msg_html = msg_html + msg_ubody;
-				
-				prev_cnt = msg_header;
-				prev_date = html_date;
-				html_block = html_block + msg_html;
-			}	
-		});
-
-		if(html_block != ""){
-			if(mode == 'begin') {
-				$('[data-msg-date='+last_date+']').remove();
-				$("#msg_li").prepend(html_block);
-			}
-			else if(mode == 'end') {
-				$("#msg_li").append(html_block);
-				if ($('[data-msg-date='+first_date+']').length != 0) {
-					var obj = $('[data-msg-date='+first_date+']')[$('[data-msg-date='+first_date+']').length-1];
-					$(obj).remove();
-				}
-			}
-		}	*/
-}
-
 $TLP_obj = unserialize($_SESSION["TLP_obj"]);
 
 $action = $_POST['action'];
@@ -382,164 +221,8 @@ elseif($action == 'catalog_get')
 			$allow_prices = $arResult['settings'][0]['allow_prices'];
 			$arItmes = $arResult['catalog'];
 			$arPictures = $arResult['pictures'];
-			foreach($arItmes as $key=>$item)
-			{
-				
-				if($list_type == 'list') {
-					//list type
-					$action = $item["popular"] ? ' popular' : '';
-					$action = $item["novetly"] ? ' novetly' : $action;
-					$action = $item["action"] ? ' action' : $action;
-					$str = $str.'<div id="it_'.$item["id"].'" class="item'.$action.'" data-it-id="'.$item["id"].'"><div class="item_content"><div class="item_line">';
-					$str = $str.'<div class="col_1">'.$item["article"].'</div><div class="col_2">'.$item["name"].'<p class="sub_info"><img src="/include/stdown.png"/></p></div>';
-					if($allow_prices)
-					{
-						$strPrice = ($item["price"]=='' || $item["price"] == 0)?'-':number_format($item["price"], 0, '.', ' ');
-						$actionPrice = ($item["action_price"]==='' || $item["action_price"] == 0)?'':number_format($item["action_price"], 0, '.', ' ');
-						if (strlen($action) && strlen($actionPrice)) {
-							$str = $str.'<div class="col_3">'.$actionPrice.'</div>';
-						} else {
-							$str = $str.'<div class="col_3">'.$strPrice.'</div>';
-						};
-					}	
-					if($allow_stocks)
-					{
-						$strStocks = number_format($item["stock"], 0, '.', ' ');
-						if($strStocks==0 && strlen($item["receipt_date"]) && !strlen(stristr($item["receipt_date"],'0001-01-01T'))){
-							$date = date_parse($item["receipt_date"]);
-							$year = $date["year"];
-							$month = (strlen($date["month"])>1) ? $date["month"] : '0'.$date["month"];
-							$day = (strlen($date["day"])>1) ? $date["day"] : '0'.$date["day"];
-							$str = $str.'<div class="col_4">Ожидается: <span>'.$day.'-'.$month.'-'.$year.'</span></div>';
-						} else {
-							$str = $str.'<div class="col_4">'.$strStocks.'</div>';
-						};
-					}	
-					
-					$str = $str.'<div class="col_5"><div class="cart" data-cart-id="'.$item["id"].'">
-						<div id="b_minus" class="cart_button"><span>-</span></div>
-							<input class="cart_input" type="text" name="cart_q" value="1"/>
-						<div id="b_plus" class="cart_button"><span>+</span></div>
-						
-						<div class="cart_order">
-							<svg fill="#CCC" height="22" viewBox="0 0 24 24" width="22" xmlns="http://www.w3.org/2000/svg">
-								<path d="M0 0h24v24H0zm18.31 6l-2.76 5z" fill="none"/>
-								<path d="M11 9h2V6h3V4h-3V1h-2v3H8v2h3v3zm-4 9c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2zm-9.83-3.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.86-7.01L19.42 4h-.01l-1.1 2-2.76 5H8.53l-.13-.27L6.16 6l-.95-2-.94-2H1v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.13 0-.25-.11-.25-.25z"/>
-							</svg>
-						</div>
-					</div></div>';
-						
-					$str = $str.'</div></div></div>';
-				}
-				elseif ($list_type == 'block') {
-					//block type
-					$im_count = (count($arPictures[$item["id"]])==0)?1:count($arPictures[$item["id"]]);
-					$action = $item["popular"] ? ' popular' : '';
-					$action = $item["novetly"] ? ' novetly' : $action;
-					$action = $item["action"] ? ' action' : $action;
 
-					$li_size = 200*$im_count;
-					$it_name = ($item["article"]=='')?$item["name"]:$item["article"].'<br>'.$item["name"];
-					$str = $str.'<div id="it_'.$item["id"].'" class="item_block'.$action.'" data-it-id="'.$item["id"].'">
-						<div class="item_block_info">
-							<div class="item_photo_list">
-								<div class="item_photo_li" style="width: '.$li_size.'px;" data-im-num="0" data-im-count="'.$im_count.'">';
-								for ($i=0; $i<$im_count; $i++) {
-									$item_url = (count($arPictures[$item["id"]]) == 0)?'/include/no_photo.svg':'https://'.$TLP_obj->TLP_HOST.'/Catalog_Pics/prev/'.$arPictures[$item["id"]][$i]["file_id"];
-									$str = $str.'<div class="item_photo" data-im-cnt="'.$i.'" style="background-image: url('.$item_url.');"></div>';
-								}
-								$str = $str.'</div>
-								<div class="item_block_icons">';
-								if($im_count > 1) {
-									$str = $str.'
-									<div class="item_block_left active_icon">
-										<svg fill="#000" height="32" viewBox="0 0 24 24" width="32" xmlns="http://www.w3.org/2000/svg">
-											<path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
-											<path d="M0 0h24v24H0z" fill="none"/>
-										</svg>
-									</div>';
-								}	
-								$str = $str.'<div class="item_block_zoom active_icon">
-										<svg fill="#000" height="32" viewBox="0 0 24 24" width="32" xmlns="http://www.w3.org/2000/svg">
-											<path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-											<path d="M0 0h24v24H0V0z" fill="none"/>
-											<path d="M12 10h-2v2H9v-2H7V9h2V7h1v2h2v1z"/>
-										</svg>
-									</div>';
-								if($im_count > 1) {
-								$str = $str.'
-									<div class="item_block_right active_icon">
-										<svg fill="#000" height="32" viewBox="0 0 24 24" width="32" xmlns="http://www.w3.org/2000/svg">
-											<path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
-											<path d="M0 0h24v24H0z" fill="none"/>
-										</svg>										
-									</div>';
-								}
-								$str = $str.'</div></div>';
-							if(!$item["article"]=='') {
-								$str = $str.'<div class="item_block_name help_icon" style="border-bottom: 1px solid #ccc;"><div class="help_info">Артикул: '.$item["article"].'</div>'.$item["article"].'</div>';
-							} else {
-								$str = $str.'<div class="item_block_name help_icon" style="border-bottom: 1px solid #ccc;"><div class="help_info">Наименование: '.$item["name"].'</div>'.$item["name"].'</div>';
-							}	
-							if($allow_prices)
-							{
-								$strPrice = ($item["price"]=='' || $item["price"] == 0)?'-':number_format($item["price"], 2, '.', ' ').' руб';
-								$actionPrice = ($item["action_price"]==='' || $item["action_price"] == 0)?'':number_format($item["action_price"], 2, '.', ' ').' руб';
-								$stroke = '';
-								if ($item["action"] && strlen($actionPrice)) {
-									$str = $str.'<div class="item_block_name item_block_name_allows item_action_price">'.$actionPrice.'</div>';
-									$stroke = ' cross-out';
-								};
-								$str = $str.'<div class="item_block_name item_block_name_allows item_price'.$stroke.'">'.$strPrice.'</div>';
-							}	
-							$str = $str.'<div class="cart" data-cart-id="'.$item["id"].'">
-								<div id="b_minus" class="cart_button"><span>-</span></div>
-									<input class="cart_input" type="text" name="cart_q" value="1"/>
-								<div id="b_plus" class="cart_button"><span>+</span></div>
-								
-								<div class="cart_order">
-									<svg fill="#777" height="32" viewBox="0 0 24 24" width="32" xmlns="http://www.w3.org/2000/svg">
-										<path d="M0 0h24v24H0zm18.31 6l-2.76 5z" fill="none"/>
-										<path d="M11 9h2V6h3V4h-3V1h-2v3H8v2h3v3zm-4 9c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2zm-9.83-3.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.86-7.01L19.42 4h-.01l-1.1 2-2.76 5H8.53l-.13-.27L6.16 6l-.95-2-.94-2H1v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.13 0-.25-.11-.25-.25z"/>
-									</svg>
-								</div>
-							</div>';
-							if($allow_stocks)
-							{
-								$strStocks = ($item["stock"]=='' || $item["stock"] == 0)?'Нет':number_format($item["stock"], 0, '.', ' ').' '.$item['unit'];
-								if($strStocks==='Нет' && strlen($item["receipt_date"]) && !strlen(stristr($item["receipt_date"],'0001-01-01T'))){
-									$date = date_parse($item["receipt_date"]);
-									$year = $date["year"];
-									$month = (strlen($date["month"])>1) ? $date["month"] : '0'.$date["month"];
-									$day = (strlen($date["day"])>1) ? $date["day"] : '0'.$date["day"];
-									$str = $str.'<div class="item_block_name item_block_name_allows" style="text-align: left; padding-bottom: 0;">Ожидается: <span>'.$day.'-'.$month.'-'.$year.'</span></div>';
-								} else {
-									$str = $str.'<div class="item_block_name item_block_name_allows" style="text-align: left; padding-bottom: 0;">На складе: <span>'.$strStocks.'</span></div>';
-								};													
-							}	
-
-							$str = $str.'
-						</div>
-						</div>';
-				}	
-				/*$str = $str.'<div class="item_main_info"><p>'.$item["name"].'</p><p>Артикул:'.$item["article"].'</p><p>Код товара:'.$item["code"].'</p></div>';
-				$str = $str.'<div class="item_info">Цена:'.$item["price"].'</div>';
-				$str = $str.'</div></div>';*/
-
-				//2 type
-				/*$str = $str.'<div id="it_'.$item["id"].'"><div class="im_lines_2">';
-				$str = $str.'<div class="image"><img src="'.$item["image"].'" /></div>';
-				$str = $str.'<div class="item_main_info"><p>'.$item["name"].'</p><p>Артикул:'.$item["article"].'</p><p>Код товара:'.$item["code"].'</p></div>';
-				$str = $str.'<div class="item_info">Цена:'.$item["price"].'</div>';
-				$str = $str.'</div></div>';*/
-
-				//3 type
-				/*$str = $str.'<div id="it_'.$item["id"].'"><div class="im_lines_3">';
-				$str = $str.'<div class="image"><img src="'.$item["image"].'" /></div>';
-				$str = $str.'<div class="item_main_info"><table><tr><td>'.$item["article"].'</td><td>'.$item["name"].'</td><td>'.$item["price"].'</td></tr></table></div>';
-				$str = $str.'<div class="item_info"></div>';
-				$str = $str.'</div></div>';*/
-			}
+			$str = getCatalogHtml($arItmes, $arPictures, $list_type, $allow_prices,  $allow_stocks, $TLP_obj);
 			echo $str;
 		}	
 	}
@@ -841,53 +524,7 @@ elseif($action == 'catalog_FiltersGet')
 	if($res['errCode'] == 0)
 	{
 		$arResult = $res["return"];
-		$str = '';
-		$filterCount = count($arResult);
-		//$expanded = ($filterCount > 2)?(""):(" it_filter_expanded");
-		//$display = ($filterCount > 2)?(""):(' style="display: block;"');
-		$expanded = ($filterCount > 0)?(""):(" it_filter_expanded");
-		$display = ($filterCount > 0)?(' style="display: none;"'):(' style="display: block;"');
-		
-		foreach($arResult as $key=>$item)
-		{
-			if($item['filter_type'] == 'enum') {
-				$str = $str.'<div class="it_filter'.$expanded.'" data-filter-group-id ="'.$item['category_id'].'" data-filter-type ="'.$item['filter_type'].'" data-filter-name ="'.$item['filter_name'].'">';
-			} else {
-				$str = $str.'<div class="it_filter" data-filter-group-id ="'.$item['category_id'].'" data-filter-type ="'.$item['filter_type'].'" data-filter-name ="'.$item['filter_name'].'">';
-			}			
-			if($item['filter_type'] == 'enum') {
-				$str = $str.''.ucfirst($item['filter_name']).'<div class="sel_enum"></div></div>';
-				$str = $str.'<div class="it_filter_enum"'.$display.'>';
-				foreach($item['enum_value'] as $key=>$value)
-				{
-					$str = $str.'<div class="it_filter_value" data-filter-value ="'.$value.'">
-						<div class="checkbox"></div>
-						<div class="enum_name">'.ucfirst($value).'</div>
-					</div>';
-				}
-				$str = $str.'</div>';
-			}
-			else if($item['filter_type'] == 'boolean') {
-				$str = $str.'<div class="checkbox"></div>
-						<div class="filter_name">'.ucfirst($item['filter_name']).'</div>';
-				$str = $str.'</div>';
-			}
-			else if($item['filter_type'] == 'string') {
-				$str = $str.'<div class="filter_name">'.ucfirst($item['filter_name']).'</div>
-				<div class="filter_string"><input class="filter_input" type="text" value="" placeholder="Введите '.mb_strtolower($item['filter_name'],'UTF-8').'"/></div>';
-				$str = $str.'</div>';
-			}
-			else if($item['filter_type'] == 'float') {
-				$str = $str.'<div class="filter_name">'.ucfirst($item['filter_name']).'</div>
-				<div class="filter_float">
-					от
-					<input class="float_input" type="text" value="" placeholder="Введите '.mb_strtolower($item['filter_name'],'UTF-8').'"/>
-					до
-					<input class="float_input" type="text" value="" placeholder="Введите '.mb_strtolower($item['filter_name'],'UTF-8').'"/>
-				</div>';
-				$str = $str.'</div>';
-			}
-		}
+		$str = getFilterHtml($arResult);
 		echo $str;
 	}	
 	else
@@ -2083,5 +1720,428 @@ elseif ($action == 'Branch_Delete') {
 	}	
 	$res = $TLP_obj->telecall('Branch_Delete', $arFnc);
 	echo json_encode($res);	
-}	
+}
+elseif($action == 'catalog_init') {
+	$arFnc = array();
+	foreach ($_POST as $key => $value) 
+	{
+		if($key == 'offers' || $key == 'items') {
+			$arFnc[$key] = json_decode($value,true);
+		} elseif(!($key == 'action' || $key=='adds' || $key=='list_type'))
+		{	
+			$arFnc[$key] = $value;
+		}
+	}	
+	$res = $TLP_obj->telecall('Catalog_init', $arFnc);
+	if($res['errCode'] == 0)
+	{
+		if($adds=='json')
+		{
+			$arResult = $res["retVal"];
+
+			$list_type = ($_POST['list_type']=='')?'block':$_POST['list_type'];
+			$allow_stocks = $arResult['settings']['allow_stocks'];
+			$allow_prices = $arResult['settings']['allow_prices'];
+		
+			if(count($arResult["filters"]) > 0) {
+				$filterResult = $arResult["filters"];
+				$str = getFilterHtml($filterResult);
+				$arResult["filters"] = $str;
+			}
+			
+			if(count($arResult["actions"]["items"]) > 0) {
+				$str = getCatalogHtml($arResult["actions"]["items"], $arResult["actions"]["pics"], $list_type, $allow_prices,  $allow_stocks, $TLP_obj);
+				$arResult["actions"] = $str;
+			} else {
+				$arResult["actions"] = '';
+			}
+
+			if(count($arResult["popular"]["items"]) > 0) {
+				$str = getCatalogHtml($arResult["popular"]["items"], $arResult["popular"]["pics"], $list_type, $allow_prices,  $allow_stocks, $TLP_obj);
+				$arResult["popular"] = $str;
+			} else {
+				$arResult["popular"] = '';
+			}
+
+			if(count($arResult["novetly"]["items"]) > 0) {
+				$str = getCatalogHtml($arResult["novetly"]["items"], $arResult["novetly"]["pics"], $list_type, $allow_prices,  $allow_stocks, $TLP_obj);
+				$arResult["novetly"] = $str;
+			} else {
+				$arResult["novetly"] = '';
+			}
+			
+			if(count($arResult["catalog_items"]["items"]) > 0) {
+				$str = getCatalogHtml($arResult["catalog_items"]["items"], $arResult["catalog_items"]["pics"], $list_type, $allow_prices,  $allow_stocks, $TLP_obj);
+				$arResult["catalog_items"] = $str;
+			} else {
+				$arResult["catalog_items"] = '';
+			}
+
+			echo json_encode($arResult);
+		}
+	}
+	else
+	{echo '%err%'.$TLP_obj->mistakes[$res['errCode']];}
+}
+
+
+function url_check($buf) 
+{ 
+      $buf=trim($buf); 
+      preg_match("~(?:(?:ftp|https?)?://|www\.)(?:[a-z0-9\-]+\.)*[a-z]{2,6}(:?/[a-z0-9\-?\[\]=&;#]+)?~i",$buf,$mat); 
+      return (isset($mat))?($mat[0]==$buf)?$mat[0]:0:0; 
+} 
+
+
+function combineMessagesHtml($arResult, $mode) {
+
+	if(count($arResult) == 0) {
+		return '';
+	}	
+	
+	$arStatus = array('new'=> 'Новый', 'sent'=>'Отправлено', 'delivered'=> 'Доставлено','viewed'=>'Просмотрено');
+	$repMessages = 0;
+	$strNowDate = date("Y-m-d");
+	$strYesterday = mktime(0, 0, 0, date("m")  , date("d")-1, date("Y"));
+		
+	$avatarSVG = '<svg fill="#BBB" height="36" viewBox="0 0 24 24" width="36" xmlns="http://www.w3.org/2000/svg">
+		<path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+		<path d="M0 0h24v24H0z" fill="none"/>
+		</svg>';
+		
+	if($TLP_obj->user_info['photo'] == '')
+		$myAvatar = '<div class="cnt_image cnt_avatar" style="background-image: none">'.avatarSVG.'</div>';
+	else
+		$myAvatar = '<div class="cnt_image cnt_avatar" style="background-image: '.$TLP_obj->user_info['photo'].'"></div>';
+
+	$myheader = ($TLP_obj->user_info['fullname'] == $TLP_obj->user_info['name'])?$TLP_obj->user_info['fullname']:$TLP_obj->user_info['fullname']."  '".$TLP_obj->user_info['name']."'";
+		
+	/*$rcv_from_obj = getContactInfo((arResult[0].from == smuser.name)?arResult[0].to:arResult[0].from);
+		var rcvAvatarURL = $('#cnt_'+ rcv_from_obj.id).find('.cnt_avatar').css('background-image') || $('#login_image').find('.cnt_avatar').css('background-image') || 'url(/include/no_avatar.svg)';
+		rcvAvatarURL = rcvAvatarURL.replace(new RegExp('"','g'),"");
+		if(rcvAvatarURL == 'none') {
+			var rcvAvatar = '<div class="cnt_image cnt_avatar" style="background-image: none">' + avatarSVG + '</div>';
+		} else {
+			var rcvAvatar = '<div class="cnt_image cnt_avatar" style="background-image: '+rcvAvatarURL+'"></div>';
+		}
+		var rcvheader = (rcv_from_obj.fullname == rcv_from_obj.name)?rcv_from_obj.fullname:rcv_from_obj.fullname +"  '" + rcv_from_obj.name + "'";
+		$('#msg_li').attr('data-cnt-id',rcv_from_obj.id);
+		
+		var last_msg = $('#msg_li .message_line').last();
+		var last_msg_cnt = last_msg.attr('data-ms-inf');
+		
+		var prev_cnt 	= "";
+		var prev_date	= "";
+		var html_block	= "";
+		
+		var first_cnt  = "";
+		var first_date  = "";
+		var last_date	= "";
+		arResult.forEach(function(msg_object, key){
+			var files_html = '';
+			var html_date = '';
+			var html_cnt = '';
+			var status_text = '';
+			var resend_text = '';
+			var txtNode = msg_object.msg_text;
+
+			//date_inf
+			var msg_date = getDateFromString(msg_object.dt);
+			var str_msgdate = getUserStringFromDate(msg_date);
+			var strDate = getUserStringFromDate(msg_date);
+			if(strDate == strNowDate) {	strDate = 'Сегодня'; }
+			else if (strDate == strYesterday) { strDate = 'Вчера'; }
+			
+			html_date = '<div class="message_line" style="text-align: center; margin: 10px 0;" data-msg-date="'+str_msgdate+'"><hr class="msg_divider"><div class="msg_date">' + strDate + '</div></div>';
+
+			//contact_inf
+			var msg_header = (msg_object.from == smuser.name)?myheader:rcvheader;
+			var msg_avatar = (msg_object.from == smuser.name)?myAvatar:rcvAvatar;
+			
+			html_cnt = '<div id="msg_inf" style="margin-top: -10px;">' + msg_avatar +
+					//'<div class="cnt_image cnt_avatar" style="background-image: '+avatarURL+'">' + avatarSVG + '</div>'+
+					'<div class="message_header"><a>'+msg_header+'</a></div>' + 
+					'<div class="message_date">'+getTimeStringFromDate(msg_date)+'</div>'+
+				'</div>';
+
+			//files
+			$(msg_object.files).each(function() {
+				
+				files_html = files_html + addFileToList($(this), false);
+			});
+			if(!files_html=='') {
+				files_html = '<div class="att_text">Вложенный(е) файлы:</div><div class="msg_file">' + files_html + '</div>';
+			}
+			
+			//message
+			resend_text = '<div class="msg_resend" title="Переслать сообщение">'+
+				'<svg fill="#777" height="19" viewBox="0 0 24 24" width="19" xmlns="http://www.w3.org/2000/svg">'+
+					'<path d="M10 9V5l-7 7 7 7v-4.1c5 0 8.5 1.6 11 5.1-1-5-4-10-11-11z"></path>'+
+					'<path d="M0 0h24v24H0z" fill="none"></path>'+
+				'</svg></div>';
+			if(msg_object.from == smuser.name) {
+				status_text = '<div class="msg_status" title="Статус сообщения">'+ arStatus[msg_object.status] +'</div>';
+			}
+			
+			var msg_ubody = '<div class="message_text">' +
+							'<div class="msg_time">'+getTimeStringFromDate(msg_date)+'</div><pre>'+txtNode+'</pre>' + files_html +
+							'<div class="msg_addblock">' + resend_text + status_text + '</div>' +
+						'</div>'+
+						'<div class="msg_submenu">'+
+							'<svg fill="#777" height="18" viewBox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg">'+
+								'<path d="M0 0h24v24H0z" fill="none"/>'+
+								'<path d="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>'+
+							'</svg></div>'+
+						'</div>'
+			
+			//creating message
+			var msg_html = "";
+			if ($("div").is('#' + 'msg_'+ msg_object.ID)) {
+				msg_html = '<div id="msg_'+ msg_object.ID+ '" class="message_line" data-ms-inf="'+msg_object.from+'">' + html_cnt + msg_ubody;
+				if($('#' + 'msg_'+ msg_object.ID).find('#msg_inf').length != 0) {
+					$('#' + 'msg_'+ msg_object.ID).replaceWith(msg_html);
+				}
+				else {
+					$('#' + 'msg_'+ msg_object.ID).replaceWith(msg_html);
+					$('#' + 'msg_'+ msg_object.ID).find('#msg_inf').remove();
+				}
+			}
+			else {
+				msg_html = '<div id="msg_'+ msg_object.ID+ '" class="message_line" data-ms-inf="'+msg_object.from+'">';
+				if((prev_cnt == '' && prev_date == '') || (prev_date != html_date)) {
+					if (mode == 'end' && first_cnt == '' && last_msg_cnt == msg_object.from) {
+						msg_html = html_date + msg_html;
+					} 
+					else {
+						msg_html = html_date + msg_html + html_cnt;
+					}
+					
+					first_date = (first_date == "")?str_msgdate:first_date;
+					first_cnt = (first_cnt == "")?msg_object.from:first_cnt;
+					last_date = str_msgdate;
+				}
+				else if(prev_cnt != msg_header) {
+					msg_html = msg_html + html_cnt;
+				}
+				msg_html = msg_html + msg_ubody;
+				
+				prev_cnt = msg_header;
+				prev_date = html_date;
+				html_block = html_block + msg_html;
+			}	
+		});
+
+		if(html_block != ""){
+			if(mode == 'begin') {
+				$('[data-msg-date='+last_date+']').remove();
+				$("#msg_li").prepend(html_block);
+			}
+			else if(mode == 'end') {
+				$("#msg_li").append(html_block);
+				if ($('[data-msg-date='+first_date+']').length != 0) {
+					var obj = $('[data-msg-date='+first_date+']')[$('[data-msg-date='+first_date+']').length-1];
+					$(obj).remove();
+				}
+			}
+		}	*/
+}
+
+function getFilterHtml($arResult) {
+	$str = '';
+	$filterCount = count($arResult);
+	//$expanded = ($filterCount > 2)?(""):(" it_filter_expanded");
+	//$display = ($filterCount > 2)?(""):(' style="display: block;"');
+	$expanded = ($filterCount > 0)?(""):(" it_filter_expanded");
+	$display = ($filterCount > 0)?(' style="display: none;"'):(' style="display: block;"');
+	
+	foreach($arResult as $key=>$item)
+	{
+		if($item['filter_type'] == 'enum') {
+			$str = $str.'<div class="it_filter'.$expanded.'" data-filter-group-id ="'.$item['category_id'].'" data-filter-type ="'.$item['filter_type'].'" data-filter-name ="'.$item['filter_name'].'">';
+		} else {
+			$str = $str.'<div class="it_filter" data-filter-group-id ="'.$item['category_id'].'" data-filter-type ="'.$item['filter_type'].'" data-filter-name ="'.$item['filter_name'].'">';
+		}			
+		if($item['filter_type'] == 'enum') {
+			$str = $str.''.ucfirst($item['filter_name']).'<div class="sel_enum"></div></div>';
+			$str = $str.'<div class="it_filter_enum"'.$display.'>';
+			foreach($item['enum_value'] as $key=>$value)
+			{
+				$str = $str.'<div class="it_filter_value" data-filter-value ="'.$value.'">
+					<div class="checkbox"></div>
+					<div class="enum_name">'.ucfirst($value).'</div>
+				</div>';
+			}
+			$str = $str.'</div>';
+		}
+		else if($item['filter_type'] == 'boolean') {
+			$str = $str.'<div class="checkbox"></div>
+					<div class="filter_name">'.ucfirst($item['filter_name']).'</div>';
+			$str = $str.'</div>';
+		}
+		else if($item['filter_type'] == 'string') {
+			$str = $str.'<div class="filter_name">'.ucfirst($item['filter_name']).'</div>
+			<div class="filter_string"><input class="filter_input" type="text" value="" placeholder="Введите '.mb_strtolower($item['filter_name'],'UTF-8').'"/></div>';
+			$str = $str.'</div>';
+		}
+		else if($item['filter_type'] == 'float') {
+			$str = $str.'<div class="filter_name">'.ucfirst($item['filter_name']).'</div>
+			<div class="filter_float">
+				от
+				<input class="float_input" type="text" value="" placeholder="Введите '.mb_strtolower($item['filter_name'],'UTF-8').'"/>
+				до
+				<input class="float_input" type="text" value="" placeholder="Введите '.mb_strtolower($item['filter_name'],'UTF-8').'"/>
+			</div>';
+			$str = $str.'</div>';
+		}
+	}
+	return $str;
+}
+function getCatalogHtml($arItmes, $arPictures, $list_type, $allow_prices,  $allow_stocks, $TLP_obj) {
+	$str = '';
+	foreach($arItmes as $key=>$item)
+	{
+		
+		if($list_type == 'list') {
+			//list type
+			$action = $item["popular"] ? ' popular' : '';
+			$action = $item["novetly"] ? ' novetly' : $action;
+			$action = $item["action"] ? ' action' : $action;
+			$str = $str.'<div id="it_'.$item["id"].'" class="item'.$action.'" data-it-id="'.$item["id"].'"><div class="item_content"><div class="item_line">';
+			$str = $str.'<div class="col_1">'.$item["article"].'</div><div class="col_2">'.$item["name"].'<p class="sub_info"><img src="/include/stdown.png"/></p></div>';
+			if($allow_prices)
+			{
+				$strPrice = ($item["price"]=='' || $item["price"] == 0)?'-':number_format($item["price"], 0, '.', ' ');
+				$actionPrice = ($item["action_price"]==='' || $item["action_price"] == 0)?'':number_format($item["action_price"], 0, '.', ' ');
+				if (strlen($action) && strlen($actionPrice)) {
+					$str = $str.'<div class="col_3">'.$actionPrice.'</div>';
+				} else {
+					$str = $str.'<div class="col_3">'.$strPrice.'</div>';
+				};
+			}	
+			if($allow_stocks)
+			{
+				$strStocks = number_format($item["stock"], 0, '.', ' ');
+				if($strStocks==0 && strlen($item["receipt_date"]) && !strlen(stristr($item["receipt_date"],'0001-01-01T'))){
+					$date = date_parse($item["receipt_date"]);
+					$year = $date["year"];
+					$month = (strlen($date["month"])>1) ? $date["month"] : '0'.$date["month"];
+					$day = (strlen($date["day"])>1) ? $date["day"] : '0'.$date["day"];
+					$str = $str.'<div class="col_4">Ожидается: <span>'.$day.'-'.$month.'-'.$year.'</span></div>';
+				} else {
+					$str = $str.'<div class="col_4">'.$strStocks.'</div>';
+				};
+			}	
+			
+			$str = $str.'<div class="col_5"><div class="cart" data-cart-id="'.$item["id"].'">
+				<div id="b_minus" class="cart_button"><span>-</span></div>
+					<input class="cart_input" type="text" name="cart_q" value="1"/>
+				<div id="b_plus" class="cart_button"><span>+</span></div>
+				
+				<div class="cart_order">
+					<svg fill="#CCC" height="22" viewBox="0 0 24 24" width="22" xmlns="http://www.w3.org/2000/svg">
+						<path d="M0 0h24v24H0zm18.31 6l-2.76 5z" fill="none"/>
+						<path d="M11 9h2V6h3V4h-3V1h-2v3H8v2h3v3zm-4 9c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2zm-9.83-3.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.86-7.01L19.42 4h-.01l-1.1 2-2.76 5H8.53l-.13-.27L6.16 6l-.95-2-.94-2H1v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.13 0-.25-.11-.25-.25z"/>
+					</svg>
+				</div>
+			</div></div>';
+				
+			$str = $str.'</div></div></div>';
+		}
+		elseif ($list_type == 'block') {
+			//block type
+			$im_count = (count($arPictures[$item["id"]])==0)?1:count($arPictures[$item["id"]]);
+			$action = $item["popular"] ? ' popular' : '';
+			$action = $item["novetly"] ? ' novetly' : $action;
+			$action = $item["action"] ? ' action' : $action;
+
+			$li_size = 200*$im_count;
+			$it_name = ($item["article"]=='')?$item["name"]:$item["article"].'<br>'.$item["name"];
+			$str = $str.'<div id="it_'.$item["id"].'" class="item_block'.$action.'" data-it-id="'.$item["id"].'">
+				<div class="item_block_info">
+					<div class="item_photo_list">
+						<div class="item_photo_li" style="width: '.$li_size.'px;" data-im-num="0" data-im-count="'.$im_count.'">';
+						for ($i=0; $i<$im_count; $i++) {
+							$item_url = (count($arPictures[$item["id"]]) == 0)?'/include/no_photo.svg':'https://'.$TLP_obj->TLP_HOST.'/Catalog_Pics/prev/'.$arPictures[$item["id"]][$i]["file_id"];
+							$str = $str.'<div class="item_photo" data-im-cnt="'.$i.'" style="background-image: url('.$item_url.');"></div>';
+						}
+						$str = $str.'</div>
+						<div class="item_block_icons">';
+						if($im_count > 1) {
+							$str = $str.'
+							<div class="item_block_left active_icon">
+								<svg fill="#000" height="32" viewBox="0 0 24 24" width="32" xmlns="http://www.w3.org/2000/svg">
+									<path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+									<path d="M0 0h24v24H0z" fill="none"/>
+								</svg>
+							</div>';
+						}	
+						$str = $str.'<div class="item_block_zoom active_icon">
+								<svg fill="#000" height="32" viewBox="0 0 24 24" width="32" xmlns="http://www.w3.org/2000/svg">
+									<path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+									<path d="M0 0h24v24H0V0z" fill="none"/>
+									<path d="M12 10h-2v2H9v-2H7V9h2V7h1v2h2v1z"/>
+								</svg>
+							</div>';
+						if($im_count > 1) {
+						$str = $str.'
+							<div class="item_block_right active_icon">
+								<svg fill="#000" height="32" viewBox="0 0 24 24" width="32" xmlns="http://www.w3.org/2000/svg">
+									<path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+									<path d="M0 0h24v24H0z" fill="none"/>
+								</svg>										
+							</div>';
+						}
+						$str = $str.'</div></div>';
+					if(!$item["article"]=='') {
+						$str = $str.'<div class="item_block_name help_icon" style="border-bottom: 1px solid #ccc;"><div class="help_info">Артикул: '.$item["article"].'</div>'.$item["article"].'</div>';
+					} else {
+						$str = $str.'<div class="item_block_name help_icon" style="border-bottom: 1px solid #ccc;"><div class="help_info">Наименование: '.$item["name"].'</div>'.$item["name"].'</div>';
+					}	
+					if($allow_prices)
+					{
+						$strPrice = ($item["price"]=='' || $item["price"] == 0)?'-':number_format($item["price"], 2, '.', ' ').' руб';
+						$actionPrice = ($item["action_price"]==='' || $item["action_price"] == 0)?'':number_format($item["action_price"], 2, '.', ' ').' руб';
+						$stroke = '';
+						if ($item["action"] && strlen($actionPrice)) {
+							$str = $str.'<div class="item_block_name item_block_name_allows item_action_price">'.$actionPrice.'</div>';
+							$stroke = ' cross-out';
+						};
+						$str = $str.'<div class="item_block_name item_block_name_allows item_price'.$stroke.'">'.$strPrice.'</div>';
+					}	
+					$str = $str.'<div class="cart" data-cart-id="'.$item["id"].'">
+						<div id="b_minus" class="cart_button"><span>-</span></div>
+							<input class="cart_input" type="text" name="cart_q" value="1"/>
+						<div id="b_plus" class="cart_button"><span>+</span></div>
+						
+						<div class="cart_order">
+							<svg fill="#777" height="32" viewBox="0 0 24 24" width="32" xmlns="http://www.w3.org/2000/svg">
+								<path d="M0 0h24v24H0zm18.31 6l-2.76 5z" fill="none"/>
+								<path d="M11 9h2V6h3V4h-3V1h-2v3H8v2h3v3zm-4 9c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2zm-9.83-3.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.86-7.01L19.42 4h-.01l-1.1 2-2.76 5H8.53l-.13-.27L6.16 6l-.95-2-.94-2H1v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.13 0-.25-.11-.25-.25z"/>
+							</svg>
+						</div>
+					</div>';
+					if($allow_stocks)
+					{
+						$strStocks = ($item["stock"]=='' || $item["stock"] == 0)?'Нет':number_format($item["stock"], 0, '.', ' ').' '.$item['unit'];
+						if($strStocks==='Нет' && strlen($item["receipt_date"]) && !strlen(stristr($item["receipt_date"],'0001-01-01T'))){
+							$date = date_parse($item["receipt_date"]);
+							$year = $date["year"];
+							$month = (strlen($date["month"])>1) ? $date["month"] : '0'.$date["month"];
+							$day = (strlen($date["day"])>1) ? $date["day"] : '0'.$date["day"];
+							$str = $str.'<div class="item_block_name item_block_name_allows" style="text-align: left; padding-bottom: 0;">Ожидается: <span>'.$day.'-'.$month.'-'.$year.'</span></div>';
+						} else {
+							$str = $str.'<div class="item_block_name item_block_name_allows" style="text-align: left; padding-bottom: 0;">На складе: <span>'.$strStocks.'</span></div>';
+						};													
+					}	
+
+					$str = $str.'
+				</div>
+				</div>';
+		}	
+	}
+	
+	return $str;
+}
+
+	
 ?>
