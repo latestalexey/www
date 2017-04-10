@@ -24,7 +24,7 @@ function arrayCount (array) {
    return cnt>0 ? cnt : 0;
 };
 
-function showUploadXLSForm () {
+function showUploadXLSForm() {
 	$('#main_content').find('#doc_excel_form').remove();
 	$('#order_view .docview').append(xls_upl_form);
 	setTimeout(

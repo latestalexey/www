@@ -61,7 +61,7 @@ if($vwmode == '') {
 			</div>
 			<div style="text-align: left; float: right;">
 				<div id="it_cart" class="active_icon" data-ln="cart">
-					<div class="simple_button checkout_button" style="padding: 7px 10px 6px 10px;">Оформить заказ</div>					
+					<div class="simple_button checkout_button" style="padding: 7px 15px 6px 15px; min-width: 0px;">Оформить заказ</div>					
 					<div style="height: 36px; min-width: 40px; border: none;" class="cart_icon">
 						<div class="info"></div>
 						<svg fill="#777" height="36" viewBox="0 0 24 24" width="36" xmlns="http://www.w3.org/2000/svg">

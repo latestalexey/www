@@ -199,7 +199,8 @@ elseif($action == 'upl_pos_from_xls')
 	function filterPos($var){
 		return($var[0] != null);
 	};
-	echo json_encode_cyr(array_filter($arPos, "filterPos"));	
+	echo json_encode_cyr($arPos);
+	//echo json_encode_cyr(array_filter($arPos, "filterPos"));	
 }
 elseif($action == 'Positions_SaveErrors')
 {

@@ -1333,7 +1333,7 @@ function initDocView(arDoc, sender, receiver) {
 						$('#item_li').find('.item_content_selected').removeClass('item_content_selected');
 						$('#it_cart').removeClass('not_empty');
 						$('#it_cart .info').empty();
-						$('#it_cart .checkout_button').fadeOut(0);
+						//$('#it_cart .checkout_button').fadeOut(0);
 						$('#it_cart .cart_items').remove();
 					}
 					var doc_num = new_Doc.docHeader.num;
@@ -1388,7 +1388,7 @@ function initDocView(arDoc, sender, receiver) {
 	$('#order_view').on('click', '#upl_xls' ,function() {
 		//$('#order_view #xls_upl').uploadifive('clearQueue');
 		//$(this).siblings('#uploadifive-xls_upl').children().last().click();
-		showUploadXLSForm ();
+		showUploadXLSForm();
 	});	
 	$(function() {	
 		$("#order_view #xls_upl").uploadifive({
@@ -1556,7 +1556,7 @@ function sendDoc (message, receiver, delID) {
 				$('#item_li').find('.item_content_selected').removeClass('item_content_selected');
 				$('#it_cart').removeClass('not_empty');
 				$('#it_cart .info').empty();
-				$('#it_cart .checkout_button').fadeOut(0);
+				//$('#it_cart .checkout_button').fadeOut(0);
 				$('#it_cart .cart_items').remove();
 			}
 			var doc_num = JSON.parse(new_Doc[0].msg_text).docHeader.num;
