@@ -480,7 +480,7 @@ function getTabHeader(arHeader) {
 	});	
 	html_str = 
 		'<tr  class="item item_list_header">' +
-			'<td class="col_0">...</td>'+
+			'<td class="col_0"><i class="fa"></i></td>'+
 			'<td class="col_1">'+arHeader.article+'</td>'+
 			'<td class="col_2">'+arHeader.name+'</td>'+
 			'<td class="col_3">'+arHeader.unit+'</td>'+
@@ -709,7 +709,8 @@ function initDocView(arDoc, sender, receiver) {
 					gravity:'north'
 				});	
 			});
-		}, 500);
+		}, 500
+	);
 
 	/*=====================================**********************=====================================================*/
 	
@@ -951,10 +952,28 @@ function initDocView(arDoc, sender, receiver) {
 		};
 	});	
 	
+	//Отметить все позиции в заказе
+	$('#order_view').on('click', '.order_item_list_head .col_0 .fa', function(){
+		if (!$('#order_view .order_item_list_content .item').length) return;
+		$(this).toggleClass('fa-check').parents('.item').toggleClass('checked');
+		if ($('#order_view .order_item_list_head .item').hasClass('checked')) {
+			$('#order_view .order_item_list_content .col_0 .fa').addClass('fa-check');
+			$('#order_view .order_item_list_content .item').addClass('checked');
+			$('#order_view #del_item').removeClass('disabled');
+			
+		} else {
+			$('#order_view .order_item_list_content .col_0 .fa').removeClass('fa-check');
+			$('#order_view .order_item_list_content .item').removeClass('checked');
+			$('#order_view #del_item').addClass('disabled');
+		};
+	});	
+	
 	//Удаление выбранных позиций
 	$('#order_view #del_item').click(function(e) {	
 		e.stopPropagation();
-		$('#order_view .order_item_list_content .item.checked').remove();		
+		$('#order_view .order_item_list_content .item.checked').remove();
+		$('#order_view .order_item_list_head .col_0 .fa').removeClass('fa-check');
+		$('#order_view .order_item_list_head .item').removeClass('checked');		
 		$(this).addClass('disabled');	
 		getTotalSum();
 		setEditPolicy (sender.name, arDoc);
@@ -1811,6 +1830,7 @@ function setOrderItemListContentHeight(){
 		$(this).css({'min-width':width+21, 'max-width':width+21, 'width':width+21});
 		$('#order_view .order_item_list_content .col_'+i).css({'min-width':width+21, 'max-width':width+21, 'width':width+21});
 	})
+	$('#order_view .order_positions .slimScrollDiv').width($('#order_view .order_positions .order_item_list_head').width()-2);
 };
 
 $(window).resize(function() {
