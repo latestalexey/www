@@ -451,7 +451,7 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 	background-color: #EEEEEE;
 	position: relative;
 }
-#cur_contact {padding: 3px 10px; display: inline-block; width: 48%;}
+#cur_contact {padding: 3px 10px; display: inline-block; width: 40%;}
 
 .active_contact_inf
 {
