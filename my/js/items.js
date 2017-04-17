@@ -866,7 +866,6 @@ $(document).ready(function()
 function createNewDoc(contact) {
 	$.post('/my/ajax/order.php', { action: 'Documents_GetLastId'}, function(docid) {
 		docid = ++docid; 
-		console.log(docid);
 		var curDate = new Date;
 		var message = {
 			"docHeader":{
@@ -908,7 +907,6 @@ function createNewDoc(contact) {
 				currencyId: message.docHeader.currencyId, 
 				hash: message.docHeader.hash
 			}, function(data) {
-				console.log(data);
 				if (data == 1) {
 					$('#it_cart').attr('data-doc-id', docid);
 					getTmpDocInfo(docid, smuser.name, contact.name);
@@ -1623,7 +1621,8 @@ function changeSelectedText(enum_filter) {
 
 function requestExtendedSearch() {
 	$('#ext_pan_header_content').html('<div style="text-align: center; padding: 13px 10px; color: #777; font-weight: 800; border-bottom: 1px solid #CCC;">Расширенный поиск товаров</div>');
-
+	
+	$('#ext_pan_content').off();
 	var contact	= getActiveContact();
 	if(contact.id == undefined)	{ contact = smuser;	}
 
@@ -1717,6 +1716,7 @@ function scrExtendedFilters(cat_id, responseText) {
 		local_filters.prepend(responseText);
 		items_filter.push({"mode": "item", "group": "AND", "name":"category_id", "operation":"=", "value": cat_id})
 	} else {
+		global_filters.empty();
 		global_filters.html(responseText);
 		if (hasAction && !$('.breadcrumbs').children().length) {
 			global_filters.prepend('<div class="it_filter" data-filter-group-id="" data-filter-type="items" data-filter-name="action"><div class="checkbox"></div><div class="filter_name">Товары по акции</div></div>');
@@ -1736,10 +1736,12 @@ function scrExtendedFilters(cat_id, responseText) {
 
 function showExtendedFilters(cat_id) {
 		var obj = $('#ext_pan_content');
-		obj.append('<div id="ext_filters">\
-									<div id="it_filters" class="global-it-filters"></div>\
-									<div id="it_filters" class="local-it-filters"></div>\
-								</div>');
+		if (!obj.children('#ext_filters').length) {
+			obj.append('<div id="ext_filters">\
+					<div id="it_filters" class="global-it-filters"></div>\
+					<div id="it_filters" class="local-it-filters"></div>\
+			</div>');
+		}	
 		if(obj.is('.wait')) {
 			return;
 		}

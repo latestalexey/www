@@ -12,6 +12,7 @@ if($vwmode == '') {
 ?>
 <script type="text/javascript" src="/my/js/items.js"></script>
 <script type="text/javascript" src="/my/js/order_view.js"></script>
+<script type="text/javascript" src="/my/js/upload_from_xls.js"></script>
 <div id="items_header">
 <div class="item">
 	<div class="item_content_header">
