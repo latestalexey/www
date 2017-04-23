@@ -372,6 +372,7 @@ function messagesRequest() {
 		{ 
 			if (xhr.readyState != 4) return;
 			$(".new_msg").css("display", "none");
+			$(".new_ord").css("display", "none");
 			if(!(xhr.responseText.indexOf('%err%') == -1)) {
 				showError(xhr.responseText.replace('%err%',''));
 				return;
@@ -463,9 +464,13 @@ function messagesRequest() {
 							needSnd = true;
 						}
 					}
-					if(rqobject.new_msg || req_quantity > 0) { 
+					if((rqobject.new_msg || req_quantity > 0) && req_type == 'message') { 
 						if(rqobject.contact == cur_contact.name && cur_menu == 'm_messages') {
 							getSelectedContactNewMessages();
+						}
+					} else if((rqobject.new_msg || req_quantity > 0) && req_type == 'document') { 
+						if(cur_menu == 'm_orders') {
+							getNewDocumentsList(rqobject.contact);
 						}
 					}	
 				}	

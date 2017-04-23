@@ -377,7 +377,7 @@ function getTmpDocs(){
 			$.each(data, function(i, val){
 				var contact = getContactInfo(val.receiver);
 				$('#order_li').prepend(
-					'<div id='+val.message_id+' class="order new" data-order-id='+val.message_id+' data-order-sender='+val.sender+' data-order-receiver='+val.receiver+' data-hash = '+val.hash+'>' +
+					'<div id='+val.message_id+' class="order new" data-order-id="'+val.message_id+'" data-order-sender="'+val.sender+'" data-order-receiver="'+val.receiver+'" data-hash = "'+val.hash+'">' +
 						'<div class="order_content">' +
 							'<div class="order_line">' +
 								'<div class="col_0">'+docType[val.type]+'</div>' +
@@ -426,4 +426,96 @@ function showOrders(responseText) {
 
 	$("#orders_header").css('padding-right', $("#work_zone").width() - $("#order_li").width());	
 	$("#order_list").css("height", $(".main_pan").height() - $("#orders_header").height());
+	const contact = getActiveContact();
+	if (contact.id === undefined) {
+		$("#order_list").find('.order.marked').addClass('active');
+	} else {
+		$('#order_list').find('.order.marked[data-order-sender="'+contact.name+'"]').addClass('active');
+		$('#order_list').find('.order.marked[data-order-receiver="'+contact.name+'"]').addClass('active');
+	}
+	$('#order_li').prepend($("#order_list").find('.order.marked.active'));
+}
+
+function getNewDocumentsList(contact) {
+	var cur_contact = getActiveContact();
+	if(contact != '' && !(cur_contact.name == contact) && !(cur_contact.name == undefined)) {
+		return;
+	}
+	allContact = (cur_contact.name == undefined);
+		
+	var ltype = $('#orders_header .selected_col').attr('data-ltype');
+	
+	var xhr = new XMLHttpRequest();
+	var body =	'action=documents_getNewList' +
+					'&adds=json_html' + 
+					'&status_change_off=true';
+		xhr.open("POST", '/my/ajax/action.php', true);
+		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+		xhr.onreadystatechange = function() 
+		{ 
+			if (xhr.readyState != 4) return;
+			if(!(xhr.responseText.indexOf('%err%') == -1)) {
+				showError(xhr.responseText.replace('%err%',''));
+				return;
+			}
+			try {
+				var arResult = jQuery.parseJSON(xhr.responseText);
+			}	
+			catch (err)	{
+				showError('Сбой операции <br> Повторите попытку позже');
+				console.log(err);
+				console.log(data);
+				return;
+			}
+			var str_orders = "";
+			var id_list = [];
+			for(var key in arResult) {
+				var order = arResult[key];
+				
+				if(ltype == 'sent' ) {
+					if(order['sender'] != smuser.name) {continue;}
+					if(!allContact && order['receiver'] != cur_contact.name) {continue;}
+				} else if(ltype == 'recieved') {
+					if(order['receiver'] != smuser.name) {continue;}
+					if(!allContact && order['sender'] != cur_contact.name) {continue;}
+				}
+				if($('#order_li #or_'+key).length) {
+					$('#order_li #or_'+key).remove();
+				}	
+				$('#order_li').prepend(order['html']);
+				id_list.push(key);
+				
+				var objOrder = $('#order_li #or_'+key);
+				var order_name = objOrder.find('.col_3').text();
+				var cnt = getContactInfo(order_name);
+				objOrder.find('.col_3').text(cnt.fullname);
+			}
+			$("#orders_header").css('padding-right', $("#work_zone").width() - $("#order_li").width());	
+			$("#order_list").css("height", $(".main_pan").height() - $("#orders_header").height());
+
+			if(id_list.length != 0) {
+				setDocumentsDelivered(id_list);
+			}
+		}		
+		xhr.send(body);
+
+}
+
+function setDocumentsDelivered(id_list) {
+	var xhr = new XMLHttpRequest();
+	var body =	'action=documents_SetDelivered' +
+					'&adds=json' + 
+					'&id_list=' + encodeURIComponent(JSON.stringify(id_list));
+		xhr.open("POST", '/my/ajax/action.php', true);
+		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+		xhr.onreadystatechange = function() 
+		{ 
+			if (xhr.readyState != 4) return;
+			if(!(xhr.responseText.indexOf('%err%') == -1)) {
+				showError(xhr.responseText.replace('%err%',''));
+				return;
+			}
+			console.log(xhr.responseText);
+		}		
+		xhr.send(body);
 }

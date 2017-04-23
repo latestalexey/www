@@ -467,6 +467,31 @@ $(document).ready(function() {
 			new_msg_obj.click();
 		}	
 	});
+	$('#cnt_list').on('click','.new_ord',function(e) {
+		var new_ord_obj = $(this).parent();
+		var new_ord_contact = new_ord_obj.attr('data-usr-name');
+		var cur_contact = getActiveContact();
+		var cur_menu = $(".topmenu li.active").attr('id');
+		if(new_ord_contact == cur_contact.name && cur_menu == 'm_orders') {
+			return;
+		}
+		
+		if(cur_menu != 'm_orders') {
+			$('.active_contact_inf').removeClass("active_contact_inf").addClass('contact_inf');
+			new_ord_obj.removeClass("sel_contact_inf");
+			new_ord_obj.addClass('active_contact_inf');
+			setCurrentContact(new_ord_obj.clone());
+			
+			$(".topmenu li.active").removeClass('active');
+			$("#m_orders").addClass('active');
+			topMenu_action($(".topmenu li.active").attr('id'));
+		}
+		else {
+			new_ord_obj.removeClass("active_contact_inf");
+			new_ord_obj.click();
+		}	
+	});
+	
 	$('#cnt_list').on('click','.cnt_check',function(e) {
 		e.stopPropagation();
 		var cnt_block = $(this).parent();
@@ -948,12 +973,13 @@ function notifyInformation(title, message, url) {
 				body : message,
 				icon : "/include/logo64.png",
 			});
+
 			notify.onclick = function(event) {
 				event.preventDefault(); 
 				
 				if(!(window.location.href == url)) {
 					window.open(url, 'my_teleport');
-				}	
+				};
 				window.focus();
 			}
 			function closeNotify() {

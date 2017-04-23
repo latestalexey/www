@@ -71,7 +71,6 @@ function getDocInfo(id, sender, receiver) {
 			return;
 		}
 		var arResult = JSON.parse(xhr.responseText);
-		//console.log(arResult)
 		initDocView(arResult, sender, receiver);
 	};
 	xhr.send(body);	
@@ -250,14 +249,19 @@ function setConfigurationValues(arParams) {
 		switch (val.name) {
 			case 'company_id':
 				$('#order_view .parameters .company_item[data-value="'+val.value+'"]').addClass('selected');
+				break;
 			case 'branch_id':
 				$('#order_view .parameters .branch_item[data-value="'+val.value+'"]').addClass('selected');
+				break;
 			case 'delivery_type':
 				$('#order_view .payment .delivery_item[data-value="'+val.value+'"]').addClass('selected');
+				break;
 			case 'payment_type':
 				$('#order_view .payment .payment_item[data-value="'+val.value+'"]').addClass('selected');
+				break;
 			case 'delivery_date':
 				$('#order_view .payment .date_item[data-value="'+val.value+'"]').addClass('selected');
+				break;
 		}
 	});
 };
@@ -311,6 +315,7 @@ function setEditPolicy (sender, message) {
 	$('#del_item').addClass('hidden');
 	$('.add-file-to-doc').addClass('hidden');
 	$('.input_row .col_1_2 input').addClass('hidden');
+	$(".order_item_list_head .col_0 .fa").addClass('hidden');
 	$(".order_item_list_content .col_0 .fa").addClass('hidden');
 	$(".order_item_list_content .col_4 .fa").addClass('hidden');
 	$(".order_item_list_content .col_5 .fa").addClass('hidden');
@@ -324,6 +329,7 @@ function setEditPolicy (sender, message) {
 				$('#del_item').removeClass('hidden');
 				$('.add-file-to-doc').removeClass('hidden');
 				$('.input_row .col_1_2 input').removeClass('hidden');
+				$('.order_item_list_head .col_0 .fa').removeClass('hidden');
 				$('.order_item_list_content .col_0 .fa').removeClass('hidden');
 				$('.order_item_list_content .col_4 .fa').removeClass('hidden');
 				$('.order_item_list_content input').prop("disabled", false);
@@ -342,9 +348,10 @@ function setEditPolicy (sender, message) {
 			case 'processed':
 				break;
 			case 'agreement':
-				//$("#upl_xls").removeClass('hidden');
+				$("#upl_xls").removeClass('hidden');
 				$('#del_item').removeClass('hidden');
 				$('.input_row .col_1_2 input').removeClass('hidden');
+				$('.order_item_list_head .col_0 .fa').removeClass('hidden');
 				$(".order_item_list_content .col_0 .fa").removeClass('hidden');
 				$(".order_item_list_content .col_4 .fa").removeClass('hidden')
 				$(".order_item_list_content input").prop("disabled", false);
@@ -369,6 +376,7 @@ function setEditPolicy (sender, message) {
 				//$("#upl_xls").removeClass('hidden');
 				$('#del_item').removeClass('hidden');
 				$('.input_row .col_1_2 input').removeClass('hidden');
+				$('.order_item_list_head .col_0 .fa').removeClass('hidden');
 				$(".order_item_list_content .col_0 .fa").removeClass('hidden');
 				$(".order_item_list_content .col_5 .fa").removeClass('hidden');
 				$(".order_item_list_content input").prop("disabled", false);
@@ -475,7 +483,7 @@ function getTabHeader(arHeader) {
 	var html_str = ''; 
 	var col = 8;
 	$.each(arHeader.props, function(i, val){
-		html_str = html_str + '<td class="col_'+col+'" add-field-name='+val.name+'>'+val.header+'</td>';
+		html_str = html_str + '<td style="min-width: 130px; max-width: 130px; width: 130px;" class="col_'+col+'" add-field-name='+val.name+'>'+val.header+'</td>';
 		col++;
 	});	
 	html_str = 
@@ -486,8 +494,9 @@ function getTabHeader(arHeader) {
 			'<td class="col_3">'+arHeader.unit+'</td>'+
 			'<td class="col_4">'+arHeader.quantity+'</td>'+
 			'<td class="col_5">'+arHeader.confirmed+'</td>'+
+			html_str +
 			'<td class="col_6">'+arHeader.price+'</td>'+
-			'<td class="col_7">'+arHeader.sum+'</td>' + html_str +
+			'<td class="col_7">'+arHeader.sum+'</td>' + 
 		'</tr>';
 	return html_str;
 };
@@ -513,7 +522,7 @@ function getDocTable(docTable, tabHeaderProps){
 		$.each(tabHeaderProps, function(i, val){	
 			var	search = item.props.length ? JSON.search(item.props, '//*[name="'+val.name+'"]/value') : '';
 			if (val.type === 'enum'){
-				html_str = html_str + '<td class="col_'+col+' '+val.name+' required"><select>';
+				html_str = html_str + '<td style="min-width: 130px; max-width: 130px; width: 130px;" class="col_'+col+' '+val.name+' required"><select>';
 				if (!val.required) { html_str = html_str + '<option></option>'};
 				$.each(val.enumvalues, function(key, enumval){
 					var isSelected = (enumval==search) ? 'selected' : ''; 
@@ -523,10 +532,10 @@ function getDocTable(docTable, tabHeaderProps){
 			}
 			else if (val.type === 'boolean'){
 				var isChecked = (search=='true') ? 'checked' : '';
-				html_str = html_str + '<td class="col_'+col+' '+val.name+'"><input type="checkbox" '+isChecked+'></td>';
+				html_str = html_str + '<td style="min-width: 111px; max-width: 111px; width: 111px;" class="col_'+col+' '+val.name+'"><input type="checkbox" '+isChecked+'></td>';
 			}
 			else {
-				html_str = html_str + '<td class="col_'+col+' '+val.name+'"><input value='+search+'></td>';
+				html_str = html_str + '<td style="min-width: 111px; max-width: 111px; width: 111px;" class="col_'+col+' '+val.name+'"><input value='+search+'></td>';
 			};
 			col++;
 		});
@@ -538,8 +547,9 @@ function getDocTable(docTable, tabHeaderProps){
 				'<td class="col_3">'+item.unit+'</td>' +
 				'<td class="col_4 required"><i class="fa fa-minus" aria-hidden="true"></i><input class="quantity" value="'+number_format(item.quantity, 0, '', ' ')+'"><i class="fa fa-plus" aria-hidden="true"></i></td>' +
 				'<td class="col_5"><i class="fa fa-minus" aria-hidden="true"></i><input class="confirmed" value="'+number_format(item.confirmed, 0, '', ' ')+'"><i class="fa fa-plus" aria-hidden="true"></i></td>'+
+				html_str +
 				'<td class="col_6">'+number_format(item.price, 2, '.', ' ')+'</td>'+
-				'<td class="col_7">'+number_format(item.sum, 2, '.', ' ')+'</td>'+ html_str +
+				'<td class="col_7">'+number_format(item.sum, 2, '.', ' ')+'</td>'+ 
 			'</tr>';
 	});
 	return strorderlist;
@@ -559,26 +569,33 @@ function initDocView(arDoc, sender, receiver) {
 	$('#order_view').remove();
 	$('#main_content').append(
 			'<div id="order_view" class="modal_window">' +
-				'<div class="close_line"><div class="clw"><img src="/include/close_window.svg"/></div></div>' +
 				'<div class="docview" data-doc-id='+docHeader.id+'>' +
+					'<div style="position: absolute; right: 7px; top: 0px;" class="close_line"><div class="clw"><img src="/include/close_window.svg"/></div></div>' +
 					'<div class="order_header"></div>' +
-					'<div class="order-configuration-panel">' +
-						'<div class="configuration-steps">' +
-							'<div class="step active" data-step="selection">' +
-								'<span class="step_num">1</span>' +
-								'<span class="step_title">Подбор товара</span>' +
-							'</div>' +
-							'<div class="step" data-step="parameters">' +
-								'<hr>' +
-								'<span class="step_num">2</span>' +
-								'<span class="step_title">Параметры заказа</span>' +
-							'</div>' +
-							'<div class="step" data-step="payment">' +
-								'<hr>' +
-								'<span class="step_num">3</span>' +
-								'<span class="step_title">Оплата и доставка</span>' +
-							'</div>' +
-							((docHeader.status !== 'new') ? '' :
+					'<div class="order-configuration-panel"' + ((docHeader.status !== 'new') ? 'style="margin-bottom: 0;"' : '') + '>' +  
+						'<div style="margin: 0;" class="configuration-steps">' +
+							((docHeader.status !== 'new') ?  
+							'<div class="step active tab_step" data-step="selection">'+
+								'<span class="step_title tab_step_title">Подбор товара</span>' +
+							'</div>'+
+							'<div class="step tab_step" data-step="info">'+
+								'<span class="step_title tab_step_title">Параметры заказа</span>' +
+							'</div>'
+							:
+								'<div class="step active" data-step="selection">' +
+									'<span class="step_num">1</span>' +
+									'<span class="step_title">Подбор товара</span>' +
+								'</div>' +
+								'<div class="step" data-step="parameters">' +
+									'<hr>' +
+									'<span class="step_num">2</span>' +
+									'<span class="step_title">Параметры заказа</span>' +
+								'</div>' +
+								'<div class="step" data-step="payment">' +
+									'<hr>' +
+									'<span class="step_num">3</span>' +
+									'<span class="step_title">Оплата и доставка</span>' +
+								'</div>' +
 								'<div class="step" data-step="confirmation">' +
 									'<hr>' +
 									'<span class="step_num">4</span>' +
@@ -586,10 +603,12 @@ function initDocView(arDoc, sender, receiver) {
 								'</div>'
 							) +
 						'</div>' +
+						((docHeader.status !== 'new') ? '' :
 						'<div class="configuration-buttons">' +
 							'<div class="next button fa fa-chevron-right">Далее</div>' +
 							'<div class="prev button fa fa-chevron-left unvisible">Назад</div>' +
-						'</div>' +
+						'</div>'
+						) +
 					'</div>' +
 					'<div class="order-configuration-tab" data-step="selection">' +
 						'<div class="order_controls"></div>' +
@@ -598,32 +617,64 @@ function initDocView(arDoc, sender, receiver) {
 							'<table class="order_item_list_content"></table>' +
 						'</div>' +
 					'</div>' +	
-					'<div class="order-configuration-tab parameters hidden" data-step="parameters">' +
-						'<div class="container">' +
-							'<div class="company_list configuration_list"><div class="header">Юридическое лицо</div><div class="company_items"></div></div>' +
-						'</div>' +
-						'<div class="container">' +
-							'<div class="branch_list configuration_list"><div class="header">Торговая точка</div><div class="branch_items"></div></div>' +
-						'</div>' +
-					'</div>' +
-					'<div class="order-configuration-tab payment hidden" data-step="payment">' +
-						'<div class="container">' +
-							'<div class="scroll-block">' +
-								'<div class="delivery_type configuration_list"><div class="header">Способ отгрузки</div><div class="delivery_items"></div></div>' +
-								'<div class="delivery_date configuration_list"><div class="header">Желаемая дата отгрузки</div><div class="date_picker"></div></div>' +
+					((docHeader.status !== 'new') ?  
+						'<div style="border: 1px solid #ccc;" class="order-configuration-tab info hidden" data-step="info">' +
+							'<div class="info_container">' +
+								'<div class="info_container_block">' +
+									'<div class="info_block delivery_type">' +
+										'<div class="header">Способ отгрузки</div>' +
+										'<div class="selected_value"></div>' +
+									'</div>' +
+									'<div class="info_block payment_type">' +
+										'<div class="header">Способ оплаты</div>' +
+										'<div class="selected_value"></div>' +
+									'</div>' +
+								'</div>'+
+								'<div class="info_container_block">' +
+									'<div class="info_block company_name">' +
+										'<div class="header">Юридическое лицо</div>' +
+										'<div class="selected_value"></div>' +
+									'</div>' +
+									'<div class="info_block branch_name">' +
+										'<div class="header">Торговая точка</div>' +
+										'<div class="selected_value"></div>' +
+									'</div>' +
+								'</div>' +
+								'<div class="info_block order_comment">' +
+									'<div class="header">Комментарий</div>' +
+									'<div class="selected_value" style="text-align: left; padding: 0 10px;"></div>' +
+								'</div>' +
+							'</div>' +
+						'</div>'
+					
+					:
+						'<div class="order-configuration-tab parameters hidden" data-step="parameters">' +
+							'<div class="container">' +
+								'<div class="company_list configuration_list"><div class="header">Юридическое лицо</div><div class="company_items"></div></div>' +
+							'</div>' +
+							'<div class="container">' +
+								'<div class="branch_list configuration_list"><div class="header">Торговая точка</div><div class="branch_items"></div></div>' +
 							'</div>' +
 						'</div>' +
-						'<div class="container">' +
-							'<div class="scroll-block">' +
-								'<div class="payment_type configuration_list"><div class="header">Способ оплаты</div><div class="payment_items"></div></div>' +
+						'<div class="order-configuration-tab payment hidden" data-step="payment">' +
+							'<div class="container">' +
+								'<div class="scroll-block">' +
+									'<div class="delivery_type configuration_list"><div class="header">Способ отгрузки</div><div class="delivery_items"></div></div>' +
+									'<div class="delivery_date configuration_list"><div class="header">Желаемая дата отгрузки</div><div class="date_picker"></div></div>' +
+								'</div>' +
+							'</div>' +
+							'<div class="container">' +
+								'<div class="scroll-block">' +
+									'<div class="payment_type configuration_list"><div class="header">Способ оплаты</div><div class="payment_items"></div></div>' +
+								'</div>' +
 							'</div>' +
 						'</div>' +
-					'</div>' +
-					'<div class="order-configuration-tab confirmation hidden" data-step="confirmation">' +
-						'<div class="order_comment">Комментарий: <input value="" ></div>' +
-						'<div class="header">Сводная информация по заказу</div>' +
-						'<div class="common_info"></div>' +
-					'</div>' +
+						'<div class="order-configuration-tab confirmation hidden" data-step="confirmation">' +
+							'<div class="order_comment">Комментарий: <input value="" ></div>' +
+							'<div class="header">Сводная информация по заказу</div>' +
+							'<div class="common_info"></div>' +
+						'</div>'
+					) +
 					'<div class="sidebar">' +
 						'<div class="pan_bar"></div>' +	
 						'<div class="sidebar-header"></div>' +
@@ -633,9 +684,10 @@ function initDocView(arDoc, sender, receiver) {
 			'</div>'
 	);
 	var strorderinfo = 
+		'<div style="font-size: 17px; padding-bottom: 3px;" class="cnt_inp" name="receiver" data-receiver="'+contact.name+'">Поставщик: ' + contact.fullname + ' ' + '</div>' +
 		'<div id="order_num">Заказ № '+docHeader.num+' от '+ docDate.day + '-' + docDate.month + '-' + docDate.year +' (' + docDate.hh + ':' + docDate.mm +':'+ docDate.ss + ')' + '</div>' +
-		'<div class="order_status"><div class="ord_hd_x1">Статус:</div><div class="ord_hd_x2">'+docStatus[docHeader.status]+'</div></div>' +
-		'<div class="order_headline"><div class="ord_hd_x1">Получатель:</div><div class="ord_hd_x2"><input class="cnt_inp" type="text" name="receiver" value="'+contact.fullname+'" data-receiver="'+contact.name+'" disabled></div></div>';
+		'<div class="order_status"><div class="ord_hd_x1">Статус:</div><div class="ord_hd_x2">'+docStatus[docHeader.status]+'</div></div>';// +
+		//'<div class="order_headline"><div class="ord_hd_x1">Получатель:</div><div class="ord_hd_x2"><input class="cnt_inp" type="text" name="receiver" value="'+contact.fullname+'" data-receiver="'+contact.name+'" disabled></div></div>';
 
 	var upl_xls = 	'<form id="upl_xls_form" name="upl_xls_form">' +	
 						'<div id="upl_xls" class="button fa fa-file-excel-o tooltip"  data-tooltip="Загрузить позиции из xls-файла">&nbsp;&nbsp;Загрузить заказ из Excel</div>' +
@@ -681,10 +733,61 @@ function initDocView(arDoc, sender, receiver) {
 
 	getDocHeaderProps(docHeader);
 	setEditPolicy (sender.name, arDoc);
-	getCompanyList((smuser.name === docHeader.owner) ? smuser.name : docHeader.owner);
-	getBranchList((smuser.name === docHeader.owner) ? smuser.name : docHeader.owner);
-	getDatePicker();
-	getDeliveryPropsList();
+	if(docHeader.status !== 'new') {
+		$('#order_view .info_container .order_comment .selected_value').text(docHeader.comment);
+		
+		var docProps = {"delivery_type": "", "payment_type": "", "company_name": "", "branch_name": "", "delivery_date":""};
+		$.each(docHeader.props, function(i, val) {
+			if(!(val.name == "" || val.name == undefined || val.name == "undefined" || val.value == undefined || val.value == "undefined")) 
+			{
+				switch (val.name) {
+					case 'delivery_type':
+						docProps.delivery_type = deliveryType[val.value];
+						break;
+					case 'payment_type':
+						docProps.payment_type = paymentType[val.value];
+						break;
+					case 'company_name':
+						docProps.company_name = val.value;
+						break;
+					case 'branch_name':
+						docProps.branch_name = val.value;
+						break;
+					case 'delivery_date':
+						docProps.delivery_date = val.value;
+						break;
+				}			
+			}
+		});	
+		if(docProps.delivery_type != '' && docProps.delivery_type != undefined) {
+			var str =  docProps.delivery_type + ((docProps.delivery_date != "" && docProps.delivery_date != undefined) ? '. Желаемая дата отгрузки: ' + docProps.delivery_date : '');
+			$('#order_view .info_container_block .delivery_type .selected_value').html(str);
+		} else {
+			$('#order_view .info_container_block .delivery_type .selected_value').text("Не указан");
+			$('#order_view .info_container_block .delivery_type .selected_value').addClass("value_error");
+		}
+		if(docProps.payment_type != '' && docProps.payment_type != undefined) {
+			$('#order_view .info_container_block .payment_type .selected_value').text(docProps.payment_type);
+		} else {
+			$('#order_view .info_container_block .payment_type .selected_value').text("Не указан");
+			$('#order_view .info_container_block .payment_type .selected_value').addClass("value_error");
+		}
+		if(docProps.company_name != '' && docProps.company_name != undefined) {
+			$('#order_view .info_container_block .company_name .selected_value').text(docProps.company_name);
+		} else {
+			$('#order_view .info_container_block .company_name').remove();
+		}
+		if(docProps.branch_name != '' && docProps.branch_name != undefined) {
+			$('#order_view .info_container_block .branch_name .selected_value').text(docProps.branch_name);
+		} else {
+			$('#order_view .info_container_block .branch_name').remove();
+		}
+	} else {
+		getCompanyList((smuser.name === docHeader.owner) ? smuser.name : docHeader.owner);
+		getBranchList((smuser.name === docHeader.owner) ? smuser.name : docHeader.owner);
+		getDatePicker();
+		getDeliveryPropsList();
+	}	
 	if (docHeader.fileAttached) SearchFiles(docHeader.file_id, docHeader.owner);
 	if (docHeader.status === 'new') $('#order_view .order-configuration-tab.confirmation').find('.order_comment').after($('#order_view #transmit'));
 	setTimeout(
@@ -746,6 +849,9 @@ function initDocView(arDoc, sender, receiver) {
 			//getCommonOrderInfo();
 			setConfigurationValues(docHeader.props);
 		};
+		if ($('#order_view .configuration-steps .step[data-step="payment"]').hasClass('active')) {
+			setConfigurationValues(docHeader.props);
+		};
 		
 		if ($('#order_view .configuration-steps .step:last-child').hasClass('active')) {
 			getCommonOrderInfo();
@@ -773,6 +879,10 @@ function initDocView(arDoc, sender, receiver) {
 		$('#order_view .order-configuration-tab:eq('+index+')').removeClass('hidden');
 		if ($('#order_view .configuration-steps .step[data-step="parameters"]').hasClass('active')) {
 			//getCommonOrderInfo();
+			setConfigurationValues(docHeader.props);
+		};
+		
+		if ($('#order_view .configuration-steps .step[data-step="payment"]').hasClass('active')) {
 			setConfigurationValues(docHeader.props);
 		};
 		
@@ -1761,8 +1871,9 @@ function setNewDocPosition(obj, arHeader){
 			'<td class="col_3">шт</td>'+
 			'<td class="col_4 required"><i class="fa fa-minus" aria-hidden="true"></i><input class="quantity" value="1"><i class="fa fa-plus" aria-hidden="true"></i></td>'+
 			'<td class="col_5"><i class="fa fa-minus" aria-hidden="true"></i><input class="confirmed" value="0"><i class="fa fa-plus" aria-hidden="true"></i></td>'+
+			html_str +
 			'<td class="col_6">'+price+'</td>'+
-			'<td class="col_7">'+price+'</td>'+	html_str +						
+			'<td class="col_7">'+price+'</td>'+							
 		'</tr>'
 	);
 	setOrderItemListContentHeight();
@@ -1825,12 +1936,13 @@ function setOrderItemListContentHeight(){
 	
 	$('#order_view .order_positions .item_list_header td').each(function(i){
 		var headerWidth = $(this).width() || 0;
-		var contentWidth = $('#order_view .order_item_list_content .col_'+i).width() || 0;
+		var contentWidth = $('#order_view .order_item_list_content td:eq('+i+')').width() || 0;
 		var width = Math.max(headerWidth, contentWidth);
 		$(this).css({'min-width':width+21, 'max-width':width+21, 'width':width+21});
 		$('#order_view .order_item_list_content .col_'+i).css({'min-width':width+21, 'max-width':width+21, 'width':width+21});
 	})
 	$('#order_view .order_positions .slimScrollDiv').width($('#order_view .order_positions .order_item_list_head').width()-2);
+	$('#order_view .totalsum-block').css('left', $('#order_view  .docview').width()-300);
 };
 
 $(window).resize(function() {

@@ -411,7 +411,7 @@ elseif($action == 'documents_getList')
 		//$arResult = downloadOrders($DOM);
 		if($adds=='json')
 		{
-			echo $res["return"];
+			echo json_encode($res["return"]);
 		}
 		elseif($adds=='json_html')
 		{
@@ -422,7 +422,7 @@ elseif($action == 'documents_getList')
 				$col_3 = ($order["sender"] == $TLP_obj->user_info['name'])?($order["receiver"]):($order["sender"]);
 				$msg_date = DateTime::createFromFormat('Y-m-d H:i:s', str_replace("T"," ",substr($order["date"],0,19)));
 				$str_date = ($msg_date === false)?(""):($msg_date->format('d-m-Y'));
-				$str = '<div id="or_'.$order["message_id"].'" class="order" data-order-id="'.$order["message_id"].'" data-order-sender="'.$order["sender"].'" data-order-receiver="'.$order["receiver"].'">
+				$str = '<div id="or_'.$order["message_id"].'" class="order '.($order["is_new"] ? 'marked' : '').'" data-order-id="'.$order["message_id"].'" data-order-sender="'.$order["sender"].'" data-order-receiver="'.$order["receiver"].'">
 					<div class="order_content">
 						<div class="order_line">
 							<div class="col_0">'.$docType[$order['type']].'</div>
@@ -443,6 +443,79 @@ elseif($action == 'documents_getList')
 		}
 	}
 	else
+	{echo '%err%'.$TLP_obj->mistakes[$res['errCode']];}
+}
+elseif($action == 'documents_getNewList')
+{
+	$arFnc = array();
+	foreach ($_POST as $key => $value) 
+	{
+		if($key == 'filters')
+			{$arFnc[$key] = json_decode($value);}
+		elseif(!($key == 'action' || $key=='adds'))
+			{$arFnc[$key] = $value;}
+	}	
+	$res = $TLP_obj->telecall('Documents_GetNewList', $arFnc);
+	if($res['errCode'] == 0)
+	{
+		if($adds=='json')
+		{
+			echo json_encode($res["return"]);
+		}
+		elseif($adds=='json_html')
+		{
+			$arMessages = $res["return"];
+			$arOrders = array();
+			foreach($arMessages as $key=>$order)
+			{
+				$col_3 = ($order["sender"] == $TLP_obj->user_info['name'])?($order["receiver"]):($order["sender"]);
+				$msg_date = DateTime::createFromFormat('Y-m-d H:i:s', str_replace("T"," ",substr($order["date"],0,19)));
+				$str_date = ($msg_date === false)?(""):($msg_date->format('d-m-Y'));
+				$str = '<div id="or_'.$order["message_id"].'" class="order marked active" data-order-id="'.$order["message_id"].'" data-order-sender="'.$order["sender"].'" data-order-receiver="'.$order["receiver"].'">
+					<div class="order_content">
+						<div class="order_line">
+							<div class="col_0">'.$docType[$order['type']].'</div>
+							<div class="col_1">'.$order["num"].'</div><div class="col_2">'.$str_date.'</div>
+							<div class="col_3">'.$col_3.'</div>
+							<div class="col_4">'.number_format($order["sum"], 2, '.', ' ').'</div>
+							<div class="col_5">'.$docStatus[$order["status"]].'</div>
+						</div>
+					</div>
+					<p class="sub_info"><img src="/include/stdown.png"/></p>
+				</div>';
+
+				$arOrders[$order["message_id"]]['html'] 	= $str;
+				$arOrders[$order["message_id"]]['date'] 	= $order["date"];
+				$arOrders[$order["message_id"]]['id'] 	    = $order["message_id"];
+				$arOrders[$order["message_id"]]['sender'] 	= $order["sender"];
+				$arOrders[$order["message_id"]]['receiver'] = $order["receiver"];
+			}
+			
+			echo json_encode($arOrders);
+		}
+	}
+	else
+	{echo '%err%'.$TLP_obj->mistakes[$res['errCode']];}
+}
+elseif($action == 'documents_SetDelivered')
+{
+	$arFnc = array();
+	foreach ($_POST as $key => $value) 
+	{
+
+		if($key == 'id_list')
+			{$arFnc[$key] = json_decode($value);}
+		elseif(!($key == 'action' || $key=='adds'))
+			{$arFnc[$key] = $value;}
+	}	
+	$res = $TLP_obj->telecall('Documents_SetDelivered', $arFnc);
+	if($res['errCode'] == 0)
+	{
+		if($adds=='json')
+		{
+			echo json_encode($res);
+		}
+	} else
 	{echo '%err%'.$TLP_obj->mistakes[$res['errCode']];}
 }
 elseif($action == 'Catalog_GetCategory')

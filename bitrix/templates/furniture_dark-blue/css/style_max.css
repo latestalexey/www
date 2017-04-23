@@ -350,11 +350,10 @@
 
 #order_view .docview {
     position: relative;
-    height: 95%;
-	margin-top:10px;
-	border: 2px solid #eee;
-    border-radius: 5px;
-    padding: 10px;
+    height: 100%;
+	/*border: 2px solid #eee;
+    border-radius: 5px;*/
+    padding: 5px;
     box-sizing: border-box;
 }
 
@@ -475,7 +474,7 @@
 
 #order_view .order_header {
     height: auto;
-	padding-bottom:30px;
+	padding-bottom: 15px;
 	box-sizing: border-box;
 }
 
@@ -687,6 +686,7 @@
 
 
 #order_view  .order_item_list_content input {
+	max-width: 100%;
 	padding:3px 5px;
 	text-align:center;
 	box-sizing:border-box;
@@ -698,12 +698,6 @@
 	border-radius: 3px;
 }
 
-#order_view  .order_item_list_content .col_7 input {
-	padding: 0;
-    border-radius: 0;
-    background: transparent;
-    width: 100%;
-} 
 
 #order_view  .order_item_list_content select {
 	padding:3px;
@@ -930,17 +924,13 @@ div#UserDocList .UserDocItem:hover {
 #order_view  .order_item_list_head .input_row .col_3 {
 	font-size: 16px;
 	font-weight: bold;
-	position: relative;
 	height: 50px;
 }
 
 #order_view  .order_item_list_head .input_row .col_3 .totalsum-block {
 	display: block;
     position: absolute;
-	top: 0;
-    right: 10px;
-    height: 100%;
-	line-height: 50px;
+	line-height: 10px;
 	color: #26A69A;
 }
 
@@ -1715,10 +1705,14 @@ div#UserDocList .UserDocItem:hover {
 	border-color: #eee;
 }
 
+.order-configuration-panel {
+	margin-bottom: 15px;
+}
+
 .order-configuration-panel .configuration-steps,
 .order-configuration-panel .configuration-buttons {
 	float: left;
-	margin: 15px 0;
+	/*margin: 15px 0;*/
 }
 
 .order-configuration-panel .configuration-steps .step {
@@ -2049,4 +2043,8 @@ div#UserDocList .UserDocItem:hover {
 
 #doc_excel_form .upl_xls_item_list_content .item:not(.red) .col_0 .fa {
 	cursor: pointer;
+}
+
+#order_list .order.marked.active .order_line {
+	background-color: rgba(38, 166, 154, 0.4);
 }

@@ -1913,12 +1913,13 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 }
 
 #order_view {
-	width: 96%;
-	height: 92%;
+	width: 99%;
+	height: 97%;
 	overflow: hidden;
 	position: absolute;
-	top: 4%;
-	margin: 0 30px;
+	top: 1px;
+	padding: 5px 10px 5px 5px;
+	/*margin: 0 30px;*/
 	font-family: 'Open Sans', Arial, Helvetica, sans-serif;
 	font-weight: 600;
 }
@@ -2421,6 +2422,70 @@ width: 278px;
 
 .link_copy {
 	right: 35px;
+}
+
+.tab_step_title {
+    padding: 5px 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px 8px 0 0;
+    margin: 0 !important;
+    box-sizing: border-box;
+}
+.tab_step_title:hover {
+	background-color: #26A69A !important;
+	color: #fff !important;
+}
+.configuration-steps .active .tab_step_title {
+	background-color: #ccc;
+	color: #fff !important;
+}
+.info_container {
+	width: 100%;
+	height: 100%;
+	padding: 5px;
+	position: relative;
+	box-sizing: border-box;
+}
+.info_container_block {
+	display: inline-block;
+	width: 45%;
+	margin: 0 20px;
+	box-sizing: border-box;
+	vertical-align: top;
+}
+
+.info_container .info_block {
+	position: relative;
+	margin-top: 30px;
+	width: 100%;
+	padding: 15px;
+	border: 2px solid #ccc;
+    border-radius: 5px;
+	box-sizing: border-box;
+	text-align: center;
+}
+.info_container .header {
+	position: absolute;
+	top: -14px;
+    width: auto;
+    padding: 0 15px;
+    margin: auto;
+	font-size: 17px;
+	box-sizing: border-box;
+	background: #f9f9f9;
+}
+.info_block .selected_value {
+	width: 99%;
+	height: 45px;
+	line-height: 45px;
+	background-color: #fff;
+    border: 1px solid #DDD;
+    border-radius: 5px;
+	cursor: pointer;
+	text-align: center;
+}
+.info_block  .value_error {
+	color: #FF0000;
 }
 /*.link_download:before {
 	content: url('/include/download.svg');
