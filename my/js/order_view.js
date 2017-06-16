@@ -57,6 +57,8 @@ var doc_file = '<div class="msg_file uploadifive-queue-item"><div class="upfile"
 
 var newDocID = '';
 
+
+
 function getDocInfo(id, sender, receiver) {
 	var xhr = new XMLHttpRequest();
 	var body = 'action=Documents_GetById' +
@@ -77,23 +79,11 @@ function getDocInfo(id, sender, receiver) {
 };
 
 function getCompanyList(contact) {
-	hasCompany = false;
-	var xhr = new XMLHttpRequest();
-	var body = 'action=Company_GetList' +
-			 '&contact=' + encodeURIComponent(contact);
-	xhr.open("POST", '/my/ajax/action.php', true);
-	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-	xhr.onreadystatechange = function() { 
-		if (xhr.readyState != 4) return;
-
-		if(!(xhr.responseText.indexOf('%err%') == -1)) {
-			showError(xhr.responseText.replace('%err%',''));
-			return;
-		}
-		var arResult = JSON.parse(xhr.responseText);
+	if(contact == smuser.name) {
 		var html_str = '';
-		if (arResult.length) hasCompany = true;
-		$.each(arResult, function(i, val){
+		if (smuser.companyList == undefined) return;
+		if (smuser.companyList.length) hasCompany = true;
+		$.each(smuser.companyList, function(i, val){
 			html_str = html_str +
 			'<div class="company_item item" data-value='+val.company_id+'>\
 				<div class="company_name name">'+((val.company_fullname.length) ? val.company_fullname : val.company_name)+'</div>\
@@ -101,28 +91,41 @@ function getCompanyList(contact) {
 			</div>'
 		});
 		$('#order_view').find('.company_items').html(html_str);
-	};
-	xhr.send(body);	
+	} else {
+		hasCompany = false;
+		var xhr = new XMLHttpRequest();
+		var body = 'action=Company_GetList' +
+				 '&contact=' + encodeURIComponent(contact);
+		xhr.open("POST", '/my/ajax/action.php', true);
+		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+		xhr.onreadystatechange = function() { 
+			if (xhr.readyState != 4) return;
+
+			if(!(xhr.responseText.indexOf('%err%') == -1)) {
+				showError(xhr.responseText.replace('%err%',''));
+				return;
+			}
+			var arResult = JSON.parse(xhr.responseText);
+			var html_str = '';
+			if (arResult.length) hasCompany = true;
+			$.each(arResult, function(i, val){
+				html_str = html_str +
+				'<div class="company_item item" data-value='+val.company_id+'>\
+					<div class="company_name name">'+((val.company_fullname.length) ? val.company_fullname : val.company_name)+'</div>\
+					<div class="company_address address">'+val.company_address+'</div>\
+				</div>'
+			});
+			$('#order_view').find('.company_items').html(html_str);
+		};
+		xhr.send(body);	
+	}	
 };
 
 function getBranchList(contact) {
-	hasBranch = false;
-	var xhr = new XMLHttpRequest();
-	var body = 'action=Branch_GetList' +
-			 '&contact=' + encodeURIComponent(contact);
-	xhr.open("POST", '/my/ajax/action.php', true);
-	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-	xhr.onreadystatechange = function() { 
-		if (xhr.readyState != 4) return;
-
-		if(!(xhr.responseText.indexOf('%err%') == -1)) {
-			showError(xhr.responseText.replace('%err%',''));
-			return;
-		}
-		var arResult = JSON.parse(xhr.responseText);
-		if (arResult.length) hasBranch = true;
+	if(contact == smuser.name) {
 		var html_str = '';
-		$.each(arResult, function(i, val){
+		if (smuser.branchList.length) hasBranch = true;
+		$.each(smuser.branchList, function(i, val){
 			html_str = html_str +
 			'<div class="branch_item item" data-value='+val.branch_id+'>\
 				<div class="branch_name name">'+val.branch_name+'</div>\
@@ -130,8 +133,34 @@ function getBranchList(contact) {
 			</div>'
 		});
 		$('#order_view').find('.branch_items').html(html_str);
-	};
-	xhr.send(body);	
+	} else {
+		hasBranch = false;
+		var xhr = new XMLHttpRequest();
+		var body = 'action=Branch_GetList' +
+				 '&contact=' + encodeURIComponent(contact);
+		xhr.open("POST", '/my/ajax/action.php', true);
+		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+		xhr.onreadystatechange = function() { 
+			if (xhr.readyState != 4) return;
+
+			if(!(xhr.responseText.indexOf('%err%') == -1)) {
+				showError(xhr.responseText.replace('%err%',''));
+				return;
+			}
+			var arResult = JSON.parse(xhr.responseText);
+			if (arResult.length) hasBranch = true;
+			var html_str = '';
+			$.each(arResult, function(i, val){
+				html_str = html_str +
+				'<div class="branch_item item" data-value='+val.branch_id+'>\
+					<div class="branch_name name">'+val.branch_name+'</div>\
+					<div class="branch_address address">'+val.branch_address+'</div>\
+				</div>'
+			});
+			$('#order_view').find('.branch_items').html(html_str);
+		};
+		xhr.send(body);	
+	}	
 };
 
 function getDeliveryPropsList() {
@@ -354,7 +383,7 @@ function setEditPolicy (sender, message) {
 				$('.order_item_list_head .col_0 .fa').removeClass('hidden');
 				$(".order_item_list_content .col_0 .fa").removeClass('hidden');
 				$(".order_item_list_content .col_4 .fa").removeClass('hidden')
-				$(".order_item_list_content input").prop("disabled", false);
+				$(".order_item_list_content .col_4 input").prop("disabled", false);
 				$(".order_item_list_content .col_5 input").prop("disabled", true);
 				$(".order_item_list_content select").prop("disabled",false);
 				$(".order_item_list_content checkbox").prop("disabled", false);	
@@ -379,7 +408,7 @@ function setEditPolicy (sender, message) {
 				$('.order_item_list_head .col_0 .fa').removeClass('hidden');
 				$(".order_item_list_content .col_0 .fa").removeClass('hidden');
 				$(".order_item_list_content .col_5 .fa").removeClass('hidden');
-				$(".order_item_list_content input").prop("disabled", false);
+				$(".order_item_list_content .col_5 input").prop("disabled", false);
 				$(".order_item_list_content .col_4 input").prop("disabled", true);
 				$(".order_item_list_content select").prop("disabled",false);
 				$(".order_item_list_content checkbox").prop("disabled", false);	
@@ -478,7 +507,6 @@ function getDocHeaderProps(arHeader) {
 	$('#order_view .sidebar .sidebar-content .doc-add-props').slimScroll({height: h, size: '7px', disableFadeOut: false});
 };
 
-
 function getTabHeader(arHeader) {
 	var html_str = ''; 
 	var col = 8;
@@ -532,10 +560,10 @@ function getDocTable(docTable, tabHeaderProps){
 			}
 			else if (val.type === 'boolean'){
 				var isChecked = (search=='true') ? 'checked' : '';
-				html_str = html_str + '<td style="min-width: 111px; max-width: 111px; width: 111px;" class="col_'+col+' '+val.name+'"><input type="checkbox" '+isChecked+'></td>';
+				html_str = html_str + '<td style="min-width: 130px; max-width: 130px; width: 130px;" class="col_'+col+' '+val.name+'"><input type="checkbox" '+isChecked+'></td>';
 			}
 			else {
-				html_str = html_str + '<td style="min-width: 111px; max-width: 111px; width: 111px;" class="col_'+col+' '+val.name+'"><input value='+search+'></td>';
+				html_str = html_str + '<td style="min-width: 130px; max-width: 130px; width: 130px;" class="col_'+col+' '+val.name+'"><input value='+search+'></td>';
 			};
 			col++;
 		});
@@ -556,6 +584,7 @@ function getDocTable(docTable, tabHeaderProps){
 };
 
 function initDocView(arDoc, sender, receiver) {
+	
 	arDoc.docHeader.hash = calcHash(arDoc.docTable);
 	var docHeader = arDoc.docHeader;
 	var tabHeader = arDoc.tabHeader;
@@ -642,7 +671,7 @@ function initDocView(arDoc, sender, receiver) {
 								'</div>' +
 								'<div class="info_block order_comment">' +
 									'<div class="header">Комментарий</div>' +
-									'<div class="selected_value" style="text-align: left; padding: 0 10px;"></div>' +
+									'<div class="selected_value" style="text-align: left; padding: 10px 10px; height: auto; line-height: normal;"></div>' +
 								'</div>' +
 							'</div>' +
 						'</div>'
@@ -812,7 +841,7 @@ function initDocView(arDoc, sender, receiver) {
 					gravity:'north'
 				});	
 			});
-		}, 500
+		}, 1
 	);
 
 	/*=====================================**********************=====================================================*/
@@ -1024,7 +1053,15 @@ function initDocView(arDoc, sender, receiver) {
 		setEditPolicy (sender.name, arDoc);
 	});
 	//Изменение количества позиций в строке заказа вручную
-	$('#order_view').on('keydown keyup', '.col_4 input, .col_5 input', function(e){
+	$('#order_view').on('keydown', '.col_4 input, .col_5 input', function(e){
+		var arKey = [8, 9, 37, 39, 46];
+		if ((e.which >= 48 && e.which <=57) || (e.which >= 96 && e.which <=105) || ($.inArray(e.which, arKey)>=0)) {
+		} 
+		else {
+			e.preventDefault();
+		}		
+	});	
+	$('#order_view').on('keyup', '.col_4 input, .col_5 input', function(e){
 		var qty = parseFloat($(this).val().replace(/ /g, ''));
 		$(this).val(number_format(qty, 0, '', ' '));
 		var arKey = [8, 9, 37, 39, 46];
@@ -1033,7 +1070,7 @@ function initDocView(arDoc, sender, receiver) {
 			var price = parseFloat($(this).closest('.item').children('.col_6').text().replace(/ /g, ''));
 			$(this).closest('.item').children('.col_7').text(number_format(price*(qty || 0), 2, '.', ' '));
 			getTotalSum();
-			setEditPolicy (sender.name, arDoc);
+			//setEditPolicy (sender.name, arDoc);
 		} 
 		else {
 			e.preventDefault();
@@ -1090,7 +1127,7 @@ function initDocView(arDoc, sender, receiver) {
 	});
 	
 	//Просмотр подробой информации о позиции
-	$('#order_view').on('click', '.order_item_list_content .col_2', function(){
+	$('#order_view').on('click', '.order_item_list_content .col_2 .fa', function(){
 		var obj = $(this).parents('.item');
 		obj.siblings('.item').removeClass('opened').next('#order-item-info').remove();
 		obj.siblings('.item').children('.col_2').children('.fa').removeClass('fa-chevron-down').addClass('fa-chevron-up');
@@ -1202,7 +1239,7 @@ function initDocView(arDoc, sender, receiver) {
 		else if(e.which == 13 && item_sel.length) {		
 			var newItem = $('.item.selected', item_sel);
 			var	exitem = $('.order_item_list_content .item[data-it-id='+newItem.attr('data-it-id')+']');	
-			if ( exitem.length && (parseFloat(newItem.attr('data-price')).toFixed(2) == parseFloat($('.col_6', exitem).text()).toFixed(2)) ) {
+			if ( exitem.length && (parseFloat(newItem.attr('data-price')).toFixed(2) == parseFloat($('.col_6', exitem).text().replace(/ /g, '')).toFixed(2)) ) {
 				mergeItems(newItem, exitem);
 			}
 			else {
@@ -1808,7 +1845,43 @@ function buildTmpDoc (tmpDoc, receiver){
 	tmpDoc.docHeader.sum = sum;
 	var hash = calcHash(tmpDoc.docTable);
 	tmpDoc.docHeader.hash = hash;
-	tmpDoc.docHeader.comment = $('.order_comment input').val();
+	if (tmpDoc.docHeader.status === 'new') {
+		tmpDoc.docHeader.comment = $('.order_comment input').val();
+		
+		tmpDoc.docHeader.props = [];
+		tmpDoc.docHeader.props.push({
+			"name": "company_id",
+			"value": $('#order_view .parameters .company_item.selected').attr('data-value')
+		});
+		tmpDoc.docHeader.props.push({
+			"name": "company_name",
+			"value": $('#order_view .parameters .company_item.selected .name').text()
+		});
+		tmpDoc.docHeader.props.push({
+			"name": "branch_id",
+			"value": $('#order_view .parameters .branch_item.selected').attr('data-value')
+		});
+		tmpDoc.docHeader.props.push({
+			"name": "branch_name",
+			"value": $('#order_view .parameters .branch_item.selected .name').text()
+		});
+		tmpDoc.docHeader.props.push({
+			"name": "branch_address",
+			"value": $('#order_view .parameters .branch_item.selected .address').text()
+		});
+		tmpDoc.docHeader.props.push({
+			"name": "delivery_type",
+			"value": $('#order_view .payment .delivery_item.selected').attr('data-value')
+		});
+		tmpDoc.docHeader.props.push({
+			"name": "payment_type",
+			"value": $('#order_view .payment .payment_item.selected').attr('data-value')
+		});
+		tmpDoc.docHeader.props.push({
+			"name": "delivery_date",
+			"value": $('#order_view .payment .date_item.selected').attr('data-value')
+		});
+	}
 	/*
 	if (tmpDoc.docHeader.props.length){
 		$.each(tmpDoc.docHeader.props, function(i, val){
@@ -1819,39 +1892,7 @@ function buildTmpDoc (tmpDoc, receiver){
 			val.value = $('.sidebar #'+val.name+' .item_'+i+' .sidebar-item-box .sidebar-item-name input').val()
 		});
 	};*/
-	tmpDoc.docHeader.props = [];
-	tmpDoc.docHeader.props.push({
-		"name": "company_id",
-		"value": $('#order_view .parameters .company_item.selected').attr('data-value')
-	});
-	tmpDoc.docHeader.props.push({
-		"name": "company_name",
-		"value": $('#order_view .parameters .company_item.selected .name').text()
-	});
-	tmpDoc.docHeader.props.push({
-		"name": "branch_id",
-		"value": $('#order_view .parameters .branch_item.selected').attr('data-value')
-	});
-	tmpDoc.docHeader.props.push({
-		"name": "branch_name",
-		"value": $('#order_view .parameters .branch_item.selected .name').text()
-	});
-	tmpDoc.docHeader.props.push({
-		"name": "branch_address",
-		"value": $('#order_view .parameters .branch_item.selected .address').text()
-	});
-	tmpDoc.docHeader.props.push({
-		"name": "delivery_type",
-		"value": $('#order_view .payment .delivery_item.selected').attr('data-value')
-	});
-	tmpDoc.docHeader.props.push({
-		"name": "payment_type",
-		"value": $('#order_view .payment .payment_item.selected').attr('data-value')
-	});
-	tmpDoc.docHeader.props.push({
-		"name": "delivery_date",
-		"value": $('#order_view .payment .date_item.selected').attr('data-value')
-	});
+	
 };
 
 function setNewDocPosition(obj, arHeader){
@@ -1866,7 +1907,7 @@ function setNewDocPosition(obj, arHeader){
 	$('#order_view .order_item_list_content').prepend(
 		'<tr id="it_'+obj.attr('data-it-id')+'" class="item" data-it-id='+obj.attr('data-it-id')+'>' +
 			'<td class="col_0"><i class="fa"></i></td>' +
-			'<td class="col_1"></td>' +
+			'<td class="col_1">'+obj.attr('data-article')+'</td>' +
 			'<td class="col_2"><span class="caption">'+name+'</span><i class="fa fa-chevron-up"></i></td>'+
 			'<td class="col_3">шт</td>'+
 			'<td class="col_4 required"><i class="fa fa-minus" aria-hidden="true"></i><input class="quantity" value="1"><i class="fa fa-plus" aria-hidden="true"></i></td>'+
@@ -1938,8 +1979,10 @@ function setOrderItemListContentHeight(){
 		var headerWidth = $(this).width() || 0;
 		var contentWidth = $('#order_view .order_item_list_content td:eq('+i+')').width() || 0;
 		var width = Math.max(headerWidth, contentWidth);
-		$(this).css({'min-width':width+21, 'max-width':width+21, 'width':width+21});
-		$('#order_view .order_item_list_content .col_'+i).css({'min-width':width+21, 'max-width':width+21, 'width':width+21});
+		if(!$(this).hasClass('col_7')) {
+			$(this).css({'min-width':width+21, 'max-width':width+21, 'width':width+21});
+			$('#order_view .order_item_list_content .col_'+i).css({'min-width':width+21, 'max-width':width+21, 'width':width+21});
+		}	
 	})
 	$('#order_view .order_positions .slimScrollDiv').width($('#order_view .order_positions .order_item_list_head').width()-2);
 	$('#order_view .totalsum-block').css('left', $('#order_view  .docview').width()-300);
@@ -1953,13 +1996,14 @@ $(window).resize(function() {
 
 function showPosList(obj, contact){
 	if(!(contact == undefined)){
-		var arr_fld = ['*'];
+		var arr_fld = ["id", "uid", "article","name","price","stock","unit"];
 		var it_filter = [{"mode": "item", "group": "OR", "name":"name", "operation":"LIKE", "value": obj.val()},
 					 {"mode": "item", "group": "OR", "name":"article", "operation":"LIKE", "value": obj.val()}];		 
 		var xhr = new XMLHttpRequest();
 		var body =  'action=catalog_get' +
 					'&adds=json' +
 					'&contact=' + encodeURIComponent(contact) +
+					'&smuser=' + encodeURIComponent(JSON.stringify(smuser)) +
 					'&fields=' + encodeURIComponent(JSON.stringify(arr_fld)) +
 					'&filters=' + encodeURIComponent(JSON.stringify(it_filter)) +
 					'&limit=30' + 
@@ -1977,7 +2021,7 @@ function showPosList(obj, contact){
 			if (item.catalog.length) {	
 				var html_str = '';	
 				$.each(item.catalog, function(key, item){
-					html_str = html_str + '<div id="'+item.id+'" class="item" data-it-id='+item.id+' data-article='+item.article+' data-price='+item.price+' data-stock='+item.stock+'><div class="item_content"><div class="item_line"><div class="col_2">'+item.name+'</div></div></div></div>';
+					html_str = html_str + '<div id="'+item.id+'" class="item" data-it-id='+item.id+' data-article='+item.article+' data-price='+item.price+' data-stock='+item.stock+' data-unit='+item.unit+'><div class="item_content"><div class="item_line"><div class="col_2">'+item.name+'</div></div></div></div>';
 					
 				});					
 				($('.modal_window.item_sel').length) 

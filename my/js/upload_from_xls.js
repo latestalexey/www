@@ -74,6 +74,7 @@ function showUploadXLSForm() {
 					var body =	'action=catalog_get' +
 								'&adds=json' +
 								'&contact=' + encodeURIComponent(receiver) +
+								'&smuser=' + encodeURIComponent(JSON.stringify(smuser)) +
 								'&filters=' + encodeURIComponent(JSON.stringify(it_filter)) +
 								'&fields=' + encodeURIComponent(JSON.stringify(arr_fld)) +
 								'&limit=1000' + 
@@ -193,6 +194,11 @@ function appendItemsToDoc() {
 }
 
 $(document).ready(function(){
+	$('#main_content').off('click', '#order_view #doc_upl_xls_btn');
+	$('#main_content').off('click', '#order_view #doc_excel_form .close_cross');
+	$('#main_content').off('click', '#order_view #append_xls_items_btn');
+	$('#main_content').off('click', '#order_view #doc_excel_form .upl_xls_item_list_content .item:not(.red) .col_0 .fa');
+	
 	$('#main_content').on('click', '#order_view #doc_upl_xls_btn' ,function() {
 		$('#order_view #doc_upl_xls_queue').uploadifive('clearQueue');
 		$(this).siblings('#uploadifive-doc_upl_xls_queue').children().last().click();

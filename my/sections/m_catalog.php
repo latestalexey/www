@@ -83,6 +83,7 @@ if($vwmode == '') {
 				<div class="col_1">Артикул</div>
 				<div class="col_2">Наименование</div>
 				<div class="col_3">Ваша цена</div>
+				<div class="col_6">Цена в рознице</div>
 				<div class="col_4">На складе</div>
 				<div class="col_5" style="min-width: 156px;">В заказ</div>
 			</div>	

@@ -16,6 +16,8 @@ if($res)
 		$TLP_obj->user_info['id'] = get_GUID();
 		$TLP_obj->user_info['name'] = $user_info['user_name'];
 		$TLP_obj->user_info['fullname'] = $user_info['user_fullname'];
+		$TLP_obj->user_info['show_myPrices'] = $user_info['show_myPrices'];
+		$TLP_obj->user_info['show_retailPrices'] = $user_info['show_retailPrices'];
 		$TLP_obj->user_info['photo_id'] = '';
 		
 		if(!$res['return']['photo_id'] == '') {

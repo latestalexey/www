@@ -334,7 +334,6 @@ function getFileType(ftype) {
 }
 
 function addUnknownContact(contact) {
-
 	var xhr = new XMLHttpRequest();
 	var body =	'action=cnt_unknown' +
 					'&contact=' + encodeURIComponent(contact);
@@ -430,10 +429,10 @@ function messagesRequest() {
 					if(req_type == 'message' && req_quantity>0) { li_msg = li_msg + req_quantity;}
 					if(req_type == 'document' && req_quantity>0) { li_ord = li_ord + req_quantity;}
 					
-					var new_msg_obj = $('[data-usr-name='+req_sender+']').first().find(".new_" + req_prefix);
+					var new_msg_obj = $('#my_contacts [data-usr-name='+req_sender+']').first().find(".new_" + req_prefix);
 					if(new_msg_obj.length == 0) {
 						addUnknownContact(rqobject.contact);
-						new_msg_obj = $('[data-usr-name='+req_sender+']').first().find(".new_" + req_prefix);
+						new_msg_obj = $('#my_contacts [data-usr-name='+req_sender+']').first().find(".new_" + req_prefix);
 					}
 					
 					if(req_quantity > 0 && new_msg_obj.length != 0) {
@@ -853,6 +852,7 @@ function ContactInfoView(name) {
 					showMessageBox("Сведения успешно сохранены", 7000);
 					$('#cnt_view').hide(100);
 					$('#cnt_view').remove();
+					updateSmuserData();
 				}
 				xhr.send(body);
 			});	
@@ -1748,7 +1748,10 @@ function getMainUser() {
 		var contact	= {'id': undefined, 'name': undefined, 'fullname': undefined, 'photo_id': undefined};
 	}
 	else {
-		var contact	= {'id': obj.attr('data-usr-id'), 'name': obj.attr('data-usr-name'), 'fullname': obj.attr('data-usr-fullname'), 'photo_id': obj.attr('data-photo-id')};
+		var contact	= {'id': obj.attr('data-usr-id'), 'name': obj.attr('data-usr-name'),
+		'fullname': obj.attr('data-usr-fullname'), 'photo_id': obj.attr('data-photo-id'),
+		'show_myPrices': obj.attr('data-usr-myPrices'), 'show_retailPrices': obj.attr('data-usr-retailPrices'), 'companyList': [], 'branchList': []
+		};
 	}	
 	return contact;
 }
@@ -1872,6 +1875,7 @@ function addLegalEnities(company, parameters) {
 		$('#cnt_view #legal_entity_card').hide(0);
 		getLegalEnities();
 		showMessageBox("Сведения успешно сохранены", 7000);
+		updateSmuserData();
 	}
 	xhr.send(body);
 };
@@ -1896,6 +1900,7 @@ function editLegalEnities(companyId, parameters) {
 		$('#cnt_view #legal_entity_card').hide(0);
 		getLegalEnities();
 		showMessageBox("Информация успешно изменена", 7000);
+		updateSmuserData();
 	}
 	xhr.send(body);
 };
@@ -2049,6 +2054,7 @@ function addTradePoints(branch, parameters) {
 		$('#cnt_view #trade_point_card').hide(0);
 		getTradePoints();
 		showMessageBox("Сведения успешно сохранены", 7000);
+		updateSmuserData();
 	}
 	xhr.send(body);
 };
@@ -2073,6 +2079,7 @@ function editTradePoints(branchId, parameters) {
 		$('#cnt_view #trade_point_card').hide(0);
 		getTradePoints();
 		showMessageBox("Информация успешно изменена", 7000);
+		updateSmuserData();
 	}
 	xhr.send(body);
 };

@@ -199,7 +199,7 @@ elseif($action == 'catalog_get')
 	{
 		if($key == 'filters' || $key == 'properties' || $key == 'fields') {
 			$arFnc[$key] = json_decode($value,true);
-		} elseif(!($key == 'action' || $key=='adds' || $key=='list_type'))
+		} elseif(!($key == 'action' || $key=='adds' || $key=='list_type' || $key=='smuser'))
 		{	
 			$arFnc[$key] = $value;
 		}
@@ -214,15 +214,23 @@ elseif($action == 'catalog_get')
 		}
 		else		
 		{
+			if($_POST["smuser"] != '') {
+				$smuser = json_decode($_POST["smuser"],true);
+			} else {
+				$smuser = array();
+			}			
+			
 			$arResult = $res["return"];
 			$list_type = ($_POST['list_type']=='')?'list':$_POST['list_type'];
 			$str = '';
 			$allow_stocks = $arResult['settings'][0]['allow_stocks'];
 			$allow_prices = $arResult['settings'][0]['allow_prices'];
+			$show_myPrices = $smuser['show_myPrices'];
+			$show_retailPrices = $smuser['show_retailPrices'];
 			$arItmes = $arResult['catalog'];
 			$arPictures = $arResult['pictures'];
 
-			$str = getCatalogHtml($arItmes, $arPictures, $list_type, $allow_prices,  $allow_stocks, $TLP_obj);
+			$str = getCatalogHtml($arItmes, $arPictures, $list_type, $allow_prices,  $allow_stocks, $TLP_obj, $show_myPrices, $show_retailPrices);
 			echo $str;
 		}	
 	}
@@ -713,7 +721,7 @@ elseif($action == 'getPersonInfo')
 							"phone"=>"Телефон",
 							"user_group"=>"Я в команде",
 							//"company"=>"Моя компания",
-							"user_status"=>"Мой статус",
+							//"user_status"=>"Мой статус",
 							//"address"=>"Наш адрес",
 							"information"=>"Информация о себе");
 			$rdFields = array("user_name"=>true, "email"=>true, "user_group"=>true, "user_status"=>true, "company"=>true, "address"=>true);
@@ -1259,7 +1267,9 @@ elseif($action == 'getPersonInfo')
 							"public_contact"=>"Публичный контакт",
 							"duplicate_messages"=>"Отправлять копии входящих сообщений на почту",
 							"deny_msgs"=>"Запретить обмен сообщениями",
-							"deny_files"=>"Запретить обмен файлами"
+							"deny_files"=>"Запретить обмен файлами",
+							"show_myPrices"=>"Показывать в каталогах 'Мои цены'",
+							"show_retailPrices"=>"Показывать в каталогах розничные цены"
 							);
 				if($arResult['user_status'] == 'saler'){			
 					$arFields["deny_orders"]="Запретить прием заказов";
@@ -1500,7 +1510,7 @@ elseif($action == 'setPersonInfo')
 		"allow_prices", "information", "deny_msgs", "deny_orders", "deny_files", "forward_to", "delivery_possible", "address", 
 		"address_GPS", "delivery_info", "company_INN", "company_KPP", "company_OGRN", "company_account", "company_BIK",
 		"company_bank", "company_coraccount", "company_chief", "company_buh", "company_phone", "company_activitytypes", "company_address", 
-		"company_logo", "photo", "catalog_shared");
+		"company_logo", "photo", "catalog_shared", "show_myPrices", "show_retailPrices");
 
 	$arParam = array();
 	$photo_filename = "";
@@ -1800,7 +1810,7 @@ elseif($action == 'catalog_init') {
 	{
 		if($key == 'offers' || $key == 'items') {
 			$arFnc[$key] = json_decode($value,true);
-		} elseif(!($key == 'action' || $key=='adds' || $key=='list_type'))
+		} elseif(!($key == 'action' || $key=='adds' || $key=='list_type' || $key=='smuser'))
 		{	
 			$arFnc[$key] = $value;
 		}
@@ -1811,6 +1821,13 @@ elseif($action == 'catalog_init') {
 		if($adds=='json')
 		{
 			$arResult = $res["retVal"];
+			if($_POST["smuser"] != '') {
+				$smuser = json_decode($_POST["smuser"],true);
+			} else {
+				$smuser = array();
+			}	
+			$show_myPrices = $smuser['show_myPrices'];
+			$show_retailPrices = $smuser['show_retailPrices'];
 
 			$list_type = ($_POST['list_type']=='')?'block':$_POST['list_type'];
 			$allow_stocks = $arResult['settings']['allow_stocks'];
@@ -1823,28 +1840,28 @@ elseif($action == 'catalog_init') {
 			}
 			
 			if(count($arResult["actions"]["items"]) > 0) {
-				$str = getCatalogHtml($arResult["actions"]["items"], $arResult["actions"]["pics"], $list_type, $allow_prices,  $allow_stocks, $TLP_obj);
+				$str = getCatalogHtml($arResult["actions"]["items"], $arResult["actions"]["pics"], $list_type, $allow_prices,  $allow_stocks, $TLP_obj, $show_myPrices, $show_retailPrices);
 				$arResult["actions"] = $str;
 			} else {
 				$arResult["actions"] = '';
 			}
 
 			if(count($arResult["popular"]["items"]) > 0) {
-				$str = getCatalogHtml($arResult["popular"]["items"], $arResult["popular"]["pics"], $list_type, $allow_prices,  $allow_stocks, $TLP_obj);
+				$str = getCatalogHtml($arResult["popular"]["items"], $arResult["popular"]["pics"], $list_type, $allow_prices,  $allow_stocks, $TLP_obj, $show_myPrices, $show_retailPrices);
 				$arResult["popular"] = $str;
 			} else {
 				$arResult["popular"] = '';
 			}
 
 			if(count($arResult["novetly"]["items"]) > 0) {
-				$str = getCatalogHtml($arResult["novetly"]["items"], $arResult["novetly"]["pics"], $list_type, $allow_prices,  $allow_stocks, $TLP_obj);
+				$str = getCatalogHtml($arResult["novetly"]["items"], $arResult["novetly"]["pics"], $list_type, $allow_prices,  $allow_stocks, $TLP_obj, $show_myPrices, $show_retailPrices);
 				$arResult["novetly"] = $str;
 			} else {
 				$arResult["novetly"] = '';
 			}
 			
 			if(count($arResult["catalog_items"]["items"]) > 0) {
-				$str = getCatalogHtml($arResult["catalog_items"]["items"], $arResult["catalog_items"]["pics"], $list_type, $allow_prices,  $allow_stocks, $TLP_obj);
+				$str = getCatalogHtml($arResult["catalog_items"]["items"], $arResult["catalog_items"]["pics"], $list_type, $allow_prices,  $allow_stocks, $TLP_obj, $show_myPrices, $show_retailPrices);
 				$arResult["catalog_items"] = $str;
 			} else {
 				$arResult["catalog_items"] = '';
@@ -2069,7 +2086,8 @@ function getFilterHtml($arResult) {
 	}
 	return $str;
 }
-function getCatalogHtml($arItmes, $arPictures, $list_type, $allow_prices,  $allow_stocks, $TLP_obj) {
+function getCatalogHtml($arItmes, $arPictures, $list_type, $allow_prices,  $allow_stocks, $TLP_obj, $show_myPrices, $show_retailPrices) {
+	
 	$str = '';
 	foreach($arItmes as $key=>$item)
 	{
@@ -2083,13 +2101,21 @@ function getCatalogHtml($arItmes, $arPictures, $list_type, $allow_prices,  $allo
 			$str = $str.'<div class="col_1">'.$item["article"].'</div><div class="col_2">'.$item["name"].'<p class="sub_info"><img src="/include/stdown.png"/></p></div>';
 			if($allow_prices)
 			{
-				$strPrice = ($item["price"]=='' || $item["price"] == 0)?'-':number_format($item["price"], 0, '.', ' ');
-				$actionPrice = ($item["action_price"]==='' || $item["action_price"] == 0)?'':number_format($item["action_price"], 0, '.', ' ');
-				if (strlen($action) && strlen($actionPrice)) {
-					$str = $str.'<div class="col_3">'.$actionPrice.'</div>';
-				} else {
-					$str = $str.'<div class="col_3">'.$strPrice.'</div>';
-				};
+				if($show_myPrices) {
+					$strPrice = ($item["price"]=='' || $item["price"] == 0)?'-':number_format($item["price"], 0, '.', ' ');
+					$actionPrice = ($item["action_price"]==='' || $item["action_price"] == 0)?'':number_format($item["action_price"], 0, '.', ' ');
+					
+					if (strlen($action) && strlen($actionPrice)) {
+						$str = $str.'<div class="col_3">'.$actionPrice.'</div>';
+					} else {
+						$str = $str.'<div class="col_3">'.$strPrice.'</div>';
+					};
+				}
+				if($show_retailPrices) {
+					$strPrice = ($item["retail_price"]=='' || $item["retail_price"] == 0)?'-':number_format($item["retail_price"], 0, '.', ' ');
+					$str = $str.'<div class="col_6">'.$strPrice.'</div>';
+				}
+				
 			}	
 			if($allow_stocks)
 			{
@@ -2172,14 +2198,21 @@ function getCatalogHtml($arItmes, $arPictures, $list_type, $allow_prices,  $allo
 					}	
 					if($allow_prices)
 					{
-						$strPrice = ($item["price"]=='' || $item["price"] == 0)?'-':number_format($item["price"], 2, '.', ' ').' руб';
-						$actionPrice = ($item["action_price"]==='' || $item["action_price"] == 0)?'':number_format($item["action_price"], 2, '.', ' ').' руб';
-						$stroke = '';
-						if ($item["action"] && strlen($actionPrice)) {
-							$str = $str.'<div class="item_block_name item_block_name_allows item_action_price">'.$actionPrice.'</div>';
-							$stroke = ' cross-out';
-						};
-						$str = $str.'<div class="item_block_name item_block_name_allows item_price'.$stroke.'">'.$strPrice.'</div>';
+						if($show_myPrices) {
+							$strPrice = ($item["price"]=='' || $item["price"] == 0)?'-':number_format($item["price"], 2, '.', ' ').' руб';
+							$actionPrice = ($item["action_price"]==='' || $item["action_price"] == 0)?'':number_format($item["action_price"], 2, '.', ' ').' руб';
+							$stroke = '';
+							if ($item["action"] && strlen($actionPrice)) {
+								$str = $str.'<div class="item_block_name item_block_name_allows item_action_price">'.$actionPrice.'</div>';
+								$stroke = ' cross-out';
+							};
+							$str = $str.'<div class="item_block_name item_block_name_allows item_price'.$stroke.'">'.$strPrice.'</div>';
+						}	
+						if($show_retailPrices && !($item["retail_price"]=='' || $item["retail_price"] == 0)) {
+							$strPrice = ($item["retail_price"]=='' || $item["retail_price"] == 0)?'-':number_format($item["retail_price"], 2, '.', ' ').' руб';
+							$str = $str.'<div class="item_block_name item_block_name_allows">Цена в рознице</div>';
+							$str = $str.'<div class="item_block_name item_block_name_allows item_price">'.$strPrice.'</div>';
+						}	
 					}	
 					$str = $str.'<div class="cart" data-cart-id="'.$item["id"].'">
 						<div id="b_minus" class="cart_button"><span>-</span></div>

@@ -12,6 +12,7 @@ var hasNew = false;
 var hasBestseller = false;
 
 var curCatalogInfo = {"contact": undefined, "has_catalog": false, "allow_stocks": false, "allow_prices": false};
+//var lastPerformance = performance.now();
 
 
 $(document).ready(function()
@@ -185,13 +186,17 @@ $(document).ready(function()
 	});	
 	
 	$("#item_list").scroll(function(e) {
-		if (!$('#item_li').children().length || $('#item_li .cat').length || $('div').is('.wait') || noItems) { return };
-		var item_li = document.getElementById("item_list");
-		if (($("#item_li").height() - $("#item_list").scrollTop() - $("#item_list").height()  < 400)) {
-			$('#item_li').append('<div class="wait"><img src="/include/wait.gif"/></div>');
-			item_nom = item_nom + 1;
-			getSelectedContactItems(item_nom, items_filter);
-		};
+		//if(performance.now() - lastPerformance > 40) {
+			//lastPerformance = performance.now();
+			
+			if (!$('#item_li').children().length || $('#item_li .cat').length || $('div').is('.wait') || noItems) { return };
+			var item_li = document.getElementById("item_list");
+			if (($("#item_li").height() - $("#item_list").scrollTop() - $("#item_list").height()  < 400)) {
+				$('#item_li').append('<div class="wait"><img src="/include/wait.gif"/></div>');
+				item_nom = item_nom + 1;
+				getSelectedContactItems(item_nom, items_filter);
+			};
+		//}	
 	});	
 
 	//list_type
@@ -1155,13 +1160,14 @@ function getSelectedContactItems(it_nom, it_filter) {
 	$('#item_list_header').css('display', (list_type == 'list')?'block':'none');
 	if(!(contact.id == undefined))
 	{
-		var arr_fld = ['id', 'article','name','price','stock','unit','currencyId','action','popular','novetly','action_price','receipt_date','pictures'];
+		var arr_fld = ['id', 'article','name','price','stock','unit','currencyId','action','popular','novetly','action_price','retail_price','receipt_date','pictures'];
 		var xhr = new XMLHttpRequest();
 		var body =	'action=catalog_get' +
 					'&list_type='+ list_type +
 					'&contact=' + encodeURIComponent(contact.name) +
+					'&smuser=' + encodeURIComponent(JSON.stringify(smuser)) +
 					'&fields=' + encodeURIComponent(JSON.stringify(arr_fld)) +
-					'&limit=100' + 
+					'&limit=30' + 
 					'&nom=' + it_nom;
 		if(!(it_filter == '')) {
 			body = body + '&filters=' + encodeURIComponent(JSON.stringify(it_filter));
@@ -1819,6 +1825,7 @@ function getItemInfoForDoc(obj) {
 					'&adds=json' +
 					'&contact=' + encodeURIComponent(contact.name) +
 					'&fields=' + encodeURIComponent(JSON.stringify(arr_fld)) +
+					'&smuser=' + encodeURIComponent(JSON.stringify(smuser)) +
 					'&properties=' + encodeURIComponent(JSON.stringify(arr_props)) +
 					'&filters=' + encodeURIComponent(JSON.stringify(arr_filter)) +
 					'&limit=1' + 
@@ -2013,13 +2020,14 @@ function getFeaturedItems(itemType) {
 	var contact = getActiveContact();
 	if (typeof contact.id === 'undefined') contact = smuser;
 	if (typeof contact.id === 'undefined') return;
-	var arr_fld = ['id', 'article','name','price','stock','unit','currencyId','action','popular','novetly','action_price','receipt_date','pictures'];
+	var arr_fld = ['id', 'article','name','price','stock','unit','currencyId','action','popular','novetly','action_price','retail_price','receipt_date','pictures'];
 	var arr_filter = [{"mode": "item", "name": itemType, "operation": "NOT IN", "value": '"0","false","","Нет"'}];
 	
 	var xhr = new XMLHttpRequest();
 		var body =	'action=catalog_get' +
 					'&list_type=' + list_type +
 					'&contact=' + encodeURIComponent(contact.name) +
+					'&smuser=' + encodeURIComponent(JSON.stringify(smuser)) +
 					'&fields=' + encodeURIComponent(JSON.stringify(arr_fld)) +
 					'&filters=' + encodeURIComponent(JSON.stringify(arr_filter)) +
 					'&limit=' + item_qty +
@@ -2051,15 +2059,16 @@ function catalogInit(contact) {
 
 	if(!(contact.id == undefined))
 	{
-		var arr_fld = ['id', 'article','name','price','stock','unit','currencyId','action','popular','novetly','action_price','receipt_date','pictures'];
+		var arr_fld = ['id', 'article','name','price','stock','unit','currencyId','action','popular','novetly','action_price','retail_price','receipt_date','pictures'];
 		var offers = {"action":true,"novetly":true,"popular":true,"quantity":10,"fields":arr_fld};
-		var items =  {"quantity":100, "fields":arr_fld};
+		var items =  {"quantity":30, "fields":arr_fld};
 		
 		var xhr = new XMLHttpRequest();
 		var body =	'action=catalog_init' +
 					'&adds=json' +
 					'&list_type=' + list_type + 
 					'&contact=' + encodeURIComponent(contact.name) +
+					'&smuser=' + encodeURIComponent(JSON.stringify(smuser)) +
 					'&offers=' + encodeURIComponent(JSON.stringify(offers)) + 
 					'&get_categories=true' +
 					'&get_filters=true' +

@@ -574,7 +574,13 @@
 #order_view .fa-plus {
 	float: right;
 }
-
+#order_view .order_item_list_content .col_2 .fa{
+	transform: scale(1.2);
+}
+#order_view .order_item_list_content .col_2 .fa:hover {
+	transition: all 0.3s;
+	transform: scale(1.4) rotate(180deg);
+}
 #order_view  #del_item.disabled,
 #order_view  #del_item.disabled:hover {
 	color:#eee;
@@ -690,11 +696,11 @@
 	padding:3px 5px;
 	text-align:center;
 	box-sizing:border-box;
-	border:0;
-	background: #f6f6f6;
+	border: 1px solid #777;
+	/*background: #f6f6f6;*/
 	font-size:14px;
 	font-weight: 600;
-	color:#777;
+	color:#111;
 	border-radius: 3px;
 }
 
@@ -2048,3 +2054,6 @@ div#UserDocList .UserDocItem:hover {
 #order_list .order.marked.active .order_line {
 	background-color: rgba(38, 166, 154, 0.4);
 }
+/*#order_view .order_item_list_content .col_1, #order_view .order_item_list_content .col_2, #order_view .order_comment .selected_value  {
+	user-select: all;
+}*/

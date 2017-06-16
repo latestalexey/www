@@ -49,7 +49,7 @@ if($mode=='')
 			<table style="border-spacing: 0; min-width: 215px;">
 				<tr>
 					<td>
-						<div id="login_user" class="cnt_text" data-nps="<?=$need_pass;?>" data-usr-id="<?=$TLP_obj->user_info['id'];?>" data-usr-name="<?=$TLP_obj->user_info['name']?>" data-usr-fullname="<?=$username;?>" data-photo-id="<?=$TLP_obj->user_info['photo_id'];?>" data-usr-index="<?=mb_strtolower($TLP_obj->user_info['name'],'UTF-8').'_ins_'.mb_strtolower($username,'UTF-8');?>">
+						<div id="login_user" class="cnt_text" data-nps="<?=$need_pass;?>" data-usr-id="<?=$TLP_obj->user_info['id'];?>" data-usr-name="<?=$TLP_obj->user_info['name']?>" data-usr-fullname="<?=$username;?>" data-photo-id="<?=$TLP_obj->user_info['photo_id'];?>" data-usr-index="<?=mb_strtolower($TLP_obj->user_info['name'],'UTF-8').'_ins_'.mb_strtolower($username,'UTF-8');?>" data-usr-myPrices="<?=$TLP_obj->user_info['show_myPrices']?>" data-usr-retailPrices="<?=$TLP_obj->user_info['show_retailPrices']?>">
 							<?=$username;?>											
 						</div>	
 						<!--<p class="cnt_add" style="font-size: 14px; color:#444; text-align: right;"><a id="my_logout" onclick="MyUserLogout()">Выход</a></p>-->

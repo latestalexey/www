@@ -859,6 +859,9 @@ $(document).ready(function() {
 	}
 
 	smuser = getMainUser();
+	if(smuser.name != undefined) {
+		updateSmuserData();
+	}
 	messagesRequest();
 	setInterval(messagesRequest, 5000);
 	
@@ -876,6 +879,22 @@ $(document).ready(function() {
 	}*/	
 });
 
+function updateSmuserData() {
+	$.post('/my/ajax/action.php', { action: "getPersonInfo", "contact": smuser.name, "adds": "json" }, function(data) {
+		var arUser = JSON.parse(data);
+		smuser.show_myPrices = arUser.show_myPrices;
+		smuser.show_retailPrices = arUser.show_retailPrices;
+	});
+	$.post('/my/ajax/action.php', { action: "Company_GetList", "contact": smuser.name, "adds": "json" }, function(data) {
+		var arCompanies = JSON.parse(data);
+		smuser.companyList = arCompanies;
+	});
+	$.post('/my/ajax/action.php', { action: "Branch_GetList", "contact": smuser.name, "adds": "json" }, function(data) {
+		var arBranches = JSON.parse(data);
+		smuser.branchList = arBranches;
+	});
+
+}
 function parseURL(url_string) {
     var data = {};
     if(url_string) {
