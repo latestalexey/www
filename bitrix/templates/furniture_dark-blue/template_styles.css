@@ -100,18 +100,18 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 	background-image: url(/include/checked.svg);
 }
 /*Confirmation*/
-#confirmation {text-align: center; color: #FFFFFF; padding-top: 70px; min-height: 650px;
+#confirmation {text-align: center; color: #ff6600; padding-top: 70px; min-height: 650px;
     position: absolute; top: 0; left: 0;
-	background-color: #607D8B; opacity: 0.8; z-index: 20;
+	background-color: #fff;
     width: 100%;
     height: 100%;
     z-index: 900;
 	}
-#confirmation a {color: #FFFFFF; text-decoration: underline;}
+#confirmation a {color: #ff6600; text-decoration: underline;}
 #confirmation a:hover, #confirmation_g a:hover {color: #FF6E53; text-decoration: underline;}
 
-#confirmation_g {text-align: center; color: #00796B; padding-top: 50px;}
-#confirmation_g a {color: #00796B; text-decoration: underline;}
+#confirmation_g {text-align: center; color: #ff6600; padding-top: 50px;}
+#confirmation_g a {color: #ff6600; text-decoration: underline;}
 
 .resend-intro-cnt {
 	padding: 0 20px;
@@ -134,7 +134,7 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 	position: relative;
     top: .9em;
     display: table-cell;
-    border-top: 1px solid #00796B;	
+    border-top: 1px solid #ff6600;	
 }
 
 .line {
@@ -143,7 +143,7 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 	position: relative;
     top: .9em;
     display: table-cell;
-    border-top: 1px solid #FFFFFF;	
+    border-top: 1px solid #ff6600;	
 }
 .left {
 	text-align: left;
@@ -163,14 +163,15 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
     margin-top: 39px;
 	margin: 51px auto 0;
     font-weight: 600;
-    text-shadow: rgba(0,0,0,.65)0 1px 1px;	
+    /*text-shadow: rgba(0,0,0,.65)0 1px 1px;	*/
 }
 .h2 {
     margin-top: 72px;
 	font-size: 1.8em;
 	line-height: 1.2em;
     font-weight: 300;
-	text-shadow: rgba(0,0,0,.65)0 1px 1px;
+	/*text-shadow: rgba(0,0,0,.65)0 1px 1px;*/
+	color: #26A69A;
     max-width: 930px;
     margin: 72px auto 10px auto;	
 }
@@ -180,6 +181,9 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
     font-size: 1.1em;
 	font-weight: 200;
     line-height: 1.6em;	
+}
+#new_password_confirm:hover {
+	background-color: #199a8e !important;
 }
 
 /*Confirmation*/

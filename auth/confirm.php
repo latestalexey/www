@@ -141,20 +141,31 @@ if($check_res['err_code'] == 0 || $check_res['err_code'] == 14) {
 						 
 					</h2>
 					<form id="change_pass_form" method="post" action="#">
-						<div style="padding: 10px 0 20px 0;">
-							<input id="new_pass" style="height: 40px; width: 282px; border-radius: 5px; border: 1px solid #FFF; font-size: 20px; padding: 10px;11" type="password" placeholder="Введите новый пароль" name="new_pass" value="">
+						<div style="padding: 10px 0 10px 0;">
+							<input id="new_name" style="height: 40px; width: 282px; border-radius: 5px; border: 1px solid #ccc; font-size: 18px; padding: 10px;11" type="text" placeholder="Введите ваше имя" name="new_name" value="">
+							<div style="color: #444; font-size: 12px;">Например: Виктор, Бизнес логистика</div>
 						</div>
-						<div id="new_password_confirm" style="margin: auto;width: 200px;padding: 20px;font-size: 18px;color: #FFF;border-color: #FFF;background-color: rgba(96, 125, 139, 0.54);" class="simple_button">
+						<div style="padding: 10px 0 20px 0;">
+							<input id="new_pass" style="height: 40px; width: 282px; border-radius: 5px; border: 1px solid #ccc; font-size: 18px; padding: 10px;11" type="password" placeholder="Введите новый пароль" name="new_pass" value="">
+						</div>
+						<div id="new_password_confirm" style="margin: auto;width: 200px;padding: 20px;font-size: 18px;color: #FFF;border-color: #ccc;background-color: #26A69A;" class="simple_button">
 							Подтвердить
 						</div>
 						<div id="reg_error" style="margin: auto;width: 200px;font-size: 16px;color: #FF0000;"></div>
 						<input id="ui" type="hidden" name="ui" value="<?=$pas;?>"/>
+						<input id="usr" type="hidden" name="usr" value="<?=$usr;?>"/>
 						<input style="display: none;" type="submit" value="OK"/>
 					</form>
 						
 				</div>	
 			</div>
 			<script id="auth_scr" type="text/javascript">
+				$('#new_name').keydown(function(e){
+					if (e.which == 13) {
+						$('#new_pass').focus();
+						e.preventDefault();
+					}	
+				});
 				$('#new_password_confirm').click(function(e){
 					e.preventDefault();
 					$('#change_pass_form').submit();
@@ -181,8 +192,27 @@ if($check_res['err_code'] == 0 || $check_res['err_code'] == 14) {
 					{ 
 						if (xhr.readyState != 4) return;
 						console.log(xhr.responseText);
-						window.location.href = '/my/index.php';
-						
+						var inp_name = $('#change_pass_form').find('#new_name').val();
+						if(inp_name != '') {
+							
+							var xhrName = new XMLHttpRequest();
+							var bodyName =	'action=setPersonInfo' +
+								'&adds=html&name='+encodeURIComponent($(this).find('#usr').val()) +
+								'&user_fullname='+ encodeURIComponent(inp_name);
+
+							xhrName.open("POST", '/my/ajax/action.php', true);
+							xhrName.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+							xhrName.onreadystatechange = function() 
+							{ 
+								if (xhrName.readyState != 4) return;
+								
+								console.log(xhrName.responseText);
+								window.location.href = '/my/index.php';
+							}	
+							xhrName.send(bodyName);
+						} else {
+							window.location.href = '/my/index.php';
+						}
 					}
 					xhr.send(body);
 				});	
