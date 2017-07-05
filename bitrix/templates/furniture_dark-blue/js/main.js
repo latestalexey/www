@@ -583,7 +583,8 @@ $(document).ready(function() {
 		}
         $(this).siblings("li").removeClass('active');
 		topMenu_action($(this).attr('id'));
-		$('.up_pan .up_add_menu').removeClass('hidden').siblings('#contact_filter').css('top','-8px');
+		$('.up_pan .up_add_menu').removeClass('hidden')
+		$('.up_pan .up_add_menu').siblings('#contact_filter').css('top','-8px');
     });
 
 	$('.my_body').on('click','#add_cnt', function(e) {

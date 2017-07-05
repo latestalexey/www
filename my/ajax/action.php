@@ -228,9 +228,9 @@ elseif($action == 'catalog_get')
 			$show_myPrices = $smuser['show_myPrices'];
 			$show_retailPrices = $smuser['show_retailPrices'];
 			$arItmes = $arResult['catalog'];
-			$arPictures = $arResult['pictures'];
+			//$arPictures = $arResult['pictures'];
 
-			$str = getCatalogHtml($arItmes, $arPictures, $list_type, $allow_prices,  $allow_stocks, $TLP_obj, $show_myPrices, $show_retailPrices);
+			$str = getCatalogHtml($arItmes, $list_type, $allow_prices,  $allow_stocks, $TLP_obj, $show_myPrices, $show_retailPrices);
 			echo $str;
 		}	
 	}
@@ -263,7 +263,6 @@ elseif($action == 'catalog_getItem')
 			$allow_stocks = $arResult['settings']['allow_stocks'];
 			$allow_prices = $arResult['settings']['allow_prices'];
 			$arItmes = $arResult['catalog'];
-			$arPictures = $arResult['pictures'];
 			$arProperties = array();
 			foreach($arResult['properties'] as $curArray)
 			{$arProperties = $curArray;}
@@ -280,17 +279,17 @@ elseif($action == 'catalog_getItem')
 			$str = '';
 			foreach($arItmes as $key=>$item)
 			{
-				$im_count = (count($arPictures[$item["id"]]) == 0)?1:count($arPictures[$item["id"]]);
+				$im_count = (count($item["pictures"]) == 0)?1:count($item["pictures"]);
 				$li_size = $imSize*$im_count;
 				$str = '<div class="item_detail_info_header" style="font-size: 20px; text-align: center;">'.$item['name'].'</div>
 						<div>
 							<div style="float: left; height: '.$imSize.'px; width: '.$imSize.'px; margin: 15px 15px 0 0;" class="item_photo_list">
 								<div class="item_photo_li" style="width: '.$li_size.'px;" data-im-num="0" data-im-count="'.$im_count.'">';
-								if(count($arPictures[$item["id"]]) > 0) {
+								if(count($item["pictures"]) > 0) {
 									$i = 0;
-									foreach($arPictures[$item["id"]] as $image)
+									foreach($item["pictures"] as $image)
 									{
-										$item_url = 'https://'.$TLP_obj->TLP_HOST.'/Catalog_Pics/'.$image['file_id'];
+										$item_url = 'https://'.$TLP_obj->TLP_HOST.'/Catalog_Pics/'.$image;
 										$str = $str.'<div class="item_photo" data-im-cnt="'.$i.'" style="width: '.$imSize.'px; height: '.$imSize.'px; background-image: url('.$item_url.');"></div>';
 										$i++;
 									}
@@ -1840,28 +1839,28 @@ elseif($action == 'catalog_init') {
 			}
 			
 			if(count($arResult["actions"]["items"]) > 0) {
-				$str = getCatalogHtml($arResult["actions"]["items"], $arResult["actions"]["pics"], $list_type, $allow_prices,  $allow_stocks, $TLP_obj, $show_myPrices, $show_retailPrices);
+				$str = getCatalogHtml($arResult["actions"]["items"], $list_type, $allow_prices,  $allow_stocks, $TLP_obj, $show_myPrices, $show_retailPrices);
 				$arResult["actions"] = $str;
 			} else {
 				$arResult["actions"] = '';
 			}
 
 			if(count($arResult["popular"]["items"]) > 0) {
-				$str = getCatalogHtml($arResult["popular"]["items"], $arResult["popular"]["pics"], $list_type, $allow_prices,  $allow_stocks, $TLP_obj, $show_myPrices, $show_retailPrices);
+				$str = getCatalogHtml($arResult["popular"]["items"], $list_type, $allow_prices,  $allow_stocks, $TLP_obj, $show_myPrices, $show_retailPrices);
 				$arResult["popular"] = $str;
 			} else {
 				$arResult["popular"] = '';
 			}
 
 			if(count($arResult["novetly"]["items"]) > 0) {
-				$str = getCatalogHtml($arResult["novetly"]["items"], $arResult["novetly"]["pics"], $list_type, $allow_prices,  $allow_stocks, $TLP_obj, $show_myPrices, $show_retailPrices);
+				$str = getCatalogHtml($arResult["novetly"]["items"], $list_type, $allow_prices,  $allow_stocks, $TLP_obj, $show_myPrices, $show_retailPrices);
 				$arResult["novetly"] = $str;
 			} else {
 				$arResult["novetly"] = '';
 			}
 			
 			if(count($arResult["catalog_items"]["items"]) > 0) {
-				$str = getCatalogHtml($arResult["catalog_items"]["items"], $arResult["catalog_items"]["pics"], $list_type, $allow_prices,  $allow_stocks, $TLP_obj, $show_myPrices, $show_retailPrices);
+				$str = getCatalogHtml($arResult["catalog_items"]["items"], $list_type, $allow_prices,  $allow_stocks, $TLP_obj, $show_myPrices, $show_retailPrices);
 				$arResult["catalog_items"] = $str;
 			} else {
 				$arResult["catalog_items"] = '';
@@ -2086,7 +2085,7 @@ function getFilterHtml($arResult) {
 	}
 	return $str;
 }
-function getCatalogHtml($arItmes, $arPictures, $list_type, $allow_prices,  $allow_stocks, $TLP_obj, $show_myPrices, $show_retailPrices) {
+function getCatalogHtml($arItmes, $list_type, $allow_prices,  $allow_stocks, $TLP_obj, $show_myPrices, $show_retailPrices) {
 	
 	$str = '';
 	foreach($arItmes as $key=>$item)
@@ -2148,7 +2147,7 @@ function getCatalogHtml($arItmes, $arPictures, $list_type, $allow_prices,  $allo
 		}
 		elseif ($list_type == 'block') {
 			//block type
-			$im_count = (count($arPictures[$item["id"]])==0)?1:count($arPictures[$item["id"]]);
+			$im_count = (count($item['pictures'])==0)?1:count($item['pictures']);
 			$action = $item["popular"] ? ' popular' : '';
 			$action = $item["novetly"] ? ' novetly' : $action;
 			$action = $item["action"] ? ' action' : $action;
@@ -2160,7 +2159,7 @@ function getCatalogHtml($arItmes, $arPictures, $list_type, $allow_prices,  $allo
 					<div class="item_photo_list">
 						<div class="item_photo_li" style="width: '.$li_size.'px;" data-im-num="0" data-im-count="'.$im_count.'">';
 						for ($i=0; $i<$im_count; $i++) {
-							$item_url = (count($arPictures[$item["id"]]) == 0)?'/include/no_photo.svg':'https://'.$TLP_obj->TLP_HOST.'/Catalog_Pics/prev/'.$arPictures[$item["id"]][$i]["file_id"];
+							$item_url = (count($item['pictures']) == 0)?'/include/no_photo.svg':'https://'.$TLP_obj->TLP_HOST.'/Catalog_Pics/prev/'.$item["pictures"][$i];
 							$str = $str.'<div class="item_photo" data-im-cnt="'.$i.'" style="background-image: url('.$item_url.');"></div>';
 						}
 						$str = $str.'</div>

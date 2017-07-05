@@ -2,7 +2,7 @@
 //$sock = fsockopen("51.254.69.66", 15671, $errno, $errstr, 30);
 //$sock = fsockopen("ssl://sstest.e-teleport.ru", 443, $errno, $errstr, 30);
 
-$TLP_HOST = "sstest.e-teleport.ru";
+$TLP_HOST = "wbs.e-teleport.ru";
 $TLP_PORT = 443;
 $TLP_PREFIX = "ssl://";
 

@@ -659,7 +659,7 @@ $(document).ready(function()
 			$.each(arItem['properties'][item_id], function(key, value){
 				html_props = html_props + '<div class="item-prop"><span class="name">'+value.property_name+'</span><input value="'+value.property_value+'"></div>'
 			});
-			var item_image = (arItem['pictures'].length) ? 'https://wbs.e-teleport.ru/Catalog_Pics/'+arItem['pictures'][item_id][0].file_id : '/include/no_photo.svg';
+			var item_image = (arItem['catalog'][0]['pictures'].length) ? 'https://wbs.e-teleport.ru/Catalog_Pics/'+arItem['catalog'][0]['pictures'][0] : '/include/no_photo.svg';
 			var html_str = '<div class="item_detail_block_edit">' +
 								'<div class="close" style="float: right;"><img src="/include/close_window.svg"></div>' +
 								'<h2>Редактирование карточки товара</h2>' +
@@ -922,7 +922,9 @@ function createNewDoc(contact) {
 
 function hideMenuItems(has_catalog){
 	$('#contact_filter').css('top','-8px');
-	$('.up_pan .up_add_menu').removeClass('hidden').children('.menu_content').remove();
+	$('.up_pan .up_add_menu').removeClass('hidden');
+	$('.up_pan .up_add_menu .menu_content').remove();
+
 	var contact = getActiveContact();
 	var html_str = '';
 	if (contact.id == undefined) {
@@ -1215,34 +1217,39 @@ function showSelectedContactCategories(cat_id, arCategories) {
 	if (arCategories.length) {
 		var html_str = '';
 		if ($('#vwmode_pan .activevwmode').attr('data-ln') === 'block') {
-			$.each(arCategories, function(i, val){		
-				var html_img = '';
-				for (key = 0; key < 4; key++) {
-					//var img = (val.pics[key]!=undefined) ? 'https://wbs.e-teleport.ru/Catalog_Pics/prev/'+val.pics[key] : '/include/no_photo.svg';
-					var img = '/include/no_photo.svg';
-					html_img = html_img + '<div><img src="'+img+'"></div>'
-				};
-				html_str = html_str + 
-					'<div id="cat_'+val.id+'" class="cat cat_block cat_'+i+'" data-catid="'+val.id+'" data-parent-catid="'+val.parent_id+'">\
-						<div class="cat_block_pict">'+html_img+'</div>\
-						<div class="cat_block_name cat_name">'+val.name+ '</div>\
-					</div>';
-					//<div class="cat_block_name cat_name">'+val.name+ ' ('+val.count+')</div>\
+			$.each(arCategories, function(i, val){
+				if(val.parent_id == cat_id) {
+					var html_img = '';
+					for (key = 0; key < 4; key++) {
+						//var img = (val.pics[key]!=undefined) ? 'https://wbs.e-teleport.ru/Catalog_Pics/prev/'+val.pics[key] : '/include/no_photo.svg';
+						var img = '/include/no_photo.svg';
+						html_img = html_img + '<div><img src="'+img+'"></div>'
+					};
+					html_str = html_str + 
+						'<div id="cat_'+val.id+'" class="cat cat_block cat_'+i+'" data-catid="'+val.id+'" data-parent-catid="'+val.parent_id+'">\
+							<div class="cat_block_pict">'+html_img+'</div>\
+							<div class="cat_block_name cat_name">'+val.name+ '</div>\
+						</div>';
+						//<div class="cat_block_name cat_name">'+val.name+ ' ('+val.count+')</div>
+				}		
 			});
 		} else {
 			$.each(arCategories, function(i, val){		
-				html_str = html_str + 
-					'<div id="cat_'+val.id+'" class="cat item cat_'+i+'" data-catid='+val.id+' data-parent-catid='+val.parent_id+'>\
-						<div class="item_content">\
-							<div class="item_line">\
-								<div class="col_2 cat_name">'+val.name+'</div>\
+				if(val.parent_id == cat_id) {
+					html_str = html_str + 
+						'<div id="cat_'+val.id+'" class="cat item cat_'+i+'" data-catid='+val.id+' data-parent-catid='+val.parent_id+'>\
+							<div class="item_content">\
+								<div class="item_line">\
+									<div class="col_2 cat_name">'+val.name+'</div>\
+								</div>\
 							</div>\
-						</div>\
-					</div>';
+						</div>';
+				}	
 			});
 		}
 		$('#item_list_header').css('display','none');
 		$('#item_li').html(html_str).position({'top':0, 'left': 0});
+		hideMenuItems(1);
 	}
 }
 
@@ -1261,7 +1268,7 @@ function getSelectedContactCategories(cat_id) {
 				    '&adds=json' +
 					'&parent_id=' + encodeURIComponent(cat_id) +
 				    '&contact=' + encodeURIComponent(contact.name) + 
-					'&parametrs=' + encodeURIComponent(parametrs);			
+					'&parametrs=' + JSON.stringify(parametrs);			
 		
 		xhr.open("POST", '/my/ajax/action.php', true);
 		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
