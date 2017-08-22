@@ -1098,7 +1098,7 @@ function srcSelectedContactItems(contact, list_type, has_catalog, responseText) 
 				<p style="font-size: 20px;">\
 					Выберите другой контакт или перейдите в раздел \
 					<a href="/my/index.php?mode=messages&cnt='+contact.name+'" style="color: #26a69a; text-decoration: underline;">сообщений</a>\
-					, для общения с ним.\
+					 для общения с ним.\
 				</p>\
 			</div>\
 			</div>';
@@ -1144,7 +1144,7 @@ function getSelectedContactItems(it_nom, it_filter) {
 				<p style="font-size: 20px;">\
 					Выберите другой контакт или перейдите в раздел \
 					<a href="/my/index.php?mode=messages&cnt='+contact.name+'" style="color: #26a69a; text-decoration: underline;">сообщений</a>\
-					, для общения с ним.\
+					 для общения с ним.\
 				</p>\
 			</div>\
 			</div>';

@@ -58,7 +58,7 @@ if($mode=='')
 	</div>
 	<div style="text-align: center; border-right: none;">
 		<div id="it_search" style="display: inline-block; position: relative; top: 4px;">
-			<input style="display: inline-block; min-width: 150px; width: 150px;" id="it_search_inp" class="search_inp" type="text" placeholder="Введите артикул, наименование или штрихкод">
+			<input style="display: inline-block; min-width: 150px; width: 150px;" id="it_search_inp" class="search_inp" type="text" placeholder="Введите артикул, наименование">
 			<div id="it_search_icon" class="simple_button" style="">
 				<svg fill="#777" height="32px" version="1.1" viewBox="0 0 32 32" width="32px" xmlns="http://www.w3.org/2000/svg" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns" xmlns:xlink="http://www.w3.org/1999/xlink">
 					<g fill="none" fill-rule="evenodd" id="Page-1" stroke="none" stroke-width="1"></g>

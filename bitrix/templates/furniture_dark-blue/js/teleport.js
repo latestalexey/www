@@ -344,7 +344,7 @@ function addUnknownContact(contact) {
 		{ 
 			if (xhr.readyState != 4) return;
 			if(!(xhr.responseText.indexOf('%err%') == -1)) {
-				showError(xhr.responseText.replace('%err%',''));
+				//showError(xhr.responseText.replace('%err%',''));
 				return;
 			}
 			try {

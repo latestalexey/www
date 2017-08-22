@@ -76,6 +76,9 @@ if($mode=='')
 				СООБЩЕНИЯ
 				<div id="li_msg" class="notify"></div>
 			</li>
+			<li id="help">
+				<a href="/upload/user_guide.pdf" target="_blank" style="color: #fff;">ПОМОЩЬ</a>
+			</li>			
 		</ul>	
 	</div>
 	<div class="workspace">

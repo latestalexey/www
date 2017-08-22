@@ -1138,7 +1138,7 @@ position: absolute; top: 0px; left: 0px; z-index: 0;}
 }
 .new_ord span {position: relative; top: 9px;}
 
-.topmenu { padding-top: 1px; width: 600px; margin: 0 auto 0 auto; font: 800 16px 'Open Sans', Arial, Helvetica, sans-serif;}
+.topmenu { padding-top: 1px; width: 670px; margin: 0 auto 0 auto; font: 800 16px 'Open Sans', Arial, Helvetica, sans-serif;}
 .topmenu li {float: left; padding: 0px 30px; cursor: pointer; text-align:center; text-decoration: none; list-style-type: none; color: #FFF; position: relative;}
 .topmenu li.active {border-bottom: 3px solid #CFD8DC; color: #CFD8DC;}
 .topmenu li:hover {color: #CFD8DC;}
