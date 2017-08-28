@@ -76,8 +76,8 @@ if($mode=='')
 				СООБЩЕНИЯ
 				<div id="li_msg" class="notify"></div>
 			</li>
-			<li id="help">
-				<a href="/upload/user_guide.pdf" target="_blank" style="color: #fff;">ПОМОЩЬ</a>
+			<li id="m_help" <?if($mode == "help"){echo 'class="active"';}?>>
+				ПОМОЩЬ
 			</li>			
 		</ul>	
 	</div>

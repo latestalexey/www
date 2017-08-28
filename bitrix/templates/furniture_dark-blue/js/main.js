@@ -575,7 +575,7 @@ $(document).ready(function() {
     });
 	//menu
 	 $(".topmenu li").click(function(){
-		if($(this).attr('id') == 'help') { return;}
+		//if($(this).attr('id') == 'help') { return;}
 		if(!$(this).hasClass('active')) {
 			$(this).addClass('active');
 		}
