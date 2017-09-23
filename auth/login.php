@@ -56,7 +56,14 @@ elseif(count($login_res["ResponseStatus"]) == 0)
 		$ciphertext_base64 = base64_encode($arPass);
 		setcookie('tlp_sid',$ciphertext_base64,time()+(30*24*60*60),'/');
 	}	
-	
+	$str_cookies = '';
+	foreach($login_res['cookies'] as $key => $value)
+	{
+		$str_cookies .= ''.$key.'='.$value.';';
+		//setcookie($key,$value,0,'/',$GLOBALS['TLP_HOST']);
+	}
+	setcookie('tl_ck',$str_cookies,0,'/');
+
 	include ($_SERVER["DOCUMENT_ROOT"]."/my/admin/init.php");
 }
 else

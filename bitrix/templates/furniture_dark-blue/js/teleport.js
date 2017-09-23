@@ -1674,6 +1674,7 @@ function MyUserLogout() {
 	xhr.onreadystatechange = function() 
 	{ 
 		if (xhr.readyState != 4) return;
+		window.location.href = '/my/index.php';
 	}		
 	xhr.send(body);
 }

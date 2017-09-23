@@ -1,10 +1,10 @@
 <?
 ob_start();
-define("ADMIN_SECTION", true);
-require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
-require_once($_SERVER["DOCUMENT_ROOT"]."/my/admin/before.php");
+//define("ADMIN_SECTION", true);
+//require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
+//require_once($_SERVER["DOCUMENT_ROOT"]."/my/admin/before.php");
 
-$TLP_obj = unserialize($_SESSION["TLP_obj"]);
+//$TLP_obj = unserialize($_SESSION["TLP_obj"]);
 $action = $_GET['a'];
 $file_ID = $_GET['i'];
 //$filename = ($_GET['fn'] == '')?($file_ID):($_GET['fn']);
@@ -30,7 +30,8 @@ ob_end_clean();
 header_remove();
 
 $str_data = '';
-$sock = fsockopen("".$TLP_obj->TLP_PREFIX."".$TLP_obj->TLP_HOST, $TLP_obj->TLP_PORT, $errno, $errstr, 180);
+//$sock = fsockopen("".$TLP_obj->TLP_PREFIX."".$TLP_obj->TLP_HOST, $TLP_obj->TLP_PORT, $errno, $errstr, 180);
+$sock = fsockopen("ssl://wbs.e-teleport.ru", 443, $errno, $errstr, 180);
 if (!$sock) die("$errstr ($errno)\n");
 
 header('Content-Description: File Transfer');
@@ -38,10 +39,12 @@ header('Content-Transfer-Encoding: binary');
 header('Cache-Control: max-age=0');
 		
 fwrite($sock, "GET /".$url." HTTP/1.0\r\n");
-fwrite($sock, "Host: ".$TLP_obj->TLP_HOST."\r\n");
+//fwrite($sock, "Host: ".$TLP_obj->TLP_HOST."\r\n");
+fwrite($sock, "Host: wbs.e-teleport.ru\r\n");
 fwrite($sock, "Content-type: application/json; charset=utf-8;\r\n");
 fwrite($sock, "Content-length: " . strlen($str_data) . "\r\n");
-fwrite($sock, "Cookie: ".$TLP_obj->str_cookies."\r\n");
+//fwrite($sock, "Cookie: ".$TLP_obj->str_cookies."\r\n");
+fwrite($sock, "Cookie: ".$_COOKIE['tl_ck']."\r\n");
 fwrite($sock, "\r\n");
 fwrite($sock, $str_data);
 

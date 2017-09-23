@@ -865,7 +865,7 @@ $(document).ready(function() {
 		updateSmuserData();
 	}
 	messagesRequest();
-	setInterval(messagesRequest, 5000);
+	setInterval(messagesRequest, 8000);
 	
 	showGreeting();
 	$("#my_contacts_icon").hide(0);

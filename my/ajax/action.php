@@ -1,8 +1,12 @@
 <?
-require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_before.php");
-require_once($_SERVER["DOCUMENT_ROOT"]."/my/admin/before.php");
+//require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_before.php");
+//require_once($_SERVER["DOCUMENT_ROOT"]."/my/admin/before.php");
+//$TLP_obj = unserialize($_SESSION["TLP_obj"]);
 
-$TLP_obj = unserialize($_SESSION["TLP_obj"]);
+require_once($_SERVER["DOCUMENT_ROOT"]."/my/admin/teleclasses.php");
+$TLP_obj = new CTSession();
+$res = $TLP_obj->LightInit();
+
 
 $action = $_POST['action'];
 $adds = $_POST['adds'];
@@ -29,11 +33,16 @@ $docType['order'] = 'Заказ';
 
 if($action == 'logout')
 {
+	require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_before.php");
+	require_once($_SERVER["DOCUMENT_ROOT"]."/my/admin/before.php");
+	$TLP_obj = unserialize($_SESSION["TLP_obj"]);
+	
 	$arFnc = array();
 	$res = $TLP_obj->post('','auth/logout');
 	unset($_SESSION["TLP_obj"]);
 	$USER->Logout();
 	setcookie('tlp_sid','',time()-(7*365*24*60*60),'/');
+	setcookie('tl_ck','',time()-(7*365*24*60*60),'/');
 
 	echo 'OK';
 }
@@ -116,7 +125,7 @@ elseif($action == 'msg_get')
 	}
 	elseif($_POST['adds'] == 'html') {
 		$res = json_decode($res, true);
-		combineMessagesHtml(array_reverse($res), $_POST['mode']);
+		//combineMessagesHtml(array_reverse($res), $_POST['mode']);
 	}
 	else {echo '%err%'.$TLP_obj->mistakes[$res['errCode']];}
 }
@@ -139,7 +148,7 @@ elseif($action == 'msg_getNew')
 	}
 	elseif($_POST['adds'] == 'html') {
 		$res = json_decode($res, true);
-		combineMessagesHtml(array_reverse($res), $_POST['mode']);
+		//combineMessagesHtml(array_reverse($res), $_POST['mode']);
 	}
 	else {echo '%err%'.$TLP_obj->mistakes[$res['errCode']];}
 }
@@ -403,6 +412,10 @@ elseif($action == 'catalog_getItem')
 }
 elseif($action == 'documents_getList')
 {
+	require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_before.php");
+	require_once($_SERVER["DOCUMENT_ROOT"]."/my/admin/before.php");
+	$TLP_obj = unserialize($_SESSION["TLP_obj"]);
+	
 	$arFnc = array();
 	foreach ($_POST as $key => $value) 
 	{
@@ -681,6 +694,10 @@ elseif($action == 'setUserGroup')
 }
 elseif($action == 'getPersonInfo')
 {
+	require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_before.php");
+	require_once($_SERVER["DOCUMENT_ROOT"]."/my/admin/before.php");
+	$TLP_obj = unserialize($_SESSION["TLP_obj"]);
+	
 	$arFnc = array();
 	foreach ($_POST as $key => $value) 
 	{
@@ -1440,6 +1457,10 @@ elseif($action == 'acceptPerson')
 }
 elseif($action == 'changePassword')
 {
+	require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_before.php");
+	require_once($_SERVER["DOCUMENT_ROOT"]."/my/admin/before.php");
+	$TLP_obj = unserialize($_SESSION["TLP_obj"]);
+	
 	$arFnc = array();
 	foreach ($_POST as $key => $value) 
 	{
@@ -1505,6 +1526,10 @@ elseif($action == 'Messages_SetViewed')
 }
 elseif($action == 'setPersonInfo')
 {
+	require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_before.php");
+	require_once($_SERVER["DOCUMENT_ROOT"]."/my/admin/before.php");
+	$TLP_obj = unserialize($_SESSION["TLP_obj"]);
+	
 	$arPermitted = array("user_name", "user_fullname", "phone", "company", "duplicate_messages", "public_contact", "allow_stocks", 
 		"allow_prices", "information", "deny_msgs", "deny_orders", "deny_files", "forward_to", "delivery_possible", "address", 
 		"address_GPS", "delivery_info", "company_INN", "company_KPP", "company_OGRN", "company_account", "company_BIK",

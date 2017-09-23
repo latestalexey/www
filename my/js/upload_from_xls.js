@@ -98,13 +98,22 @@ function showUploadXLSForm() {
 									var name = item.name;
 									var price = number_format(item.price, 2, '.', ' ');
 									var qty = val[2] || 0;
+									var redClass = '';
+									var strChecked = ' checked';
+									var strFaCheck = ' fa-check';
+									if (item.stock == 0) {
+										redClass = ' red';
+										strChecked = '';
+										strFaCheck = '';
+									}
 									items_str +=
-										'<tr id="it_'+item.id+'" class="item checked" data-it-id='+item.id+'>' +
-											'<td class="col_0"><i class="fa fa-check"></i></td>' +
+										'<tr id="it_'+item.id+'" class="item'+strChecked+'" data-it-id='+item.id+'>' +
+											'<td class="col_0"><i class="fa'+strFaCheck+'"></i></td>' +
 											'<td class="col_1">'+item.article+'</td>' +
 											'<td class="col_2">'+item.name+'</td>'+
 											'<td class="col_3">шт</td>'+
 											'<td class="col_4">'+number_format(val[2], 0, '', ' ')+'</td>'+
+											'<td class="col_5' + redClass + '">'+number_format(item.stock, 0, '', ' ')+'</td>'+
 											'<td class="col_6">'+number_format(item.price, 2, '.', ' ')+'</td>'+
 											'<td class="col_7">'+number_format(item.price*qty, 2, '.', ' ')+'</td>'+				
 										'</tr>'
@@ -116,12 +125,13 @@ function showUploadXLSForm() {
 											'<td class="col_2">'+val[1]+'</td>'+
 											'<td class="col_3">шт</td>'+
 											'<td class="col_4">'+number_format(val[2], 0, '', ' ')+'</td>'+
+											'<td class="col_5"></td>'+
 											'<td class="col_6">0.00</td>'+
 											'<td class="col_7">0.00</td>'+				
 										'</tr>'
 								}
 							});	
-							const table_items = '<table class="upl_xls_item_list_content"><tr><th class="col_0">...</th><th class="col_1">Артикул</th><th class="col_2">Товар/Услуга</th><th class="col_3">Ед. изм.</th><th class="col_4">Кол-во</th><th class="col_6">Цена</th><th class="col_7">Всего</th></tr>'+items_str+'</table>'
+							const table_items = '<table class="upl_xls_item_list_content"><tr><th class="col_0">...</th><th class="col_1">Артикул</th><th class="col_2">Товар/Услуга</th><th class="col_3">Ед. изм.</th><th class="col_4">Кол-во</th><th class="col_5">Остаток</th><th class="col_6">Цена</th><th class="col_7">Всего</th></tr>'+items_str+'</table>'
 							$('#doc_excel_form .upl_xls_example').html(table_items);
 							$('#doc_excel_form').append('<div id="append_xls_items_btn" class="button fa fa-file-excel-o"  >&nbsp;&nbsp;Загрузить в заказ</div>');
 						} else {
@@ -133,11 +143,12 @@ function showUploadXLSForm() {
 										'<td class="col_2">'+val[1]+'</td>'+
 										'<td class="col_3">шт</td>'+
 										'<td class="col_4">'+number_format(val[2], 0, '', ' ')+'</td>'+
+										'<td class="col_5">0.00</td>'+
 										'<td class="col_6">0.00</td>'+
 										'<td class="col_7">0.00</td>'+				
 									'</tr>'
 							});	
-							const table_items = '<table class="upl_xls_item_list_content"><tr><th class="col_0">...</th><th class="col_1">Артикул</th><th class="col_2">Товар/Услуга</th><th class="col_3">Ед. изм.</th><th class="col_4">Кол-во</th><th class="col_6">Цена</th><th class="col_7">Всего</th></tr>'+items_str+'</table>'
+							const table_items = '<table class="upl_xls_item_list_content"><tr><th class="col_0">...</th><th class="col_1">Артикул</th><th class="col_2">Товар/Услуга</th><th class="col_3">Ед. изм.</th><th class="col_4">Кол-во</th><th class="col_5">Остаток</th><th class="col_6">Цена</th><th class="col_7">Всего</th></tr>'+items_str+'</table>'
 							$('#doc_excel_form .upl_xls_example').html(table_items);	
 						};
 						hideTelebotInfo();

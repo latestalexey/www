@@ -17,7 +17,7 @@ $arContacts	= array();
 $arGroups	= array();
 $lastContacts = array();
 
-$arFnc = array();
+$arFnc = array('has_catalog' => false);
 $res = $TLP_obj->telecall('Contacts_Get', $arFnc);
 $first_name = '';
 $cnt_quantity = 0;

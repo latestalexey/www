@@ -2008,6 +2008,9 @@ div#UserDocList .UserDocItem:hover {
 #doc_excel_form .upl_xls_example table .item.red {
 	background: rgba(255, 0, 0, 0.3);
 }
+#doc_excel_form .upl_xls_example table .item .red {
+	background-color: #FF0000;
+}
 
 #doc_excel_form #doc_upl_xls_form {
 	height: 50px;
