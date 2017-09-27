@@ -604,6 +604,29 @@ elseif($action == 'catalog_getQuantity')
 	else
 	{echo '%err%'.$TLP_obj->mistakes[$res['errCode']];}
 }
+elseif($action == 'catalog_copy')
+{
+	$arFnc = array();
+	foreach ($_POST as $key => $value) 
+	{
+		if($key == 'filters' || $key == 'properties' || $key == 'fields') {
+			$arFnc[$key] = json_decode($value,true);
+		} elseif(!($key == 'action' || $key=='adds' || $key=='list_type'))
+		{	
+			$arFnc[$key] = $value;
+		}
+	}	
+		
+	$res = $TLP_obj->telecall('Catalog_Copy', $arFnc);
+	echo $res;
+	if($res['errCode'] == 0)
+	{
+		$result = json_decode($res["return"], true);
+		echo $result;
+	}	
+	else
+	{echo '%err%'.$TLP_obj->mistakes[$res['errCode']];}
+}
 elseif($action == 'catalog_FiltersGet')
 {
 	$arFnc = array();

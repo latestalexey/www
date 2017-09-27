@@ -223,7 +223,7 @@ uasort($arGroups, 'arSortByNum');
 							
 						?>
 							
-							<div id="cnt_<?=$cnt['user_id']?>" class="<?=$cnt_classname;?><?=$drag;?><?=$drop;?>" data-usr-id="<?=$cnt['user_id']?>" data-usr-name="<?=$cnt['name']?>" data-usr-fullname="<?=$usr_fullname?>" data-usr-alias="<?=$cnt['alias']?>" data-photo-id="<?=$cnt['photo_id']?>" data-group="<?=mb_strtolower($cnt['group'], 'UTF-8');?>" data-group-name="<?=$cnt['group'];?>" data-usr-activedate="<?=$cnt['activedate'];?>" data-usr-index="<?=mb_strtolower($cnt['name'],'UTF-8').'_ins_'.mb_strtolower($cnt['fullname'],'UTF-8')?>">
+							<div id="cnt_<?=$cnt['user_id']?>" class="<?=$cnt_classname;?><?=$drag;?><?=$drop;?>" data-usr-id="<?=$cnt['user_id']?>" data-usr-name="<?=$cnt['name']?>" data-usr-fullname="<?=$usr_fullname?>" data-usr-alias="<?=$cnt['alias']?>" data-photo-id="<?=$cnt['photo_id']?>" data-group="<?=mb_strtolower($cnt['group'], 'UTF-8');?>" data-group-name="<?=$cnt['group'];?>" data-usr-activedate="<?=$cnt['activedate'];?>" data-usr-index="<?=mb_strtolower($cnt['name'],'UTF-8').'_ins_'.mb_strtolower($cnt['fullname'],'UTF-8').'_ins_'.mb_strtolower($cnt['alias'],'UTF-8');?>">
 								<p class="cnt_info active_icon"><?include($_SERVER["DOCUMENT_ROOT"]."/my/data/svg/expand_more.svg");?></p>
 								<table style="border-spacing: 0;">
 									<tr>

@@ -570,7 +570,7 @@ $(document).ready(function()
 				'</div>' +
 				'<div class="caption">Каталог '+contact.name+' будет скопирован в МОЙ каталог.<br>Продолжить?</div>' +	
 				'<div class="button yes">Да</div>' +	
-				'<div class="button no">Нет</div>' +
+				'<div class="button no">Нет</div>'/* +
 				'<div class="cat_autoupdate">' +
 					'<div class="checkbox"></div><div class="update_val" update-type-value=rest_update>Автообновление остатков</div>' +
 					'<div class="mail_icon active_icon help_icon">' +
@@ -591,7 +591,7 @@ $(document).ready(function()
 						'</svg>' +	
 					'</div>' +
 				'</div>' +
-			'</div>'
+			'</div>'*/
 		);	
 		showModalWindow($('#copy_cat'));
 		
@@ -605,9 +605,9 @@ $(document).ready(function()
 
 		$('#copy_cat').on('click', '.button.yes',function() {
 			var update_params = '';
-			$('#copy_cat .cat_autoupdate .checked').each(function(i, checked_obj) {
+			/*$('#copy_cat .cat_autoupdate .checked').each(function(i, checked_obj) {
 				update_params = update_params + $(this).siblings('.update_val').attr('update-type-value')+',';
-			});
+			});*/
 			hideModalWindow($('#copy_cat'));
 			InitCatCopy(update_params.substr(0,update_params.length-1));
 		});
@@ -1818,7 +1818,31 @@ function ShowStocks() {
 
 
 function InitCatCopy(update_params) {
-	//console.log(update_params);
+	var contact = getActiveContact();
+	if(!(contact.id == undefined)){
+		var arr_fld = ['*'];
+		var arr_props = ['*'];
+		//var arr_filter = [{"mode": "item", "name":"id", "operation":"=", "value": obj.attr('data-it-id')}];
+		var xhr = new XMLHttpRequest();
+		var body =	'action=catalog_copy' +
+					'&adds=json' +
+					'&contact=' + encodeURIComponent(contact.name) +
+					//'&filters=' + encodeURIComponent(JSON.stringify(arr_filter)) +
+					'&copyMode=cleanBefore';
+		xhr.open("POST", '/my/ajax/action.php', true);
+		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+		xhr.onreadystatechange = function() 
+		{ 
+			if (xhr.readyState != 4) return;
+			
+			if(!(xhr.responseText.indexOf('%err%') == -1)) {
+				showError(xhr.responseText.replace('%err%',''));
+				return;
+			}
+			console.log(xhr.responseText);
+		}		
+		xhr.send(body);
+	};
 }
 
 function getItemInfoForDoc(obj) {
